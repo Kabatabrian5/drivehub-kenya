@@ -80,37 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
     { name: "Mercedes-Benz", logo: "https://www.carlogos.org/car-logos/mercedes-benz-logo.png" }
   ];
 
-  if (brandLogoContainer) {
-    brandLogoContainer.innerHTML = brandDatabase.map(brand => `
-      <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 8px; min-width: 120px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 90px;">
-        <img src="${brand.logo}" alt="${brand.name} logo" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 4px;">
-        <p style="font-size: 12px; font-weight: bold; color: #111; margin: 0;">${brand.name}</p>
-      </div>
-    `).join('');
-
-    document.querySelectorAll('.brand-badge').forEach(badge => {
-      badge.addEventListener('click', () => {
-        const selectedMake = badge.getAttribute('data-make');
-        if (makeFilter.value === selectedMake) {
-          makeFilter.value = "";
-          badge.style.border = "1px solid #ddd";
-          badge.style.background = "#fff";
-        } else {
-          makeFilter.value = selectedMake;
-          document.querySelectorAll('.brand-badge').forEach(b => {
-            b.style.border = "1px solid #ddd";
-            b.style.background = "#fff";
-          });
-          badge.style.border = "2px solid #ff4d00";
-          badge.style.background = "#fff8f5";
-        }
-        filterInventory();
-      });
-    });
-  }
-
   if (typeof cars !== 'undefined') {
-    // Populate dynamic filter selections from database fields
+    // Populate dynamic filter selections from database fields first so select options are available
     const populateSelect = (element, values) => {
       values.sort().forEach(val => {
         if (val && ![...element.options].some(o => o.value == val)) {
@@ -129,6 +100,37 @@ document.addEventListener('DOMContentLoaded', () => {
     populateSelect(yearFilter, [...new Set(cars.map(c => c.year))]);
     populateSelect(ccFilter, [...new Set(cars.map(c => c.cc))]);
     populateSelect(priceFilter, [1000000, 2000000, 3000000, 5000000, 10000000]);
+
+    if (brandLogoContainer) {
+      brandLogoContainer.innerHTML = brandDatabase.map(brand => `
+        <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 8px; min-width: 120px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 90px;">
+          <img src="${brand.logo}" alt="${brand.name} logo" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 4px;">
+          <p style="font-size: 12px; font-weight: bold; color: #111; margin: 0;">${brand.name}</p>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.brand-badge').forEach(badge => {
+        badge.addEventListener('click', () => {
+          const selectedMake = badge.getAttribute('data-make');
+          
+          // Toggle selection: if already selected, clear filter and reset styles
+          if (makeFilter.value.toLowerCase() === selectedMake.toLowerCase()) {
+            makeFilter.value = "";
+            badge.style.border = "1px solid #ddd";
+            badge.style.background = "#fff";
+          } else {
+            makeFilter.value = selectedMake;
+            document.querySelectorAll('.brand-badge').forEach(b => {
+              b.style.border = "1px solid #ddd";
+              b.style.background = "#fff";
+            });
+            badge.style.border = "2px solid #ff4d00";
+            badge.style.background = "#fff8f5";
+          }
+          filterInventory();
+        });
+      });
+    }
 
     function renderCars(items) {
       if (!container) return;
