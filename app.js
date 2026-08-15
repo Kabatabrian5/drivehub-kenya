@@ -35,9 +35,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput');
   const makeFilter = document.getElementById('makeFilter');
   const locationFilter = document.getElementById('locationFilter');
+  const brandLogoContainer = document.getElementById('brandLogoContainer');
+
+  // Badge/Logo image mapping for popular car makes in Kenya
+  const brandLogos = {
+    "Toyota": "https://www.carlogos.org/car-logos/toyota-logo-2019-show.png",
+    "Mazda": "https://www.carlogos.org/car-logos/mazda-logo-2018.png",
+    "Subaru": "https://www.carlogos.org/car-logos/subaru-logo-2019.png",
+    "Nissan": "https://www.carlogos.org/car-logos/nissan-logo-2020.png",
+    "Honda": "https://www.carlogos.org/car-logos/honda-logo-2000.png",
+    "Volkswagen": "https://www.carlogos.org/car-logos/volkswagen-logo-2019.png",
+    "BMW": "https://www.carlogos.org/car-logos/bmw-logo-2020.png",
+    "Mercedes-Benz": "https://www.carlogos.org/car-logos/mercedes-benz-logo-2011.png"
+  };
 
   if (typeof cars !== 'undefined') {
-    // Populate filter dropdown options dynamically from database
     const uniqueMakes = [...new Set(cars.map(c => c.make))];
     const uniqueLocations = [...new Set(cars.map(c => c.location))];
 
@@ -54,6 +66,35 @@ document.addEventListener('DOMContentLoaded', () => {
       opt.textContent = loc;
       locationFilter.appendChild(opt);
     });
+
+    // Render clickable brand logos
+    if (brandLogoContainer) {
+      brandLogoContainer.innerHTML = uniqueMakes.map(make => {
+        const logoUrl = brandLogos[make] || "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf";
+        return `
+          <div class="brand-badge" data-make="${make}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; min-width: 100px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s;">
+            <img src="${logoUrl}" alt="${make}" style="width: 45px; height: 35px; object-fit: contain; margin-bottom: 5px;">
+            <p style="font-size: 12px; font-weight: bold; color: #333;">${make}</p>
+          </div>
+        `;
+      }).join('');
+
+      // Add click event listeners to brand badges
+      document.querySelectorAll('.brand-badge').forEach(badge => {
+        badge.addEventListener('click', () => {
+          const selectedMake = badge.getAttribute('data-make');
+          if (makeFilter.value === selectedMake) {
+            makeFilter.value = ""; // Toggle off if clicked again
+            badge.style.border = "1px solid #ddd";
+          } else {
+            makeFilter.value = selectedMake;
+            document.querySelectorAll('.brand-badge').forEach(b => b.style.border = "1px solid #ddd");
+            badge.style.border = "2px solid #ff4d00";
+          }
+          filterInventory();
+        });
+      });
+    }
 
     function renderCars(items) {
       if (!container) return;
