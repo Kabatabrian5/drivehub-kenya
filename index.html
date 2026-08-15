@@ -33,26 +33,44 @@
                 <input type="text" id="postModel" placeholder="Model (e.g. RAV4, Demio)" required>
                 <input type="number" id="postPrice" placeholder="Price in KSh (e.g. 1500000)" required>
                 <input type="number" id="postYear" placeholder="Year (e.g. 2018)" required>
+                
                 <select id="postLocation" required>
-                    <option value="">Select Location</option>
+                    <option value="">Select Town / Location</option>
                     <option value="Nairobi">Nairobi</option>
                     <option value="Mombasa">Mombasa</option>
                     <option value="Nakuru">Nakuru</option>
                     <option value="Eldoret">Eldoret</option>
+                    <option value="Kisumu">Kisumu</option>
+                    <option value="Thika">Thika</option>
+                    <option value="Kiambu">Kiambu</option>
+                    <option value="Machakos">Machakos</option>
+                    <option value="Nyeri">Nyeri</option>
+                    <option value="Meru">Meru</option>
+                    <option value="Kisii">Kisii</option>
+                    <option value="Kitale">Kitale</option>
+                    <option value="Malindi">Malindi</option>
                 </select>
+
+                <select id="postCondition" required>
+                    <option value="Foreign Used">Foreign Used</option>
+                    <option value="Locally Used">Locally Used</option>
+                </select>
+
                 <select id="postTransmission" required>
                     <option value="">Transmission</option>
                     <option value="Automatic">Automatic</option>
                     <option value="Manual">Manual</option>
                 </select>
+
                 <select id="postFuel" required>
                     <option value="">Fuel Type</option>
                     <option value="Petrol">Petrol</option>
                     <option value="Diesel">Diesel</option>
                     <option value="Hybrid">Hybrid</option>
                 </select>
+
                 <input type="number" id="postCc" placeholder="Engine CC (e.g. 1500)" required>
-                <input type="text" id="postImage" placeholder="Image URL (optional, leave blank for default car photo)">
+                <input type="text" id="postImage" placeholder="Image URL (optional)">
                 <button type="submit" class="btn-success">Publish Listing Now</button>
             </form>
         </section>
@@ -87,12 +105,22 @@
                     <option value="2020">2020+</option>
                 </select>
 
+                <!-- All Kenyan Towns Location Filter -->
                 <select id="locationFilter">
-                    <option value="">All Locations</option>
+                    <option value="">All Towns in Kenya</option>
                     <option value="Nairobi">Nairobi</option>
                     <option value="Mombasa">Mombasa</option>
                     <option value="Nakuru">Nakuru</option>
                     <option value="Eldoret">Eldoret</option>
+                    <option value="Kisumu">Kisumu</option>
+                    <option value="Thika">Thika</option>
+                    <option value="Kiambu">Kiambu</option>
+                    <option value="Machakos">Machakos</option>
+                    <option value="Nyeri">Nyeri</option>
+                    <option value="Meru">Meru</option>
+                    <option value="Kisii">Kisii</option>
+                    <option value="Kitale">Kitale</option>
+                    <option value="Malindi">Malindi</option>
                 </select>
 
                 <select id="transmissionFilter">
