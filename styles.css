@@ -1,4 +1,3 @@
-/* --- Global Resets & Mobile-First Foundation --- */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -13,7 +12,6 @@ body {
   padding: 0;
 }
 
-/* --- Layout Containers --- */
 header, .container, .hero, .search-filter {
   width: 100%;
   max-width: 1200px;
@@ -21,7 +19,13 @@ header, .container, .hero, .search-filter {
   padding: 15px;
 }
 
-/* --- Car Card & Image Management --- */
+.car-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
 .car-card {
   background: #ffffff;
   border-radius: 8px;
@@ -40,7 +44,7 @@ header, .container, .hero, .search-filter {
 .car-img-container img {
   width: 100%;
   height: 200px;
-  object-fit: cover; /* Keeps images uniform and prevents stretching */
+  object-fit: cover;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
@@ -52,7 +56,6 @@ header, .container, .hero, .search-filter {
   gap: 8px;
 }
 
-/* --- Interactive Auth Modal Styling --- */
 .modal {
   display: none; 
   position: fixed; 
@@ -118,7 +121,6 @@ header, .container, .hero, .search-filter {
   background: #333;
 }
 
-/* --- Responsive Mobile Optimization (Under 768px) --- */
 @media (max-width: 768px) {
   body {
     padding: 5px;
@@ -130,7 +132,6 @@ header, .container, .hero, .search-filter {
     width: 100%;
   }
 
-  /* Stack search and filter options vertically to avoid clutter */
   .search-filter, .filters-grid {
     display: flex;
     flex-direction: column;
