@@ -11,9 +11,13 @@
   <!-- Full-Width Header -->
   <header class="full-header">
     <div class="nav-container">
-      <div style="display: flex; align-items: center; gap: 30px;">
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <!-- Mobile Menu Toggle Button -->
+        <button id="menuToggleBtn" class="mobile-menu-btn">☰</button>
         <h1 class="brand-title">KABATA <span style="color: #ff4d00;">MOTORS</span></h1>
-        <nav class="desktop-nav">
+        
+        <!-- Desktop Nav Links -->
+        <nav id="desktopNav" class="desktop-nav">
           <a href="#" class="nav-link active">Home</a>
           <a href="#" class="nav-link">🔥 Hot Deals</a>
           <a href="#" class="nav-link">Find a Car</a>
@@ -21,11 +25,27 @@
         </nav>
       </div>
       <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="font-size: 13px; font-weight: bold; color: #fff;">BRIAN KABATA</span>
+        <span class="desktop-username" style="font-size: 13px; font-weight: bold; color: #fff;">BRIAN KABATA</span>
         <button id="signInBtn" class="signin-btn">Account</button>
       </div>
     </div>
   </header>
+
+  <!-- Mobile Slide-out Menu Drawer -->
+  <div id="mobileNavDrawer" class="mobile-drawer">
+    <div class="drawer-header">
+      <h3>Menu</h3>
+      <span id="closeDrawerBtn">&times;</span>
+    </div>
+    <div class="drawer-links">
+      <a href="#">🏠 Home</a>
+      <a href="#">🔥 Hot Deals</a>
+      <a href="#">🚗 Find a Car</a>
+      <a href="#">🛠️ Our Services</a>
+      <a href="#">📑 Import Duty Guide</a>
+      <a href="#">⭐ Verified Sellers</a>
+    </div>
+  </div>
 
   <!-- Full-Width Hero Section -->
   <section class="hero-section">
