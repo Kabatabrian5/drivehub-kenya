@@ -8,7 +8,6 @@
 </head>
 <body>
 
-  <!-- Header Section -->
   <header>
     <div class="nav-container" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eaeaea;">
       <h1 style="font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">KABATA MOTORS</h1>
@@ -16,36 +15,23 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
   <section class="hero" style="text-align: center; padding: 30px 15px 15px 15px;">
     <h2 style="font-size: 2rem; margin-bottom: 8px;">Find Your Dream Ride in Kenya</h2>
     <p style="color: #666;">Browse verified local & foreign used cars with 100% free listings.</p>
   </section>
 
-  <!-- Marketplace Search & Filter Bar -->
   <div class="search-filter" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px;">
     <h3 style="font-size: 1rem; margin-bottom: 12px; color: #333;">Search & Filter Inventory</h3>
-    <div class="filters-grid">
-      <select id="makeFilter"><option value="">All Makes</option></select>
-      <input type="text" id="searchInput" placeholder="Search model, make...">
-      <select id="priceFilter"><option value="">Max Price (KSh)</option></select>
-      <select id="yearFilter"><option value="">Min Year</option></select>
-      <select id="locationFilter"><option value="">All Towns in Kenya</option></select>
-      <select id="transmissionFilter"><option value="">Transmission</option></select>
-      <select id="fuelFilter"><option value="">Fuel Type</option></select>
-      <select id="ccFilter"><option value="">Engine CC</option></select>
+    <div class="filters-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
+      <input type="text" id="searchInput" placeholder="Search model, make, or location..." style="padding: 10px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
     </div>
   </div>
 
-  <!-- Main Car Inventory Grid -->
   <main class="container">
     <h3 style="font-size: 1.2rem; margin-bottom: 15px;">Fresh Listings in Kenya</h3>
-    <div id="carListings" class="car-grid">
-      <!-- Dynamic car cards populate here -->
-    </div>
+    <div id="carListings" class="car-grid"></div>
   </main>
 
-  <!-- Interactive Sign In Modal -->
   <div id="authModal" class="modal">
     <div class="modal-content">
       <span id="closeModal">&times;</span>
@@ -58,7 +44,6 @@
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="cars-data.js"></script>
   <script src="app.js"></script>
 </body>
