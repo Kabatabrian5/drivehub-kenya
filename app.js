@@ -1,79 +1,78 @@
-const defaultCars = [
-    { make: "Toyota", model: "RAV4", price: 3200000, year: 2017, location: "Nairobi", condition: "Foreign Used", transmission: "Automatic", fuel: "Petrol", cc: 2000, image: "https://images.unsplash.com/photo-1590362891991-f776e747a588?auto=format&fit=crop&w=600&q=80" },
-    { make: "Mazda", model: "Demio", price: 950000, year: 2016, location: "Mombasa", condition: "Foreign Used", transmission: "Automatic", fuel: "Petrol", cc: 1300, image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80" },
-    { make: "Subaru", model: "Forester", price: 2800000, year: 2015, location: "Nakuru", condition: "Locally Used", transmission: "Automatic", fuel: "Petrol", cc: 2500, image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" }
-];
+// Initialize Supabase Client
+const SUPABASE_URL = 'https://qzqvyceabwxvzeylfnpw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cXZ5Y2VhYnd4dnpleWxmbnB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NzEzMzUsImV4cCI6MjEwMjM0NzMzNX0.9fDJGRjaCamvZhxkfhwu08vFTTPcabZ00VBvi_av1wk';
 
-let cars = JSON.parse(localStorage.getItem("drivehub_cars")) || defaultCars;
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const carGrid = document.getElementById("carGrid");
-const toggleFormBtn = document.getElementById("toggleFormBtn");
-const postCarSection = document.getElementById("postCarSection");
-const postCarForm = document.getElementById("postCarForm");
+// DOM Elements
+const carGrid = document.getElementById('carGrid');
+const postCarForm = document.getElementById('postCarForm');
+const toggleFormBtn = document.getElementById('toggleFormBtn');
+const postCarSection = document.getElementById('postCarSection');
 
-toggleFormBtn.addEventListener("click", () => {
-    postCarSection.classList.toggle("hidden");
-    toggleFormBtn.textContent = postCarSection.classList.contains("hidden") ? "+ Post Car Free" : "Close Form";
+// Filter Inputs
+const makeFilter = document.getElementById('makeFilter');
+const modelFilter = document.getElementById('modelFilter');
+const priceFilter = document.getElementById('priceFilter');
+const yearFilter = document.getElementById('yearFilter');
+const locationFilter = document.getElementById('locationFilter');
+const transmissionFilter = document.getElementById('transmissionFilter');
+const fuelFilter = document.getElementById('fuelFilter');
+const ccFilter = document.getElementById('ccFilter');
+
+let allCars = [];
+
+// Toggle Post Form Visibility
+toggleFormBtn.addEventListener('click', () => {
+    postCarSection.classList.toggle('hidden');
+    toggleFormBtn.textContent = postCarSection.classList.contains('hidden') ? '+ Post Car Free' : 'Close Form';
 });
 
-postCarForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    
-    const userImg = document.getElementById("postImage").value.trim();
-    const fallbackImg = "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80";
+// Fetch Cars from Supabase
+async function fetchCars() {
+    const { data, error } = await supabaseClient
+        .from('cars')
+        .select('*')
+        .order('id', { ascending: false });
 
-    const newCar = {
-        make: document.getElementById("postMake").value,
-        model: document.getElementById("postModel").value,
-        price: Number(document.getElementById("postPrice").value),
-        year: Number(document.getElementById("postYear").value),
-        location: document.getElementById("postLocation").value,
-        condition: document.getElementById("postCondition").value,
-        transmission: document.getElementById("postTransmission").value,
-        fuel: document.getElementById("postFuel").value,
-        cc: Number(document.getElementById("postCc").value),
-        image: userImg !== "" ? userImg : fallbackImg
-    };
-
-    cars.unshift(newCar);
-    localStorage.setItem("drivehub_cars", JSON.stringify(cars));
-    
-    postCarForm.reset();
-    postCarSection.classList.add("hidden");
-    toggleFormBtn.textContent = "+ Post Car Free";
-    
-    filterCars();
-});
-
-const makeFilter = document.getElementById("makeFilter");
-const modelFilter = document.getElementById("modelFilter");
-const priceFilter = document.getElementById("priceFilter");
-const yearFilter = document.getElementById("yearFilter");
-const locationFilter = document.getElementById("locationFilter");
-const transmissionFilter = document.getElementById("transmissionFilter");
-const fuelFilter = document.getElementById("fuelFilter");
-const ccFilter = document.getElementById("ccFilter");
-
-function displayCars(carsToDisplay) {
-    carGrid.innerHTML = "";
-    if (carsToDisplay.length === 0) {
-        carGrid.innerHTML = "<p style='grid-column: 1/-1; text-align: center; color: #64748b;'>No cars found matching your filters.</p>";
+    if (error) {
+        console.error('Error fetching cars:', error);
         return;
     }
-    
-    carsToDisplay.forEach(car => {
-        const card = document.createElement("div");
-        card.classList.add("car-card");
+
+    allCars = data || [];
+    displayCars(allCars);
+}
+
+// Display Cars in Grid
+function displayCars(cars) {
+    carGrid.innerHTML = '';
+
+    if (cars.length === 0) {
+        carGrid.innerHTML = `<p class="no-cars">No vehicles found matching your criteria.</p>`;
+        return;
+    }
+
+    cars.forEach(car => {
+        const card = document.createElement('div');
+        card.className = 'car-card';
+
+        const defaultImage = 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80';
+        const carImage = car.image && car.image.trim() !== '' ? car.image : defaultImage;
+
         card.innerHTML = `
-            <div class="car-badge">${car.condition || 'Foreign Used'}</div>
-            <img src="${car.image || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80'}" alt="${car.make} ${car.model}" class="car-img">
-            <div class="car-info">
+            <div class="car-image-container">
+                <img src="${carImage}" alt="${car.make} ${car.model}" onerror="this.src='${defaultImage}'">
+                <span class="badge-condition">${car.condition}</span>
+            </div>
+            <div class="car-details">
                 <h4>${car.make} ${car.model} (${car.year})</h4>
-                <div class="car-price">KSh ${car.price.toLocaleString()}</div>
-                <div class="car-details">
-                    📍 Town: <strong>${car.location}</strong><br>
-                    ⚙️ Trans: ${car.transmission} | ⛽ Fuel: ${car.fuel}<br>
-                    🔋 Engine: ${car.cc}cc
+                <p class="car-price">KSh ${Number(car.price).toLocaleString()}</p>
+                <div class="car-specs">
+                    <span>📍 ${car.location}</span>
+                    <span>⚙️ ${car.transmission}</span>
+                    <span>⛽ ${car.fuel}</span>
+                    <span>🔧 ${car.cc}cc</span>
                 </div>
             </div>
         `;
@@ -81,33 +80,78 @@ function displayCars(carsToDisplay) {
     });
 }
 
-function filterCars() {
-    const selectedMake = makeFilter.value;
-    const typedModel = modelFilter.value.toLowerCase();
-    const maxPrice = priceFilter.value ? Number(priceFilter.value) : Infinity;
-    const minYear = yearFilter.value ? Number(yearFilter.value) : 0;
-    const selectedLocation = locationFilter.value;
-    const selectedTransmission = transmissionFilter.value;
-    const selectedFuel = fuelFilter.value;
-    const maxCc = ccFilter.value ? Number(ccFilter.value) : Infinity;
+// Handle Form Submission (Save to Supabase)
+postCarForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    const filtered = cars.filter(car => {
-        return (selectedMake === "" || car.make === selectedMake) &&
-               (typedModel === "" || car.model.toLowerCase().includes(typedModel)) &&
-               (car.price <= maxPrice) &&
-               (car.year >= minYear) &&
-               (selectedLocation === "" || car.location === selectedLocation) &&
-               (selectedTransmission === "" || car.transmission === selectedTransmission) &&
-               (selectedFuel === "" || car.fuel === selectedFuel) &&
-               (car.cc <= maxCc);
+    const newCar = {
+        make: document.getElementById('postMake').value.trim(),
+        model: document.getElementById('postModel').value.trim(),
+        price: parseFloat(document.getElementById('postPrice').value),
+        year: parseInt(document.getElementById('postYear').value),
+        location: document.getElementById('postLocation').value,
+        condition: document.getElementById('postCondition').value,
+        transmission: document.getElementById('postTransmission').value,
+        fuel: document.getElementById('postFuel').value,
+        cc: parseInt(document.getElementById('postCc').value),
+        image: document.getElementById('postImage').value.trim()
+    };
+
+    const { error } = await supabaseClient
+        .from('cars')
+        .insert([newCar]);
+
+    if (error) {
+        alert('Error posting car: ' + error.message);
+        console.error(error);
+        return;
+    }
+
+    alert('Vehicle listed successfully to Supabase!');
+    postCarForm.reset();
+    postCarSection.classList.add('hidden');
+    toggleFormBtn.textContent = '+ Post Car Free';
+    
+    // Refresh listing view
+    fetchCars();
+});
+
+// Filter Functionality
+function filterCars() {
+    const selectedMake = makeFilter.value.toLowerCase();
+    const searchModel = modelFilter.value.toLowerCase().trim();
+    const maxPrice = priceFilter.value ? parseFloat(priceFilter.value) : Infinity;
+    const minYear = yearFilter.value ? parseInt(yearFilter.value) : 0;
+    const selectedLocation = locationFilter.value.toLowerCase();
+    const selectedTransmission = transmissionFilter.value.toLowerCase();
+    const selectedFuel = fuelFilter.value.toLowerCase();
+    const selectedCc = ccFilter.value ? parseInt(ccFilter.value) : 0;
+
+    const filtered = allCars.filter(car => {
+        const matchesMake = selectedMake === '' || car.make.toLowerCase() === selectedMake;
+        const matchesModel = car.model.toLowerCase().includes(searchModel);
+        const matchesPrice = car.price <= maxPrice;
+        const matchesYear = car.year >= minYear;
+        const matchesLocation = selectedLocation === '' || car.location.toLowerCase() === selectedLocation;
+        const matchesTransmission = selectedTransmission === '' || car.transmission.toLowerCase() === selectedTransmission;
+        const matchesFuel = selectedFuel === '' || car.fuel.toLowerCase() === selectedFuel;
+        
+        let matchesCc = true;
+        if (selectedCc === 1500) matchesCc = car.cc <= 1500;
+        else if (selectedCc === 2000) matchesCc = car.cc <= 2000;
+        else if (selectedCc === 2500) matchesCc = car.cc >= 2000;
+
+        return matchesMake && matchesModel && matchesPrice && matchesYear && matchesLocation && matchesTransmission && matchesFuel && matchesCc;
     });
 
     displayCars(filtered);
 }
 
+// Attach filter events
 [makeFilter, modelFilter, priceFilter, yearFilter, locationFilter, transmissionFilter, fuelFilter, ccFilter].forEach(element => {
-    element.addEventListener("input", filterCars);
-    element.addEventListener("change", filterCars);
+    element.addEventListener('input', filterCars);
+    element.addEventListener('change', filterCars);
 });
 
-displayCars(cars);
+// Load cars on page load
+fetchCars();
