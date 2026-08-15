@@ -25,6 +25,17 @@ window.addEventListener('click', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Prevent any wrapping search forms from performing a full page reload
+  const searchForm = document.querySelector('form');
+  if (searchForm) {
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (typeof filterInventory === 'function') {
+        filterInventory();
+      }
+    });
+  }
+
   const container = document.getElementById('carListings');
   const searchInput = document.getElementById('searchInput');
   const makeFilter = document.getElementById('makeFilter');
