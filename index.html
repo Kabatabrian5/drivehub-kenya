@@ -5,23 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriveHub | Kenya Auto Marketplace</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>DriveHub Kenya</h1>
-        <p>Find your next ride — 100% Free Listings</p>
-        <button id="toggleFormBtn" class="btn-primary">Post Your Car Free</button>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">Drive<span>Hub</span> 🚗</h1>
+            <button id="toggleFormBtn" class="btn-primary">+ Post Car Free</button>
+        </div>
+    </nav>
+
+    <!-- Hero Header Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h2>Find Your Dream Ride in Kenya</h2>
+            <p>Browse verified local & foreign used cars with 100% free listings.</p>
+        </div>
     </header>
 
     <main class="container">
-        <!-- Post Car Form Modal/Section (Hidden by default) -->
+        <!-- Post Car Form Modal (Hidden by default) -->
         <section id="postCarSection" class="post-box hidden">
-            <h2>List a Car for Free</h2>
+            <h2>List Your Vehicle for Free</h2>
             <form id="postCarForm">
                 <input type="text" id="postMake" placeholder="Make (e.g. Toyota, Mazda)" required>
                 <input type="text" id="postModel" placeholder="Model (e.g. RAV4, Demio)" required>
                 <input type="number" id="postPrice" placeholder="Price in KSh (e.g. 1500000)" required>
-                <input type="number" id="postYear" placeholder="Year of Manufacture (e.g. 2018)" required>
+                <input type="number" id="postYear" placeholder="Year (e.g. 2018)" required>
                 <select id="postLocation" required>
                     <option value="">Select Location</option>
                     <option value="Nairobi">Nairobi</option>
@@ -30,24 +41,25 @@
                     <option value="Eldoret">Eldoret</option>
                 </select>
                 <select id="postTransmission" required>
-                    <option value="">Select Transmission</option>
+                    <option value="">Transmission</option>
                     <option value="Automatic">Automatic</option>
                     <option value="Manual">Manual</option>
                 </select>
                 <select id="postFuel" required>
-                    <option value="">Select Fuel Type</option>
+                    <option value="">Fuel Type</option>
                     <option value="Petrol">Petrol</option>
                     <option value="Diesel">Diesel</option>
                     <option value="Hybrid">Hybrid</option>
                 </select>
-                <input type="number" id="postCc" placeholder="Engine Capacity CC (e.g. 1500)" required>
-                <button type="submit" class="btn-success">Publish Listing</button>
+                <input type="number" id="postCc" placeholder="Engine CC (e.g. 1500)" required>
+                <input type="text" id="postImage" placeholder="Image URL (optional, leave blank for default car photo)">
+                <button type="submit" class="btn-success">Publish Listing Now</button>
             </form>
         </section>
 
-        <!-- Search & Filter Section -->
+        <!-- Search & Filter Bar -->
         <section class="filter-box">
-            <h2>Filter Cars</h2>
+            <h3>Search & Filter Inventory</h3>
             <div class="filter-grid">
                 <select id="makeFilter">
                     <option value="">All Makes</option>
@@ -57,7 +69,7 @@
                     <option value="Nissan">Nissan</option>
                 </select>
 
-                <input type="text" id="modelFilter" placeholder="Model (e.g. RAV4, Demio)">
+                <input type="text" id="modelFilter" placeholder="Search model...">
 
                 <select id="priceFilter">
                     <option value="">Max Price (KSh)</option>
@@ -97,7 +109,7 @@
                 </select>
 
                 <select id="ccFilter">
-                    <option value="">Engine Capacity</option>
+                    <option value="">Engine CC</option>
                     <option value="1500">Under 1500cc</option>
                     <option value="2000">Under 2000cc</option>
                     <option value="2500">2000cc+</option>
@@ -107,9 +119,9 @@
 
         <!-- Car Listings Grid -->
         <section class="listings-section">
-            <h2>Available Vehicles</h2>
+            <h3 class="section-title">Fresh Listings in Kenya</h3>
             <div id="carGrid" class="car-grid">
-                <!-- Dynamic car cards will appear here -->
+                <!-- Dynamic cards loaded here -->
             </div>
         </section>
     </main>
