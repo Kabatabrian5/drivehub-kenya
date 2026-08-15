@@ -24,7 +24,12 @@ window.addEventListener('click', (e) => {
   }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize Supabase Client (Replace with your own project credentials from Supabase dashboard)
+  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   // Prevent any wrapping search forms from performing a full page reload
   const searchForm = document.querySelector('form');
   if (searchForm) {
@@ -47,24 +52,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const ccFilter = document.getElementById('ccFilter');
   const brandLogoContainer = document.getElementById('brandLogoContainer');
 
-  // Brand database pulling real image file paths from your project database assets
-  const brandDatabase = [
-    { name: "Toyota", img: "assets/images/brands/toyota.png" },
-    { name: "Mazda", img: "assets/images/brands/mazda.png" },
-    { name: "Subaru", img: "assets/images/brands/subaru.png" },
-    { name: "Nissan", img: "assets/images/brands/nissan.png" },
-    { name: "Honda", img: "assets/images/brands/honda.png" },
-    { name: "Volkswagen", img: "assets/images/brands/volkswagen.png" },
-    { name: "BMW", img: "assets/images/brands/bmw.png" },
-    { name: "Mercedes", img: "assets/images/brands/mercedes.png" }
-  ];
+  // 1. Fetch Brand Logos Dynamically from Supabase 'brands' table
+  async function loadBrandsFromDB() {
+    if (!brandLogoContainer) return;
 
-  // 1. Render the logos using image sources from your database
-  if (brandLogoContainer) {
-    brandLogoContainer.innerHTML = brandDatabase.map(brand => `
+    const { data: brands, error } = await supabaseClient
+      .from('brands')
+      .select('*');
+
+    if (error) {
+      console.error('Error fetching brands from Supabase:', error.message);
+      brandLogoContainer.innerHTML = `<p style="font-size:12px; color:red;">Failed to load brand filters.</p>`;
+      return;
+    }
+
+    brandLogoContainer.innerHTML = brands.map(brand => `
       <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px 6px; min-width: 110px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 85px;">
         <div style="display: flex; align-items: center; justify-content: center; height: 42px;">
-          <img src="${brand.img}" alt="${brand.name} logo" style="max-height: 38px; max-width: 45px; object-fit: contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/40?text=${brand.name[0]}';">
+          <img src="${brand.logo_path}" alt="${brand.name} logo" style="max-height: 38px; max-width: 45px; object-fit: contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/40?text=${brand.name[0]}';">
         </div>
         <p style="font-size: 12px; font-weight: bold; color: #111; margin: 0;">${brand.name}</p>
       </div>
@@ -75,13 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedMake = badge.getAttribute('data-make');
         const isActive = badge.style.border.includes('2px solid');
 
-        // Reset all badges
         document.querySelectorAll('.brand-badge').forEach(b => {
           b.style.border = "1px solid #ddd";
           b.style.background = "#fff";
         });
 
-        // Toggle logic
         if (isActive) {
           if(makeFilter) makeFilter.value = "";
         } else {
@@ -90,13 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
           badge.style.background = "#fff8f5";
         }
         
-        // Trigger inventory filter if the function exists
         if (typeof filterInventory === 'function') {
           filterInventory();
         }
       });
     });
   }
+
+  // Load the logos immediately on startup
+  await loadBrandsFromDB();
 
   // 2. Handle the Cars Database and Filtering
   if (typeof cars !== 'undefined') {
