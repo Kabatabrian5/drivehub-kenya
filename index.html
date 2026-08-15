@@ -117,5 +117,28 @@
 
   <script src="cars-data.js"></script>
   <script src="app.js"></script>
+  <!-- Mobile Bottom Navigation Bar (Appears only on phones) -->
+  <nav class="mobile-bottom-nav">
+    <a href="#" class="nav-item active">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon">🔖</span>
+      <span>Saved</span>
+    </a>
+    <a href="#" class="nav-item" onclick="document.getElementById('signInBtn').click(); return false;">
+      <span class="nav-icon">➕</span>
+      <span>Sell</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="nav-icon">💬</span>
+      <span>Messages</span>
+    </a>
+    <a href="#" class="nav-item" onclick="document.getElementById('signInBtn').click(); return false;">
+      <span class="nav-icon">👤</span>
+      <span>Profile</span>
+    </a>
+  </nav>
 </body>
 </html>
