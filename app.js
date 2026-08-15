@@ -18,7 +18,7 @@ if (closeModal && authModal) {
 window.addEventListener('click', (e) => {
   if (e.target === authModal) {
     authModal.style.display = 'none';
-  });
+  }
 });
 
 const loginForm = document.getElementById('loginForm');
@@ -29,6 +29,32 @@ if (loginForm) {
     authModal.style.display = 'none';
   });
 }
+
+/* Mobile Slide-out Menu Drawer Controller */
+const menuToggleBtn = document.getElementById('menuToggleBtn');
+const mobileNavDrawer = document.getElementById('mobileNavDrawer');
+const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+
+if (menuToggleBtn && mobileNavDrawer) {
+  menuToggleBtn.addEventListener('click', () => {
+    mobileNavDrawer.classList.add('open');
+  });
+}
+
+if (closeDrawerBtn && mobileNavDrawer) {
+  closeDrawerBtn.addEventListener('click', () => {
+    mobileNavDrawer.classList.remove('open');
+  });
+}
+
+// Close drawer if user clicks anywhere outside of it
+window.addEventListener('click', (e) => {
+  if (mobileNavDrawer && mobileNavDrawer.classList.contains('open')) {
+    if (!mobileNavDrawer.contains(e.target) && e.target !== menuToggleBtn) {
+      mobileNavDrawer.classList.remove('open');
+    }
+  }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('carListings');
