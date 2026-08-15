@@ -15,16 +15,16 @@
         <!-- Mobile Menu Toggle Button -->
         <button id="menuToggleBtn" class="mobile-menu-btn">☰</button>
         <h1 class="brand-title">KABATA <span style="color: #ff4d00;">MOTORS</span></h1>
-        
-        <!-- Desktop Nav Links -->
-        <nav id="desktopNav" class="desktop-nav">
-          <a href="#" class="nav-link active">Home</a>
-          <a href="#" class="nav-link">🔥 Hot Deals</a>
-          <a href="#" class="nav-link">Find a Car</a>
-          <a href="#" class="nav-link">Our Services</a>
-        </nav>
       </div>
-    
+      
+      <!-- Desktop Nav Links -->
+      <nav id="desktopNav" class="desktop-nav">
+        <a href="#" class="nav-link active">Home</a>
+        <a href="#" class="nav-link">🔥 Hot Deals</a>
+        <a href="#" class="nav-link">Find a Car</a>
+        <a href="#" class="nav-link">Our Services</a>
+      </nav>
+    </div>
   </header>
 
   <!-- Mobile Slide-out Menu Drawer -->
@@ -110,7 +110,7 @@
       <!-- Brand Logo Quick Filter Bar -->
       <div style="margin-bottom: 30px;">
         <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #111;">Browse by Make</h3>
-        <div id="brandLogoContainer" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
+        <div id="brandLogoContainer" class="brand-logo-scroll"></div>
       </div>
 
       <!-- Listings -->
@@ -143,20 +143,9 @@
 
   </div>
 
-  <div id="authModal" class="modal">
-    <div class="modal-content">
-      <span id="closeModal">&times;</span>
-      <h2 style="margin-bottom: 15px;">Sign In to Kabata Motors</h2>
-      <form id="loginForm">
-        <input type="email" placeholder="Email Address" required>
-        <input type="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  </div>
-
   <script src="cars-data.js"></script>
   <script src="app.js"></script>
+
   <!-- Mobile Bottom Navigation Bar (Appears only on phones) -->
   <nav class="mobile-bottom-nav">
     <a href="#" class="nav-item active">
@@ -164,20 +153,16 @@
       <span>Home</span>
     </a>
     <a href="#" class="nav-item">
-      <span class="nav-icon">🔖</span>
-      <span>Saved</span>
-    </a>
-    <a href="#" class="nav-item" onclick="document.getElementById('signInBtn').click(); return false;">
-      <span class="nav-icon">➕</span>
-      <span>Sell</span>
+      <span class="nav-icon">🔥</span>
+      <span>Deals</span>
     </a>
     <a href="#" class="nav-item">
       <span class="nav-icon">💬</span>
-      <span>Messages</span>
+      <span>Broker</span>
     </a>
-    <a href="#" class="nav-item" onclick="document.getElementById('signInBtn').click(); return false;">
-      <span class="nav-icon">👤</span>
-      <span>Profile</span>
+    <a href="#" class="nav-item">
+      <span class="nav-icon">📑</span>
+      <span>Guides</span>
     </a>
   </nav>
 </body>
