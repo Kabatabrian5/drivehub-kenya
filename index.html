@@ -3,39 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kabata Motors - Free Second-Hand Car Marketplace</title>
+  <title>Kabata Motors - Kenya's Trusted Car Marketplace</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <header>
-    <div class="nav-container" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eaeaea;">
-      <h1 style="font-size: 1.4rem; font-weight: 800; letter-spacing: 0.5px;">KABATA MOTORS</h1>
-      <button id="signInBtn" style="background: #000; color: #fff; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: bold;">Sign In</button>
+  <header style="background: #111; color: #fff; padding: 15px 0; border-bottom: 3px solid #ff4d00;">
+    <div class="nav-container" style="max-width: 1200px; margin: 0 auto; padding: 0 15px; display: flex; justify-content: space-between; align-items: center;">
+      <h1 style="font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; color: #fff;">KABATA <span style="color: #ff4d00;">MOTORS</span></h1>
+      <button id="signInBtn" style="background: #ff4d00; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Sign In</button>
     </div>
   </header>
 
-  <section class="hero" style="text-align: center; padding: 30px 15px 15px 15px;">
-    <h2 style="font-size: 2rem; margin-bottom: 8px;">Find Your Dream Ride in Kenya</h2>
-    <p style="color: #666;">Browse verified local & foreign used cars with 100% free listings.</p>
+  <section class="hero" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1533473359331-0135ef1b58bf') center/cover no-repeat; color: #fff; text-align: center; padding: 60px 20px;">
+    <h2 style="font-size: 2.5rem; margin-bottom: 10px; font-weight: 800;">Find Your Dream Ride in Kenya</h2>
+    <p style="font-size: 1.1rem; color: #ddd; margin-bottom: 20px;">Browse verified local & foreign used cars with 100% free listings.</p>
   </section>
 
-  <div class="search-filter" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 25px;">
-    <h3 style="font-size: 1rem; margin-bottom: 12px; color: #333;">Search & Filter Inventory</h3>
-    <div class="filters-grid" style="display: flex; gap: 10px; flex-wrap: wrap;">
-      <input type="text" id="searchInput" placeholder="Search model, make, or location..." style="padding: 10px; flex: 1; border: 1px solid #ccc; border-radius: 4px;">
+  <div class="search-filter" style="max-width: 1200px; margin: -30px auto 30px auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; z-index: 10;">
+    <h3 style="font-size: 1.1rem; margin-bottom: 15px; color: #111;">Search & Filter Inventory</h3>
+    <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+      <select id="makeFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Makes</option></select>
+      <input type="text" id="searchInput" placeholder="Search model..." style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+      <select id="priceFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Max Price (KSh)</option></select>
+      <select id="yearFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Min Year</option></select>
+      <select id="locationFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Towns</option></select>
+      <select id="transmissionFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Transmission</option></select>
+      <select id="fuelFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Fuel Type</option></select>
+      <select id="ccFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Engine CC</option></select>
     </div>
   </div>
 
-  <main class="container">
-    <h3 style="font-size: 1.2rem; margin-bottom: 15px;">Fresh Listings in Kenya</h3>
+  <main class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 15px 40px 15px;">
+    <h3 style="font-size: 1.3rem; margin-bottom: 20px; color: #111; border-left: 4px solid #ff4d00; padding-left: 10px;">Fresh Listings in Kenya</h3>
     <div id="carListings" class="car-grid"></div>
   </main>
 
   <div id="authModal" class="modal">
     <div class="modal-content">
       <span id="closeModal">&times;</span>
-      <h2>Sign In to Kabata Motors</h2>
+      <h2 style="margin-bottom: 15px;">Sign In to Kabata Motors</h2>
       <form id="loginForm">
         <input type="email" placeholder="Email Address" required>
         <input type="password" placeholder="Password" required>
