@@ -1,4 +1,4 @@
-/* General Resets */
+/* General Resets & Styling */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f6f9;
@@ -68,7 +68,7 @@ body {
   margin: 0;
 }
 
-/* 3-Column Layout Wrapper */
+/* 3-Column Layout Wrapper (Desktop) */
 .main-layout-wrapper {
   width: 100%;
   max-width: 1500px;
@@ -192,14 +192,93 @@ body {
   padding: 15px;
 }
 
-/* Responsive layout adjustments for mobile/tablets */
+/* Mobile Bottom Navigation Bar (Hidden by default on desktop) */
+.mobile-bottom-nav {
+  display: none;
+}
+
+/* Mobile-Specific App Layout Switcher */
 @media (max-width: 1100px) {
-  .main-layout-wrapper {
-    grid-template-columns: 1fr;
-    padding: 0 15px;
+  /* Hide desktop sidebars, header, and hero to transition into mobile app layout */
+  .sidebar, .full-header, .hero-section {
+    display: none !important;
   }
-  .sidebar {
-    display: none; /* Hide sidebars on smaller screens to maximize mobile view */
+
+  body {
+    background-color: #f4f6f9;
+    padding-bottom: 70px; /* Space for fixed bottom navigation bar */
+  }
+
+  /* Main wrapper reset for mobile view */
+  .main-layout-wrapper {
+    display: block !important;
+    padding: 10px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* App-Style Bottom Navigation Bar */
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    justify-content: space-around;
+    padding: 8px 0;
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  }
+
+  .mobile-bottom-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #666;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .mobile-bottom-nav .nav-item.active,
+  .mobile-bottom-nav .nav-item:hover {
+    color: #ff4d00;
+  }
+
+  .mobile-bottom-nav .nav-icon {
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+
+  /* Optimize car listings layout for mobile screens */
+  .car-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .car-card {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .car-img-container img {
+    height: 110px !important;
+  }
+  
+  .car-details {
+    padding: 10px !important;
+  }
+
+  .search-filter {
+    padding: 12px !important;
+    margin-bottom: 15px !important;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
   }
 }
 
