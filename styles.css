@@ -1,0 +1,65 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f8;
+    color: #333;
+}
+header {
+    background: #0f172a;
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+}
+.container {
+    padding: 1rem;
+    max-width: 1200px;
+    margin: auto;
+}
+.filter-box {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+.filter-grid select, .filter-grid input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.car-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 15px;
+}
+.car-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 15px;
+}
+.car-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #0f172a;
+}
+.car-price {
+    font-weight: bold;
+    color: #16a34a;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+.car-details {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+}
