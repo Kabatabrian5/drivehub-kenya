@@ -68,13 +68,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const ccFilter = document.getElementById('ccFilter');
   const brandLogoContainer = document.getElementById('brandLogoContainer');
 
-  const brands = ["Toyota", "Mazda", "Subaru", "Nissan", "Honda", "Volkswagen", "BMW", "Mercedes-Benz"];
+  // Structured database for vehicle makes and their official logo URLs
+  const brandDatabase = [
+    { name: "Toyota", logo: "https://www.carlogos.org/car-logos/toyota-logo-2020-world.png" },
+    { name: "Mazda", logo: "https://www.carlogos.org/car-logos/mazda-logo-2018.png" },
+    { name: "Subaru", logo: "https://www.carlogos.org/car-logos/subaru-logo-2019.png" },
+    { name: "Nissan", logo: "https://www.carlogos.org/car-logos/nissan-logo-2020.png" },
+    { name: "Honda", logo: "https://www.carlogos.org/car-logos/honda-logo-2000.png" },
+    { name: "Volkswagen", logo: "https://www.carlogos.org/car-logos/volkswagen-logo-2019.png" },
+    { name: "BMW", logo: "https://www.carlogos.org/car-logos/bmw-logo-2020.png" },
+    { name: "Mercedes-Benz", logo: "https://www.carlogos.org/car-logos/mercedes-benz-logo-2011.png" }
+  ];
 
   if (brandLogoContainer) {
-    brandLogoContainer.innerHTML = brands.map(brand => `
-      <div class="brand-badge" data-make="${brand}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 10px; min-width: 105px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">
-        <div style="font-size: 22px; margin-bottom: 4px;">🚘</div>
-        <p style="font-size: 12px; font-weight: bold; color: #111;">${brand}</p>
+    brandLogoContainer.innerHTML = brandDatabase.map(brand => `
+      <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 10px; min-width: 105px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 75px;">
+        <img src="${brand.logo}" alt="${brand.name} logo" style="width: 36px; height: 36px; object-fit: contain; margin-bottom: 4px;">
+        <p style="font-size: 12px; font-weight: bold; color: #111; margin: 0;">${brand.name}</p>
       </div>
     `).join('');
 
