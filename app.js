@@ -68,22 +68,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const ccFilter = document.getElementById('ccFilter');
   const brandLogoContainer = document.getElementById('brandLogoContainer');
 
-  // Structured database for vehicle makes and their official logo URLs
+  // Structured database using reliable direct emblem asset URLs and larger proportions
   const brandDatabase = [
-    { name: "Toyota", logo: "https://www.carlogos.org/car-logos/toyota-logo-2020-world.png" },
-    { name: "Mazda", logo: "https://www.carlogos.org/car-logos/mazda-logo-2018.png" },
-    { name: "Subaru", logo: "https://www.carlogos.org/car-logos/subaru-logo-2019.png" },
-    { name: "Nissan", logo: "https://www.carlogos.org/car-logos/nissan-logo-2020.png" },
-    { name: "Honda", logo: "https://www.carlogos.org/car-logos/honda-logo-2000.png" },
-    { name: "Volkswagen", logo: "https://www.carlogos.org/car-logos/volkswagen-logo-2019.png" },
-    { name: "BMW", logo: "https://www.carlogos.org/car-logos/bmw-logo-2020.png" },
-    { name: "Mercedes-Benz", logo: "https://www.carlogos.org/car-logos/mercedes-benz-logo-2011.png" }
+    { name: "Toyota", logo: "https://www.carlogos.org/car-logos/toyota-logo.png" },
+    { name: "Mazda", logo: "https://www.carlogos.org/car-logos/mazda-logo.png" },
+    { name: "Subaru", logo: "https://www.carlogos.org/car-logos/subaru-logo.png" },
+    { name: "Nissan", logo: "https://www.carlogos.org/car-logos/nissan-logo.png" },
+    { name: "Honda", logo: "https://www.carlogos.org/car-logos/honda-logo.png" },
+    { name: "Volkswagen", logo: "https://www.carlogos.org/car-logos/volkswagen-logo.png" },
+    { name: "BMW", logo: "https://www.carlogos.org/car-logos/bmw-logo.png" },
+    { name: "Mercedes-Benz", logo: "https://www.carlogos.org/car-logos/mercedes-benz-logo.png" }
   ];
 
   if (brandLogoContainer) {
     brandLogoContainer.innerHTML = brandDatabase.map(brand => `
-      <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 10px; min-width: 105px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 75px;">
-        <img src="${brand.logo}" alt="${brand.name} logo" style="width: 36px; height: 36px; object-fit: contain; margin-bottom: 4px;">
+      <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 8px; min-width: 120px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 90px;">
+        <img src="${brand.logo}" alt="${brand.name} logo" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 4px;">
         <p style="font-size: 12px; font-weight: bold; color: #111; margin: 0;">${brand.name}</p>
       </div>
     `).join('');
