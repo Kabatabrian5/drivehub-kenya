@@ -20,20 +20,26 @@
     <p style="font-size: 1.1rem; color: #ddd; margin-bottom: 20px;">Browse verified local & foreign used cars with 100% free listings.</p>
   </section>
 
+  <!-- Complete Filter Bar matching your Supabase table fields -->
   <div class="search-filter" style="max-width: 1200px; margin: -30px auto 30px auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; z-index: 10;">
     <h3 style="font-size: 1.1rem; margin-bottom: 15px; color: #111;">Search & Filter Inventory</h3>
-    <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+    <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
       <select id="makeFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Makes</option></select>
       <input type="text" id="searchInput" placeholder="Search model..." style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-      <select id="locationFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Towns</option></select>
+      <select id="priceFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Max Price (Ksh)</option></select>
+      <select id="yearFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Min Year</option></select>
+      <select id="locationFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Locations</option></select>
+      <select id="transmissionFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Transmission</option></select>
+      <select id="fuelFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Fuel Type</option></select>
+      <select id="ccFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Engine CC</option></select>
     </div>
   </div>
 
   <!-- Brand Logo Quick Filter Bar -->
   <div style="max-width: 1200px; margin: 0 auto 30px auto; padding: 0 15px;">
     <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #111;">Browse by Make</h3>
-    <div id="brandLogoContainer" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin;">
-      <!-- Dynamic Brand Logos Injected Here -->
+    <div id="brandLogoContainer" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin;">
+      <!-- Dynamic Brand Badges -->
     </div>
   </div>
 
