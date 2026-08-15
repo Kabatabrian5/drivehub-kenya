@@ -34,16 +34,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('carListings');
   const searchInput = document.getElementById('searchInput');
   const makeFilter = document.getElementById('makeFilter');
+  const priceFilter = document.getElementById('priceFilter');
+  const yearFilter = document.getElementById('yearFilter');
   const locationFilter = document.getElementById('locationFilter');
+  const transmissionFilter = document.getElementById('transmissionFilter');
+  const fuelFilter = document.getElementById('fuelFilter');
+  const ccFilter = document.getElementById('ccFilter');
   const brandLogoContainer = document.getElementById('brandLogoContainer');
 
   const brands = ["Toyota", "Mazda", "Subaru", "Nissan", "Honda", "Volkswagen", "BMW", "Mercedes-Benz"];
 
   if (brandLogoContainer) {
     brandLogoContainer.innerHTML = brands.map(brand => `
-      <div class="brand-badge" data-make="${brand}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 15px 10px; min-width: 110px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">
-        <div style="font-size: 20px; margin-bottom: 5px;">🚗</div>
-        <p style="font-size: 13px; font-weight: bold; color: #111;">${brand}</p>
+      <div class="brand-badge" data-make="${brand}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 10px; min-width: 105px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s;">
+        <div style="font-size: 22px; margin-bottom: 4px;">🚘</div>
+        <p style="font-size: 12px; font-weight: bold; color: #111;">${brand}</p>
       </div>
     `).join('');
 
@@ -69,26 +74,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (typeof cars !== 'undefined') {
-    const uniqueMakes = [...new Set(cars.map(c => c.make))];
-    const uniqueLocations = [...new Set(cars.map(c => c.location))];
+    // Populate dynamic filter selections from database fields
+    const populateSelect = (element, values) => {
+      values.sort().forEach(val => {
+        if (val && ![...element.options].some(o => o.value == val)) {
+          const opt = document.createElement('option');
+          opt.value = val;
+          opt.textContent = val;
+          element.appendChild(opt);
+        }
+      });
+    };
 
-    uniqueMakes.forEach(make => {
-      if (![...makeFilter.options].some(o => o.value === make)) {
-        const opt = document.createElement('option');
-        opt.value = make;
-        opt.textContent = make;
-        makeFilter.appendChild(opt);
-      }
-    });
-
-    uniqueLocations.forEach(loc => {
-      if (![...locationFilter.options].some(o => o.value === loc)) {
-        const opt = document.createElement('option');
-        opt.value = loc;
-        opt.textContent = loc;
-        locationFilter.appendChild(opt);
-      }
-    });
+    populateSelect(makeFilter, [...new Set(cars.map(c => c.make))]);
+    populateSelect(locationFilter, [...new Set(cars.map(c => c.location))]);
+    populateSelect(transmissionFilter, [...new Set(cars.map(c => c.transmission))]);
+    populateSelect(fuelFilter, [...new Set(cars.map(c => c.fuel))]);
+    populateSelect(yearFilter, [...new Set(cars.map(c => c.year))]);
+    populateSelect(ccFilter, [...new Set(cars.map(c => c.cc))]);
+    populateSelect(priceFilter, [1000000, 2000000, 3000000, 5000000, 10000000]);
 
     function renderCars(items) {
       if (!container) return;
@@ -106,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h3 style="font-size: 1.1rem; color: #111;">${car.make} ${car.model}</h3>
             <p style="font-weight: 800; color: #ff4d00; font-size: 1.1rem;">Ksh ${car.price.toLocaleString()}</p>
             <p style="font-size: 13px; color: #555;">Year: ${car.year} | Location: ${car.location}</p>
-            <p style="font-size: 13px; color: #555;">Transmission: ${car.transmission} | Fuel: ${car.fuel}</p>
+            <p style="font-size: 13px; color: #555;">Trans: ${car.transmission} | Fuel: ${car.fuel} | CC: ${car.cc}</p>
           </div>
         </div>
       `).join('');
@@ -116,14 +120,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function filterInventory() {
       const query = searchInput.value.toLowerCase();
-      const selectedMake = makeFilter.value.toLowerCase();
-      const selectedLocation = locationFilter.value.toLowerCase();
+      const sMake = makeFilter.value.toLowerCase();
+      const sLoc = locationFilter.value.toLowerCase();
+      const sTrans = transmissionFilter.value.toLowerCase();
+      const sFuel = fuelFilter.value.toLowerCase();
+      const sYear = yearFilter.value;
+      const sCc = ccFilter.value;
+      const sPrice = priceFilter.value ? Number(priceFilter.value) : null;
 
       const filtered = cars.filter(car => {
         const matchesQuery = car.make.toLowerCase().includes(query) || car.model.toLowerCase().includes(query);
-        const matchesMake = selectedMake === "" || car.make.toLowerCase() === selectedMake;
-        const matchesLocation = selectedLocation === "" || car.location.toLowerCase() === selectedLocation;
-        return matchesQuery && matchesMake && matchesLocation;
+        const matchesMake = sMake === "" || car.make.toLowerCase() === sMake;
+        const matchesLoc = sLoc === "" || car.location.toLowerCase() === sLoc;
+        const matchesTrans = sTrans === "" || car.transmission.toLowerCase() === sTrans;
+        const matchesFuel = sFuel === "" || car.fuel.toLowerCase() === sFuel;
+        const matchesYear = sYear === "" || Number(car.year) >= Number(sYear);
+        const matchesCc = sCc === "" || Number(car.cc) === Number(sCc);
+        const matchesPrice = sPrice === null || Number(car.price) <= sPrice;
+
+        return matchesQuery && matchesMake && matchesLoc && matchesTrans && matchesFuel && matchesYear && matchesCc && matchesPrice;
       });
 
       renderCars(filtered);
@@ -132,6 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', filterInventory);
     makeFilter.addEventListener('change', filterInventory);
     locationFilter.addEventListener('change', filterInventory);
+    transmissionFilter.addEventListener('change', filterInventory);
+    fuelFilter.addEventListener('change', filterInventory);
+    yearFilter.addEventListener('change', filterInventory);
+    ccFilter.addEventListener('change', filterInventory);
+    priceFilter.addEventListener('change', filterInventory);
 
   } else {
     if (container) {
