@@ -9,18 +9,105 @@ const carGrid = document.getElementById('carGrid');
 const postCarForm = document.getElementById('postCarForm');
 const toggleFormBtn = document.getElementById('toggleFormBtn');
 const postCarSection = document.getElementById('postCarSection');
+const authBtn = document.getElementById('authBtn');
+const userDisplay = document.getElementById('userDisplay');
+const authModal = document.getElementById('authModal');
+const closeAuthModal = document.getElementById('closeAuthModal');
+const authForm = document.getElementById('authForm');
+const authTitle = document.getElementById('authTitle');
+const authSubmitBtn = document.getElementById('authSubmitBtn');
+const authNameInput = document.getElementById('authName');
+const toggleAuthMode = document.getElementById('toggleAuthMode');
+const switchText = document.getElementById('switchText');
 
-// Filter Inputs
-const makeFilter = document.getElementById('makeFilter');
-const modelFilter = document.getElementById('modelFilter');
-const priceFilter = document.getElementById('priceFilter');
-const yearFilter = document.getElementById('yearFilter');
-const locationFilter = document.getElementById('locationFilter');
-const transmissionFilter = document.getElementById('transmissionFilter');
-const fuelFilter = document.getElementById('fuelFilter');
-const ccFilter = document.getElementById('ccFilter');
-
+let isRegistering = false;
+let currentUser = null;
 let allCars = [];
+
+// Check current auth session on load
+async function checkUserSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    currentUser = session ? session.user : null;
+    updateAuthUI();
+}
+
+function updateAuthUI() {
+    if (currentUser) {
+        authBtn.textContent = 'Sign Out';
+        userDisplay.textContent = `👤 ${currentUser.email}`;
+        userDisplay.classList.remove('hidden');
+        toggleFormBtn.classList.remove('hidden');
+    } else {
+        authBtn.textContent = 'Sign In / Register';
+        userDisplay.classList.add('hidden');
+        toggleFormBtn.classList.add('hidden');
+        postCarSection.classList.add('hidden');
+    }
+}
+
+// Auth Modal Open/Close
+authBtn.addEventListener('click', async () => {
+    if (currentUser) {
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        updateAuthUI();
+        alert('Signed out successfully.');
+    } else {
+        authModal.classList.remove('hidden');
+    }
+});
+
+closeAuthModal.addEventListener('click', () => authModal.classList.add('hidden'));
+
+toggleAuthMode.addEventListener('click', (e) => {
+    e.preventDefault();
+    isRegistering = !isRegistering;
+    if (isRegistering) {
+        authTitle.textContent = 'Create a DriveHub Account';
+        authSubmitBtn.textContent = 'Register';
+        authNameInput.classList.remove('hidden');
+        switchText.textContent = 'Already have an account?';
+        toggleAuthMode.textContent = 'Sign in here';
+    } else {
+        authTitle.textContent = 'Sign In to DriveHub';
+        authSubmitBtn.textContent = 'Sign In';
+        authNameInput.classList.add('hidden');
+        switchText.textContent = "Don't have an account?";
+        toggleAuthMode.textContent = 'Register here';
+    }
+});
+
+// Handle Login / Registration Form Submission
+authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
+
+    if (isRegistering) {
+        const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+                data: { full_name: authNameInput.value }
+            }
+        });
+        if (error) {
+            alert('Registration error: ' + error.message);
+            return;
+        }
+        alert('Account created successfully! You can now post cars.');
+    } else {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+            alert('Sign in error: ' + error.message);
+            return;
+        }
+        alert('Signed in successfully!');
+    }
+
+    authModal.classList.add('hidden');
+    checkUserSession();
+});
 
 // Toggle Post Form Visibility
 toggleFormBtn.addEventListener('click', () => {
@@ -39,12 +126,11 @@ async function fetchCars() {
         console.error('Error fetching cars:', error);
         return;
     }
-
     allCars = data || [];
     displayCars(allCars);
 }
 
-// Display Cars in Grid
+// Display Cars in Grid (With Direct Phone Contact)
 function displayCars(cars) {
     carGrid.innerHTML = '';
 
@@ -74,27 +160,65 @@ function displayCars(cars) {
                     <span>⛽ ${car.fuel}</span>
                     <span>🔧 ${car.cc}cc</span>
                 </div>
+                <div class="seller-box" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 8px; font-size: 13px;">
+                    <p>👤 <strong>Seller:</strong> ${car.seller_name || 'Verified Dealer'}</p>
+                    <p>📞 <strong>Phone:</strong> <a href="tel:${car.seller_phone}" style="color: #007bff; font-weight: bold;">${car.seller_phone || 'N/A'}</a></p>
+                </div>
             </div>
         `;
         carGrid.appendChild(card);
     });
 }
 
-// Handle Form Submission (Save to Supabase)
+// Handle Form Submission with Local Image Upload & User Info
 postCarForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    if (!currentUser) {
+        alert('You must be signed in to post a car.');
+        return;
+    }
+
+    const imageFile = document.getElementById('postImageFile').files[0];
+    let imageUrl = '';
+
+    // Upload image to Supabase Bucket if file is selected
+    if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        const { error: uploadError } = await supabaseClient.storage
+            .from('car-images')
+            .upload(filePath, imageFile);
+
+        if (uploadError) {
+            alert('Error uploading image: ' + uploadError.message);
+            return;
+        }
+
+        // Get public URL of the uploaded image
+        const { data: publicURLData } = supabaseClient.storage
+            .from('car-images')
+            .getPublicUrl(filePath);
+
+        imageUrl = publicURLData.publicUrl;
+    }
 
     const newCar = {
         make: document.getElementById('postMake').value.trim(),
         model: document.getElementById('postModel').value.trim(),
         price: parseFloat(document.getElementById('postPrice').value),
         year: parseInt(document.getElementById('postYear').value),
+        seller_name: document.getElementById('postNationality') ? '' : document.getElementById('postSellerName').value.trim(),
+        seller_phone: document.getElementById('postSellerPhone').value.trim(),
+        seller_email: currentUser.email,
         location: document.getElementById('postLocation').value,
         condition: document.getElementById('postCondition').value,
         transmission: document.getElementById('postTransmission').value,
         fuel: document.getElementById('postFuel').value,
         cc: parseInt(document.getElementById('postCc').value),
-        image: document.getElementById('postImage').value.trim()
+        image: imageUrl
     };
 
     const { error } = await supabaseClient
@@ -107,16 +231,24 @@ postCarForm.addEventListener('submit', async (e) => {
         return;
     }
 
-    alert('Vehicle listed successfully to Supabase!');
+    alert('Vehicle listed successfully with your phone number and photo!');
     postCarForm.reset();
     postCarSection.classList.add('hidden');
     toggleFormBtn.textContent = '+ Post Car Free';
     
-    // Refresh listing view
     fetchCars();
 });
 
 // Filter Functionality
+const makeFilter = document.getElementById('makeFilter');
+const modelFilter = document.getElementById('modelFilter');
+const priceFilter = document.getElementById('priceFilter');
+const yearFilter = document.getElementById('yearFilter');
+const locationFilter = document.getElementById('locationFilter');
+const transmissionFilter = document.getElementById('transmissionFilter');
+const fuelFilter = document.getElementById('fuelFilter');
+const ccFilter = document.getElementById('ccFilter');
+
 function filterCars() {
     const selectedMake = makeFilter.value.toLowerCase();
     const searchModel = modelFilter.value.toLowerCase().trim();
@@ -147,11 +279,11 @@ function filterCars() {
     displayCars(filtered);
 }
 
-// Attach filter events
 [makeFilter, modelFilter, priceFilter, yearFilter, locationFilter, transmissionFilter, fuelFilter, ccFilter].forEach(element => {
     element.addEventListener('input', filterCars);
     element.addEventListener('change', filterCars);
 });
 
-// Load cars on page load
+// Initialize on page load
+checkUserSession();
 fetchCars();
