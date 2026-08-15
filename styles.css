@@ -173,7 +173,6 @@ body {
   padding-right: 4px;
 }
 
-/* Custom scrollbar styling for sidebars */
 .sidebar::-webkit-scrollbar {
   width: 5px;
 }
@@ -230,8 +229,8 @@ body {
 
 .filters-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
 }
 
 .search-filter select, 
@@ -241,6 +240,26 @@ body {
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* Browse by Make Horizontal Scroll Bar */
+.brand-logo-scroll {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 25px;
+  scroll-behavior: smooth;
+}
+
+.brand-logo-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.brand-logo-scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
 }
 
 /* Car Listings Grid */
