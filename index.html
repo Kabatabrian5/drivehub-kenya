@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveHub | Kenya Auto Marketplace</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>DriveHub Kenya</h1>
+        <p>Find your next ride — 100% Free Listings</p>
+    </header>
+
+    <main class="container">
+        <!-- Search & Filter Section -->
+        <section class="filter-box">
+            <h2>Filter Cars</h2>
+            <div class="filter-grid">
+                <select id="makeFilter">
+                    <option value="">All Makes</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Mazda">Mazda</option>
+                    <option value="Subaru">Subaru</option>
+                    <option value="Nissan">Nissan</option>
+                </select>
+
+                <input type="text" id="modelFilter" placeholder="Model (e.g. RAV4, Demio)">
+
+                <select id="priceFilter">
+                    <option value="">Max Price (KSh)</option>
+                    <option value="1000000">Under 1M</option>
+                    <option value="2000000">Under 2M</option>
+                    <option value="3500000">Under 3.5M</option>
+                    <option value="5000000">Under 5M</option>
+                </select>
+
+                <select id="yearFilter">
+                    <option value="">Min Year</option>
+                    <option value="2012">2012+</option>
+                    <option value="2015">2015+</option>
+                    <option value="2018">2018+</option>
+                    <option value="2020">2020+</option>
+                </select>
+
+                <select id="locationFilter">
+                    <option value="">All Locations</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Nakuru">Nakuru</option>
+                    <option value="Eldoret">Eldoret</option>
+                </select>
+
+                <select id="transmissionFilter">
+                    <option value="">Transmission</option>
+                    <option value="Automatic">Automatic</option>
+                    <option value="Manual">Manual</option>
+                </select>
+
+                <select id="fuelFilter">
+                    <option value="">Fuel Type</option>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Hybrid">Hybrid</option>
+                </select>
+
+                <select id="ccFilter">
+                    <option value="">Engine Capacity</option>
+                    <option value="1500">Under 1500cc</option>
+                    <option value="2000">Under 2000cc</option>
+                    <option value="2500">2000cc+</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Car Listings Grid -->
+        <section class="listings-section">
+            <h2>Available Vehicles</h2>
+            <div id="carGrid" class="car-grid">
+                <!-- Dynamic car cards will appear here -->
+            </div>
+        </section>
+    </main>
+
+    <script src="cars-data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
