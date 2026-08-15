@@ -11,16 +11,40 @@
   <!-- Full-Width Header -->
   <header class="full-header">
     <div class="nav-container">
-      <h1 class="brand-title">KABATA <span style="color: #ff4d00;">MOTORS</span></h1>
-      <button id="signInBtn" class="signin-btn">Sign In</button>
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <h1 class="brand-title">KABATA <span style="color: #ff4d00;">MOTORS</span></h1>
+        <nav class="desktop-nav">
+          <a href="#" class="nav-link active">Home</a>
+          <a href="#" class="nav-link">🔥 Hot Deals</a>
+          <a href="#" class="nav-link">Find a Car</a>
+          <a href="#" class="nav-link">Our Services</a>
+        </nav>
+      </div>
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <span style="font-size: 13px; font-weight: bold; color: #fff;">BRIAN KABATA</span>
+        <button id="signInBtn" class="signin-btn">Account</button>
+      </div>
     </div>
   </header>
 
   <!-- Full-Width Hero Section -->
   <section class="hero-section">
     <div class="hero-content">
-      <h2>Find Your Dream Ride in Kenya</h2>
-      <p>Browse verified local & foreign used cars with 100% free listings.</p>
+      <h2>AFRICA'S NO.1</h2>
+      <p style="font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 30px;">MOTOR VEHICLE MARKETPLACE</p>
+      
+      <!-- Floating Search Card overlaying the bottom of the hero -->
+      <div class="hero-search-box">
+        <div class="hero-search-bar-row">
+          <input type="text" id="heroSearchInput" placeholder="Search Make, Model..." class="hero-search-input">
+          <button id="heroSearchBtn" class="hero-search-submit-btn">Search Cars</button>
+        </div>
+        <div class="hero-verified-banner">
+          <span style="color: #ff4d00; font-weight: bold;">🛡️ Kabata Verified only</span> 
+          <span style="background: #ff4d00; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">RECOMMENDED</span>
+          <span style="margin-left: auto; color: #ff4d00; font-size: 13px; font-weight: bold; cursor: pointer;">View verified cars &rarr;</span>
+        </div>
+      </div>
     </div>
   </section>
 
