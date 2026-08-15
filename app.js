@@ -24,7 +24,7 @@ let isRegistering = false;
 let currentUser = null;
 let allCars = [];
 
-// Check current auth session on load
+// Check session on load
 async function checkUserSession() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentUser = session ? session.user : null;
@@ -45,7 +45,7 @@ function updateAuthUI() {
     }
 }
 
-// Auth Modal Open/Close
+// Auth Modal Controls
 authBtn.addEventListener('click', async () => {
     if (currentUser) {
         await supabaseClient.auth.signOut();
@@ -63,7 +63,7 @@ toggleAuthMode.addEventListener('click', (e) => {
     e.preventDefault();
     isRegistering = !isRegistering;
     if (isRegistering) {
-        authTitle.textContent = 'Create a DriveHub Account';
+        authTitle.textContent = 'Create DriveHub Account';
         authSubmitBtn.textContent = 'Register';
         authNameInput.classList.remove('hidden');
         switchText.textContent = 'Already have an account?';
@@ -77,7 +77,7 @@ toggleAuthMode.addEventListener('click', (e) => {
     }
 });
 
-// Handle Login / Registration Form Submission
+// Handle Login & Registration with Email Verification
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('authEmail').value;
@@ -95,7 +95,13 @@ authForm.addEventListener('submit', async (e) => {
             alert('Registration error: ' + error.message);
             return;
         }
-        alert('Account created successfully! You can now post cars.');
+        alert('Registration successful! Please check your email inbox to verify your account before signing in.');
+        isRegistering = false;
+        authTitle.textContent = 'Sign In to DriveHub';
+        authSubmitBtn.textContent = 'Sign In';
+        authNameInput.classList.add('hidden');
+        switchText.textContent = "Don't have an account?";
+        toggleAuthMode.textContent = 'Register here';
     } else {
         const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
         if (error) {
@@ -103,13 +109,13 @@ authForm.addEventListener('submit', async (e) => {
             return;
         }
         alert('Signed in successfully!');
+        authModal.classList.add('hidden');
+        authForm.reset();
+        checkUserSession();
     }
-
-    authModal.classList.add('hidden');
-    checkUserSession();
 });
 
-// Toggle Post Form Visibility
+// Toggle Post Car Form
 toggleFormBtn.addEventListener('click', () => {
     postCarSection.classList.toggle('hidden');
     toggleFormBtn.textContent = postCarSection.classList.contains('hidden') ? '+ Post Car Free' : 'Close Form';
@@ -130,7 +136,7 @@ async function fetchCars() {
     displayCars(allCars);
 }
 
-// Display Cars in Grid (With Direct Phone Contact)
+// Display Cars in Grid
 function displayCars(cars) {
     carGrid.innerHTML = '';
 
@@ -170,7 +176,7 @@ function displayCars(cars) {
     });
 }
 
-// Handle Form Submission with Local Image Upload & User Info
+// Handle Form Submission (Uploads Image & Links to User ID)
 postCarForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -182,7 +188,6 @@ postCarForm.addEventListener('submit', async (e) => {
     const imageFile = document.getElementById('postImageFile').files[0];
     let imageUrl = '';
 
-    // Upload image to Supabase Bucket if file is selected
     if (imageFile) {
         const fileExt = imageFile.name.split('.').pop();
         const fileName = `${Date.now()}.${fileExt}`;
@@ -197,7 +202,6 @@ postCarForm.addEventListener('submit', async (e) => {
             return;
         }
 
-        // Get public URL of the uploaded image
         const { data: publicURLData } = supabaseClient.storage
             .from('car-images')
             .getPublicUrl(filePath);
@@ -206,11 +210,12 @@ postCarForm.addEventListener('submit', async (e) => {
     }
 
     const newCar = {
+        user_id: currentUser.id,
         make: document.getElementById('postMake').value.trim(),
         model: document.getElementById('postModel').value.trim(),
         price: parseFloat(document.getElementById('postPrice').value),
         year: parseInt(document.getElementById('postYear').value),
-        seller_name: document.getElementById('postNationality') ? '' : document.getElementById('postSellerName').value.trim(),
+        seller_name: document.getElementById('postSellerName').value.trim(),
         seller_phone: document.getElementById('postSellerPhone').value.trim(),
         seller_email: currentUser.email,
         location: document.getElementById('postLocation').value,
@@ -231,7 +236,7 @@ postCarForm.addEventListener('submit', async (e) => {
         return;
     }
 
-    alert('Vehicle listed successfully with your phone number and photo!');
+    alert('Vehicle listed successfully and linked to your profile!');
     postCarForm.reset();
     postCarSection.classList.add('hidden');
     toggleFormBtn.textContent = '+ Post Car Free';
