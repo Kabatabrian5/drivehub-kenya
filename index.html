@@ -10,9 +10,41 @@
     <header>
         <h1>DriveHub Kenya</h1>
         <p>Find your next ride — 100% Free Listings</p>
+        <button id="toggleFormBtn" class="btn-primary">Post Your Car Free</button>
     </header>
 
     <main class="container">
+        <!-- Post Car Form Modal/Section (Hidden by default) -->
+        <section id="postCarSection" class="post-box hidden">
+            <h2>List a Car for Free</h2>
+            <form id="postCarForm">
+                <input type="text" id="postMake" placeholder="Make (e.g. Toyota, Mazda)" required>
+                <input type="text" id="postModel" placeholder="Model (e.g. RAV4, Demio)" required>
+                <input type="number" id="postPrice" placeholder="Price in KSh (e.g. 1500000)" required>
+                <input type="number" id="postYear" placeholder="Year of Manufacture (e.g. 2018)" required>
+                <select id="postLocation" required>
+                    <option value="">Select Location</option>
+                    <option value="Nairobi">Nairobi</option>
+                    <option value="Mombasa">Mombasa</option>
+                    <option value="Nakuru">Nakuru</option>
+                    <option value="Eldoret">Eldoret</option>
+                </select>
+                <select id="postTransmission" required>
+                    <option value="">Select Transmission</option>
+                    <option value="Automatic">Automatic</option>
+                    <option value="Manual">Manual</option>
+                </select>
+                <select id="postFuel" required>
+                    <option value="">Select Fuel Type</option>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Hybrid">Hybrid</option>
+                </select>
+                <input type="number" id="postCc" placeholder="Engine Capacity CC (e.g. 1500)" required>
+                <button type="submit" class="btn-success">Publish Listing</button>
+            </form>
+        </section>
+
         <!-- Search & Filter Section -->
         <section class="filter-box">
             <h2>Filter Cars</h2>
@@ -82,7 +114,6 @@
         </section>
     </main>
 
-    <script src="cars-data.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
