@@ -1,4 +1,3 @@
-// --- Modal Interactivity Handling ---
 const signInBtn = document.getElementById('signInBtn');
 const authModal = document.getElementById('authModal');
 const closeModal = document.getElementById('closeModal');
@@ -31,7 +30,6 @@ if (loginForm) {
   });
 }
 
-// --- Render & Filter Inventory from Database (`cars-data.js`) ---
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('carListings');
   const searchInput = document.getElementById('searchInput');
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof cars !== 'undefined') {
     renderCars(cars);
 
-    // Basic Search Event listener
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase();
@@ -76,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   } else {
     if (container) {
-      container.innerHTML = `<p style="grid-column: 1/-1; color: red; text-align: center;">Error: Car database file (cars-data.js) not detected.</p>`;
+      container.innerHTML = `<p style="grid-column: 1/-1; color: red; text-align: center;">Error: Car database file not detected.</p>`;
     }
   }
 });
