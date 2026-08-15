@@ -8,45 +8,100 @@
 </head>
 <body>
 
-  <header style="background: #111; color: #fff; padding: 15px 0; border-bottom: 3px solid #ff4d00;">
-    <div class="nav-container" style="max-width: 1200px; margin: 0 auto; padding: 0 15px; display: flex; justify-content: space-between; align-items: center;">
-      <h1 style="font-size: 1.5rem; font-weight: 900; letter-spacing: 1px; color: #fff;">KABATA <span style="color: #ff4d00;">MOTORS</span></h1>
-      <button id="signInBtn" style="background: #ff4d00; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">Sign In</button>
+  <!-- Full-Width Header -->
+  <header class="full-header">
+    <div class="nav-container">
+      <h1 class="brand-title">KABATA <span style="color: #ff4d00;">MOTORS</span></h1>
+      <button id="signInBtn" class="signin-btn">Sign In</button>
     </div>
   </header>
 
-  <section class="hero" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1533473359331-0135ef1b58bf') center/cover no-repeat; color: #fff; text-align: center; padding: 60px 20px;">
-    <h2 style="font-size: 2.5rem; margin-bottom: 10px; font-weight: 800;">Find Your Dream Ride in Kenya</h2>
-    <p style="font-size: 1.1rem; color: #ddd; margin-bottom: 20px;">Browse verified local & foreign used cars with 100% free listings.</p>
+  <!-- Full-Width Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h2>Find Your Dream Ride in Kenya</h2>
+      <p>Browse verified local & foreign used cars with 100% free listings.</p>
+    </div>
   </section>
 
-  <!-- Complete Filter Bar matching your Supabase table fields -->
-  <div class="search-filter" style="max-width: 1200px; margin: -30px auto 30px auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; z-index: 10;">
-    <h3 style="font-size: 1.1rem; margin-bottom: 15px; color: #111;">Search & Filter Inventory</h3>
-    <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
-      <select id="makeFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Makes</option></select>
-      <input type="text" id="searchInput" placeholder="Search model..." style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-      <select id="priceFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Max Price (Ksh)</option></select>
-      <select id="yearFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Min Year</option></select>
-      <select id="locationFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Locations</option></select>
-      <select id="transmissionFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Transmission</option></select>
-      <select id="fuelFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Fuel Type</option></select>
-      <select id="ccFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Engine CC</option></select>
-    </div>
-  </div>
+  <!-- Main Website Wrapper with Sidebars -->
+  <div class="main-layout-wrapper">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar left-sidebar">
+      <div class="sidebar-card">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">🔥 Hot Deals</a></li>
+          <li><a href="#">⭐ Verified Sellers</a></li>
+          <li><a href="#">🛠️ Car Inspection Tips</a></li>
+          <li><a href="#">📑 Import Duty Guide</a></li>
+        </ul>
+      </div>
 
-  <!-- Brand Logo Quick Filter Bar -->
-  <div style="max-width: 1200px; margin: 0 auto 30px auto; padding: 0 15px;">
-    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #111;">Browse by Make</h3>
-    <div id="brandLogoContainer" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin;">
-      <!-- Dynamic Brand Badges -->
-    </div>
-  </div>
+      <div class="sidebar-card">
+        <h3>Trending Makes</h3>
+        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Most searched in Kenya:</p>
+        <span class="tag">Toyota Harrier</span>
+        <span class="tag">Mazda CX-5</span>
+        <span class="tag">Subaru Forester</span>
+        <span class="tag">Toyota Voxy</span>
+      </div>
+    </aside>
 
-  <main class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 15px 40px 15px;">
-    <h3 style="font-size: 1.3rem; margin-bottom: 20px; color: #111; border-left: 4px solid #ff4d00; padding-left: 10px;">Fresh Listings in Kenya</h3>
-    <div id="carListings" class="car-grid"></div>
-  </main>
+    <!-- CENTER CONTENT -->
+    <div class="center-content">
+      
+      <!-- Filter Section -->
+      <div class="search-filter">
+        <h3 style="font-size: 1.1rem; margin-bottom: 15px; color: #111;">Search & Filter Inventory</h3>
+        <div class="filters-grid">
+          <select id="makeFilter"><option value="">All Makes</option></select>
+          <input type="text" id="searchInput" placeholder="Search model...">
+          <select id="priceFilter"><option value="">Max Price (Ksh)</option></select>
+          <select id="yearFilter"><option value="">Min Year</option></select>
+          <select id="locationFilter"><option value="">All Locations</option></select>
+          <select id="transmissionFilter"><option value="">Transmission</option></select>
+          <select id="fuelFilter"><option value="">Fuel Type</option></select>
+          <select id="ccFilter"><option value="">Engine CC</option></select>
+        </div>
+      </div>
+
+      <!-- Brand Logo Quick Filter Bar -->
+      <div style="margin-bottom: 30px;">
+        <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #111;">Browse by Make</h3>
+        <div id="brandLogoContainer" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
+      </div>
+
+      <!-- Listings -->
+      <main>
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px; color: #111; border-left: 4px solid #ff4d00; padding-left: 10px;">Fresh Listings in Kenya</h3>
+        <div id="carListings" class="car-grid"></div>
+      </main>
+
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <aside class="sidebar right-sidebar">
+      <div class="sidebar-card">
+        <h3>Car Broker Desk</h3>
+        <p style="font-size: 13px; color: #555; margin-bottom: 12px;">Looking to buy or sell a second-hand car quickly? Connect directly with our broker service.</p>
+        <button style="width: 100%; background: #ff4d00; color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">WhatsApp Broker</button>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Asset Financing</h3>
+        <p style="font-size: 13px; color: #555; margin-bottom: 10px;">Get up to 70% bank financing for your car purchase with flexible terms.</p>
+        <a href="#" style="color: #ff4d00; font-weight: bold; font-size: 13px; text-decoration: none;">Calculate Loan &rarr;</a>
+      </div>
+
+      <div class="sidebar-card ad-banner">
+        <h3>Your Ad Here</h3>
+        <p style="font-size: 12px; color: #777;">Promote your spare parts shop, car wash, or insurance firm here.</p>
+      </div>
+    </aside>
+
+  </div>
 
   <div id="authModal" class="modal">
     <div class="modal-content">
