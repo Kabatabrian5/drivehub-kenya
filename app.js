@@ -63,13 +63,13 @@ toggleAuthMode.addEventListener('click', (e) => {
     e.preventDefault();
     isRegistering = !isRegistering;
     if (isRegistering) {
-        authTitle.textContent = 'Create DriveHub Account';
+        authTitle.textContent = 'Create KABATA_MOTORS Account';
         authSubmitBtn.textContent = 'Register';
         authNameInput.classList.remove('hidden');
         switchText.textContent = 'Already have an account?';
         toggleAuthMode.textContent = 'Sign in here';
     } else {
-        authTitle.textContent = 'Sign In to DriveHub';
+        authTitle.textContent = 'Sign In to KABATA_MOTORS';
         authSubmitBtn.textContent = 'Sign In';
         authNameInput.classList.add('hidden');
         switchText.textContent = "Don't have an account?";
@@ -97,7 +97,7 @@ authForm.addEventListener('submit', async (e) => {
         }
         alert('Registration successful! Please check your email inbox to verify your account before signing in.');
         isRegistering = false;
-        authTitle.textContent = 'Sign In to DriveHub';
+        authTitle.textContent = 'Sign In to KABATA_MOTORS';
         authSubmitBtn.textContent = 'Sign In';
         authNameInput.classList.add('hidden');
         switchText.textContent = "Don't have an account?";
