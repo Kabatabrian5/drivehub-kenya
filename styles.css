@@ -91,7 +91,7 @@ body {
   margin-bottom: 20px;
 }
 
-/* Floating Search Box - Properly anchored inside hero */
+/* Floating Search Box */
 .hero-search-box {
   background: #a81c07;
   padding: 20px;
@@ -158,13 +158,28 @@ body {
   grid-template-columns: 240px 1fr 260px;
   gap: 25px;
   box-sizing: border-box;
+  align-items: start;
 }
 
-/* Sidebar Styling */
+/* Scrollable Sidebars Marketplace Style */
 .sidebar {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-height: calc(100vh - 120px);
+  position: sticky;
+  top: 20px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom scrollbar styling for sidebars */
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
 }
 
 .sidebar-card {
@@ -323,7 +338,7 @@ body {
   display: none;
 }
 
-/* Responsive Breakpoints */
+/* Responsive Media Queries for Mobile Safeguards */
 @media (max-width: 1100px) {
   .sidebar {
     display: none !important;
@@ -346,6 +361,7 @@ body {
     padding: 15px !important;
     margin: 30px auto 10px auto !important;
     width: 100% !important;
+    box-sizing: border-box;
   }
 
   .hero-search-box {
