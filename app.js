@@ -15,7 +15,6 @@ if (closeDrawerBtn && mobileNavDrawer) {
   });
 }
 
-// Close drawer if user clicks anywhere outside of it
 window.addEventListener('click', (e) => {
   if (mobileNavDrawer && mobileNavDrawer.classList.contains('open')) {
     if (!mobileNavDrawer.contains(e.target) && e.target !== menuToggleBtn) {
@@ -25,21 +24,16 @@ window.addEventListener('click', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Initialize Supabase Client with your project credentials
+  // 1. Check if Supabase SDK is loaded
+  if (typeof supabase === 'undefined') {
+    console.error('CRITICAL: Supabase library is missing! Add <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> to index.html <head>.');
+    return;
+  }
+
+  // Initialize Supabase Client
   const SUPABASE_URL = 'https://qzqvyceabwxvzeyifnpw.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cXZ5Y2VhYnd4dnpleWxmbnB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NzEzMzUsImV4cCI6MjEwMjM0NzMzNX0.9fDJGRjaCamvZhxkfhwu08vFTTPcabZ00VBvi_av1wk';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // Prevent any wrapping search forms from performing a full page reload
-  const searchForm = document.querySelector('form');
-  if (searchForm) {
-    searchForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (typeof filterInventory === 'function') {
-        filterInventory();
-      }
-    });
-  }
 
   const container = document.getElementById('carListings');
   const searchInput = document.getElementById('searchInput');
@@ -52,60 +46,75 @@ document.addEventListener('DOMContentLoaded', async () => {
   const ccFilter = document.getElementById('ccFilter');
   const brandLogoContainer = document.getElementById('brandLogoContainer');
 
-  // 1. Fetch Brand Logos Dynamically from Supabase 'brands' table
+  // 2. Fetch Brand Logos Dynamically from Supabase 'brands' table
   async function loadBrandsFromDB() {
     if (!brandLogoContainer) return;
 
-    const { data: brands, error } = await supabaseClient
-      .from('brands')
-      .select('*');
+    try {
+      const { data: brands, error } = await supabaseClient
+        .from('brands')
+        .select('*');
 
-    if (error) {
-      console.error('Error fetching brands from Supabase:', error.message);
-      brandLogoContainer.innerHTML = `<p style="font-size:12px; color:red;">Failed to load brand filters.</p>`;
-      return;
-    }
+      if (error) {
+        console.error('Supabase Query Error:', error.message);
+        brandLogoContainer.innerHTML = `<p style="font-size:12px; color:red;">Database Error: ${error.message}</p>`;
+        return;
+      }
 
-    brandLogoContainer.innerHTML = brands.map(brand => `
-      <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px 6px; min-width: 110px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 85px;">
-        <div style="display: flex; align-items: center; justify-content: center; height: 42px;">
-          <img src="${brand.logo_path}" alt="${brand.name} logo" style="max-height: 38px; max-width: 45px; object-fit: contain;" onerror="this.onerror=null; this.src='https://via.placeholder.com/40?text=${brand.name[0]}';">
+      console.log('Successfully fetched brands from database:', brands);
+
+      if (!brands || brands.length === 0) {
+        brandLogoContainer.innerHTML = `<p style="font-size:12px; color:#666;">No brand logos found in database.</p>`;
+        return;
+      }
+
+      brandLogoContainer.innerHTML = brands.map(brand => `
+        <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px 6px; min-width: 100px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 85px;">
+          <div style="display: flex; align-items: center; justify-content: center; height: 42px; width: 100%;">
+            <img src="${brand.logo_path}" alt="${brand.name}" style="max-height: 38px; max-width: 45px; object-fit: contain;" 
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="logo-fallback" style="display: none; width: 36px; height: 36px; background: #ff4d00; color: #fff; border-radius: 50%; font-weight: bold; align-items: center; justify-content: center; font-size: 14px;">
+              ${brand.name.charAt(0)}
+            </div>
+          </div>
+          <p style="font-size: 12px; font-weight: bold; color: #111; margin: 0;">${brand.name}</p>
         </div>
-        <p style="font-size: 12px; font-weight: bold; color: #111; margin: 0;">${brand.name}</p>
-      </div>
-    `).join('');
+      `).join('');
 
-    document.querySelectorAll('.brand-badge').forEach(badge => {
-      badge.addEventListener('click', () => {
-        const selectedMake = badge.getAttribute('data-make');
-        const isActive = badge.style.border.includes('2px solid');
+      document.querySelectorAll('.brand-badge').forEach(badge => {
+        badge.addEventListener('click', () => {
+          const selectedMake = badge.getAttribute('data-make');
+          const isActive = badge.style.border.includes('2px solid');
 
-        document.querySelectorAll('.brand-badge').forEach(b => {
-          b.style.border = "1px solid #ddd";
-          b.style.background = "#fff";
+          document.querySelectorAll('.brand-badge').forEach(b => {
+            b.style.border = "1px solid #ddd";
+            b.style.background = "#fff";
+          });
+
+          if (isActive) {
+            if(makeFilter) makeFilter.value = "";
+          } else {
+            if(makeFilter) makeFilter.value = selectedMake;
+            badge.style.border = "2px solid #ff4d00";
+            badge.style.background = "#fff8f5";
+          }
+          
+          if (typeof filterInventory === 'function') {
+            filterInventory();
+          }
         });
-
-        if (isActive) {
-          if(makeFilter) makeFilter.value = "";
-        } else {
-          if(makeFilter) makeFilter.value = selectedMake;
-          badge.style.border = "2px solid #ff4d00";
-          badge.style.background = "#fff8f5";
-        }
-        
-        if (typeof filterInventory === 'function') {
-          filterInventory();
-        }
       });
-    });
+
+    } catch (err) {
+      console.error('Unexpected error loading brands:', err);
+    }
   }
 
-  // Load the logos immediately on startup
+  // Execute brand fetch
   await loadBrandsFromDB();
 
-  // 2. Handle the Cars Database and Filtering
+  // 3. Handle Cars Database
   if (typeof cars !== 'undefined') {
-    
     const populateSelect = (element, values) => {
       values.sort().forEach(val => {
         if (val && ![...element.options].some(o => o.value.toLowerCase() == val.toLowerCase())) {
@@ -175,7 +184,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     renderCars(cars);
 
-    // Make filterInventory global so the brand badges can access it
     window.filterInventory = function() {
       const query = searchInput.value.toLowerCase();
       const sMake = makeFilter.value.toLowerCase();
@@ -200,32 +208,34 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       renderCars(filtered);
-    }
+    };
 
-    searchInput.addEventListener('input', filterInventory);
-    makeFilter.addEventListener('change', () => {
-      const currentVal = makeFilter.value.toLowerCase();
-      document.querySelectorAll('.brand-badge').forEach(b => {
-        if (b.getAttribute('data-make').toLowerCase() === currentVal) {
-          b.style.border = "2px solid #ff4d00";
-          b.style.background = "#fff8f5";
-        } else {
-          b.style.border = "1px solid #ddd";
-          b.style.background = "#fff";
-        }
+    if (searchInput) searchInput.addEventListener('input', filterInventory);
+    if (makeFilter) {
+      makeFilter.addEventListener('change', () => {
+        const currentVal = makeFilter.value.toLowerCase();
+        document.querySelectorAll('.brand-badge').forEach(b => {
+          if (b.getAttribute('data-make').toLowerCase() === currentVal) {
+            b.style.border = "2px solid #ff4d00";
+            b.style.background = "#fff8f5";
+          } else {
+            b.style.border = "1px solid #ddd";
+            b.style.background = "#fff";
+          }
+        });
+        filterInventory();
       });
-      filterInventory();
-    });
-    locationFilter.addEventListener('change', filterInventory);
-    transmissionFilter.addEventListener('change', filterInventory);
-    fuelFilter.addEventListener('change', filterInventory);
-    yearFilter.addEventListener('change', filterInventory);
-    ccFilter.addEventListener('change', filterInventory);
-    priceFilter.addEventListener('change', filterInventory);
+    }
+    if (locationFilter) locationFilter.addEventListener('change', filterInventory);
+    if (transmissionFilter) transmissionFilter.addEventListener('change', filterInventory);
+    if (fuelFilter) fuelFilter.addEventListener('change', filterInventory);
+    if (yearFilter) yearFilter.addEventListener('change', filterInventory);
+    if (ccFilter) ccFilter.addEventListener('change', filterInventory);
+    if (priceFilter) priceFilter.addEventListener('change', filterInventory);
 
   } else {
     if (container) {
-      container.innerHTML = `<p style="grid-column: 1/-1; color: red; text-align: center; padding: 40px; background: #fff; border-radius: 8px;">Error: <strong>cars-data.js</strong> is missing or the 'cars' array is empty. Please check your data file.</p>`;
+      container.innerHTML = `<p style="grid-column: 1/-1; color: red; text-align: center; padding: 40px; background: #fff; border-radius: 8px;">Error: <strong>cars-data.js</strong> is missing or the 'cars' array is empty.</p>`;
     }
   }
 });
