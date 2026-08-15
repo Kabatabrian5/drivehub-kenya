@@ -25,12 +25,15 @@
     <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
       <select id="makeFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Makes</option></select>
       <input type="text" id="searchInput" placeholder="Search model..." style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-      <select id="priceFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Max Price (KSh)</option></select>
-      <select id="yearFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Min Year</option></select>
       <select id="locationFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Towns</option></select>
-      <select id="transmissionFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Transmission</option></select>
-      <select id="fuelFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Fuel Type</option></select>
-      <select id="ccFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Engine CC</option></select>
+    </div>
+  </div>
+
+  <!-- Brand Logo Quick Filter Bar -->
+  <div style="max-width: 1200px; margin: 0 auto 30px auto; padding: 0 15px;">
+    <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #111;">Browse by Make</h3>
+    <div id="brandLogoContainer" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin;">
+      <!-- Dynamic Brand Logos Injected Here -->
     </div>
   </div>
 
