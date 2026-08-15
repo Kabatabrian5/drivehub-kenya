@@ -36,23 +36,47 @@ document.addEventListener('DOMContentLoaded', () => {
   const ccFilter = document.getElementById('ccFilter');
   const brandLogoContainer = document.getElementById('brandLogoContainer');
 
-  // Updated with exact working URLs and fallback mechanism
+  // Bulletproof embedded SVG brand database (Guaranteed 100% visible, no missing/blocked images)
   const brandDatabase = [
-    { name: "Toyota", logo: "https://www.carlogos.org/car-logos/toyota-logo-2020.png" },
-    { name: "Mazda", logo: "https://www.carlogos.org/car-logos/mazda-logo-2018.png" },
-    { name: "Subaru", logo: "https://www.carlogos.org/car-logos/subaru-logo-2019.png" },
-    { name: "Nissan", logo: "https://www.carlogos.org/car-logos/nissan-logo-2020.png" },
-    { name: "Honda", logo: "https://www.carlogos.org/car-logos/honda-logo.png" },
-    { name: "Volkswagen", logo: "https://www.carlogos.org/car-logos/volkswagen-logo-2019.png" },
-    { name: "BMW", logo: "https://www.carlogos.org/car-logos/bmw-logo-2020.png" },
-    { name: "Mercedes", logo: "https://www.carlogos.org/car-logos/mercedes-benz-logo-2011.png" }
+    { 
+      name: "Toyota", 
+      svg: `<svg viewBox="0 0 512 512" width="40" height="40"><ellipse cx="256" cy="256" rx="200" ry="110" fill="none" stroke="#111" stroke-width="28"/><ellipse cx="256" cy="256" rx="110" ry="180" fill="none" stroke="#111" stroke-width="28"/><path d="M120 256h272" stroke="#111" stroke-width="20"/></svg>` 
+    },
+    { 
+      name: "Mazda", 
+      svg: `<svg viewBox="0 0 512 512" width="40" height="40"><circle cx="256" cy="256" r="200" fill="none" stroke="#111" stroke-width="28"/><path d="M150 320c40-60 70-80 106-80s66 20 106 80M190 200l66 50 66-50" fill="none" stroke="#111" stroke-width="24" stroke-linejoin="round" stroke-linecap="round"/></svg>` 
+    },
+    { 
+      name: "Subaru", 
+      svg: `<svg viewBox="0 0 512 512" width="40" height="40"><circle cx="256" cy="256" r="200" fill="#003399"/><g fill="#fff"><circle cx="256" cy="150" r="30"/><circle cx="180" cy="230" r="22"/><circle cx="332" cy="230" r="22"/><circle cx="160" cy="330" r="18"/><circle cx="352" cy="330" r="18"/></g></svg>` 
+    },
+    { 
+      name: "Nissan", 
+      svg: `<svg viewBox="0 0 512 512" width="40" height="40"><circle cx="256" cy="256" r="200" fill="none" stroke="#c00" stroke-width="28"/><rect x="136" y="220" width="240" height="72" fill="#111"/><text x="50%" y="54%" font-size="75" font-weight="900" text-anchor="middle" fill="#fff" font-family="Arial" dominant-baseline="middle">NISSAN</text></svg>` 
+    },
+    { 
+      name: "Honda", 
+      svg: `<svg viewBox="0 0 512 512" width="40" height="40"><text x="50%" y="55%" font-size="280" font-weight="900" text-anchor="middle" fill="#111" font-family="Arial" dominant-baseline="middle">H</text></svg>` 
+    },
+    { 
+      name: "Volkswagen", 
+      svg: `<svg viewBox="0 0 512 512" width="40" height="40"><circle cx="256" cy="256" r="200" fill="none" stroke="#001e50" stroke-width="28"/><text x="50%" y="55%" font-size="190" font-weight="900" text-anchor="middle" fill="#001e50" font-family="Arial" dominant-baseline="middle">VW</text></svg>` 
+    },
+    { 
+      name: "BMW", 
+      svg: `<svg viewBox="0 0 512 512" width="40" height="40"><circle cx="256" cy="256" r="200" fill="#111"/><circle cx="256" cy="256" r="180" fill="#fff"/><path d="M256 256V76a180 180 0 00-180 180h180zm0 0h180A180 180 0 00256 76v180z" fill="#0066b1"/></svg>` 
+    },
+    { 
+      name: "Mercedes", 
+      svg: `<svg viewBox="0 0 512 512" width="40" height="40"><circle cx="256" cy="256" r="200" fill="none" stroke="#111" stroke-width="24"/><path d="M256 56v200l130 75M256 256L126 331" fill="none" stroke="#111" stroke-width="24"/></svg>` 
+    }
   ];
 
-  // 1. ALWAYS render the logos, regardless of the cars database status
+  // 1. ALWAYS render the logos using inline SVGs
   if (brandLogoContainer) {
     brandLogoContainer.innerHTML = brandDatabase.map(brand => `
-      <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 8px; min-width: 120px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 90px;">
-        <img src="${brand.logo}" alt="${brand.name} logo" onerror="this.src='https://via.placeholder.com/48?text=${brand.name}'" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 4px;">
+      <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px 6px; min-width: 110px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 85px;">
+        <div style="display: flex; align-items: center; justify-content: center; height: 42px;">${brand.svg}</div>
         <p style="font-size: 12px; font-weight: bold; color: #111; margin: 0;">${brand.name}</p>
       </div>
     `).join('');
