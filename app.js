@@ -1,35 +1,3 @@
-const signInBtn = document.getElementById('signInBtn');
-const authModal = document.getElementById('authModal');
-const closeModal = document.getElementById('closeModal');
-
-if (signInBtn && authModal) {
-  signInBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    authModal.style.display = 'flex';
-  });
-}
-
-if (closeModal && authModal) {
-  closeModal.addEventListener('click', () => {
-    authModal.style.display = 'none';
-  });
-}
-
-window.addEventListener('click', (e) => {
-  if (e.target === authModal) {
-    authModal.style.display = 'none';
-  }
-});
-
-const loginForm = document.getElementById('loginForm');
-if (loginForm) {
-  loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('Sign in functionality connected successfully!');
-    authModal.style.display = 'none';
-  });
-}
-
 /* Mobile Slide-out Menu Drawer Controller */
 const menuToggleBtn = document.getElementById('menuToggleBtn');
 const mobileNavDrawer = document.getElementById('mobileNavDrawer');
@@ -68,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ccFilter = document.getElementById('ccFilter');
   const brandLogoContainer = document.getElementById('brandLogoContainer');
 
-  // Structured database using reliable direct emblem asset URLs and larger proportions
+  // Structured database using reliable direct emblem asset URLs
   const brandDatabase = [
     { name: "Toyota", logo: "https://www.carlogos.org/car-logos/toyota-logo.png" },
     { name: "Mazda", logo: "https://www.carlogos.org/car-logos/mazda-logo.png" },
@@ -81,10 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   if (typeof cars !== 'undefined') {
-    // Populate dynamic filter selections from database fields first so select options are available
+    // Populate dynamic filter selections from database fields first
     const populateSelect = (element, values) => {
       values.sort().forEach(val => {
-        if (val && ![...element.options].some(o => o.value == val)) {
+        if (val && ![...element.options].some(o => o.value.toLowerCase() == val.toLowerCase())) {
           const opt = document.createElement('option');
           opt.value = val;
           opt.textContent = val;
@@ -101,7 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
     populateSelect(ccFilter, [...new Set(cars.map(c => c.cc))]);
     populateSelect(priceFilter, [1000000, 2000000, 3000000, 5000000, 10000000]);
 
+    // Add a "See All Vehicles / Reset Filter" button above or next to filters if needed, 
+    // or handle resetting via clicking an active brand badge or clearing filters.
     if (brandLogoContainer) {
+      // Prepend or include a "Reset / All" button container option if desired, 
+      // clicking an active brand badge now completely deselects and resets the filter.
       brandLogoContainer.innerHTML = brandDatabase.map(brand => `
         <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px 8px; min-width: 120px; text-align: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 90px;">
           <img src="${brand.logo}" alt="${brand.name} logo" style="width: 48px; height: 48px; object-fit: contain; margin-bottom: 4px;">
@@ -113,17 +85,21 @@ document.addEventListener('DOMContentLoaded', () => {
         badge.addEventListener('click', () => {
           const selectedMake = badge.getAttribute('data-make');
           
-          // Toggle selection: if already selected, clear filter and reset styles
-          if (makeFilter.value.toLowerCase() === selectedMake.toLowerCase()) {
+          // Check if this badge is already active
+          const isActive = badge.style.border.includes('2px solid');
+
+          // Reset all badges style
+          document.querySelectorAll('.brand-badge').forEach(b => {
+            b.style.border = "1px solid #ddd";
+            b.style.background = "#fff";
+          });
+
+          if (isActive) {
+            // If it was already active, clear the filter (See All Vehicles)
             makeFilter.value = "";
-            badge.style.border = "1px solid #ddd";
-            badge.style.background = "#fff";
           } else {
+            // Otherwise, activate this badge and filter by make
             makeFilter.value = selectedMake;
-            document.querySelectorAll('.brand-badge').forEach(b => {
-              b.style.border = "1px solid #ddd";
-              b.style.background = "#fff";
-            });
             badge.style.border = "2px solid #ff4d00";
             badge.style.background = "#fff8f5";
           }
@@ -135,7 +111,33 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCars(items) {
       if (!container) return;
       if (items.length === 0) {
-        container.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #666; padding: 40px;">No vehicles found matching your criteria.</p>`;
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 50px 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+            <h3 style="color: #333; margin-bottom: 10px; font-size: 1.3rem;">No vehicles found</h3>
+            <p style="color: #666; margin-bottom: 20px;">There are no vehicles matching your current selection or brand filter.</p>
+            <button id="resetFiltersBtn" style="background: #ff4d00; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">See All Vehicles</button>
+          </div>
+        `;
+
+        const resetBtn = document.getElementById('resetFiltersBtn');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', () => {
+            makeFilter.value = "";
+            searchInput.value = "";
+            priceFilter.value = "";
+            yearFilter.value = "";
+            locationFilter.value = "";
+            transmissionFilter.value = "";
+            fuelFilter.value = "";
+            ccFilter.value = "";
+            
+            document.querySelectorAll('.brand-badge').forEach(b => {
+              b.style.border = "1px solid #ddd";
+              b.style.background = "#fff";
+            });
+            renderCars(cars);
+          });
+        }
         return;
       }
 
@@ -183,7 +185,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     searchInput.addEventListener('input', filterInventory);
-    makeFilter.addEventListener('change', filterInventory);
+    makeFilter.addEventListener('change', () => {
+      // Sync badge UI if dropdown is changed manually
+      const currentVal = makeFilter.value.toLowerCase();
+      document.querySelectorAll('.brand-badge').forEach(b => {
+        if (b.getAttribute('data-make').toLowerCase() === currentVal) {
+          b.style.border = "2px solid #ff4d00";
+          b.style.background = "#fff8f5";
+        } else {
+          b.style.border = "1px solid #ddd";
+          b.style.background = "#fff";
+        }
+      });
+      filterInventory();
+    });
     locationFilter.addEventListener('change', filterInventory);
     transmissionFilter.addEventListener('change', filterInventory);
     fuelFilter.addEventListener('change', filterInventory);
