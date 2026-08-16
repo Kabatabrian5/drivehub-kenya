@@ -40,7 +40,7 @@
     .main-layout-wrapper { display: flex; flex-direction: column; gap: 16px; padding: 16px; max-width: 1200px; margin: 0 auto; }
 
     /* Containers */
-    .search-filter, main { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .search-filter, main { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); width: 100%; }
     
     /* Filters Grid */
     .filters-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -57,8 +57,8 @@
     #applyFilterBtn { background: #ff4d00; color: #fff; }
     #resetFilterBtn { background: #e2e8f0; color: #334155; }
 
-    /* Car Grid Listings */
-    .car-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    /* Car Grid Listings - FIXED FOR PROPER SPREAD */
+    .car-grid { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; }
     @media(min-width: 560px) {
       .car-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -193,7 +193,13 @@
           <option value="CVT">CVT</option>
         </select>
 
-      
+        <!-- Filter Action Buttons -->
+        <div class="filter-actions">
+          <button id="applyFilterBtn">🔍 Apply Filters</button>
+          <button id="resetFilterBtn">🔄 Reset</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Listings Grid Section -->
     <main>
@@ -390,7 +396,7 @@
     };
 
     // Live search input tracking
-    document.getElementById('searchInput').oninput = () => renderCars(allCarsData);
+    document.getElementById('searchInput').oninput = () => renderCars(allCards = allCarsData);
     document.getElementById('makeFilter').onchange = () => renderCars(allCarsData);
     document.getElementById('priceRangeFilter').onchange = () => renderCars(allCarsData);
     document.getElementById('yearRangeFilter').onchange = () => renderCars(allCarsData);
@@ -440,12 +446,12 @@
                 const simImg = otherCar.imageUrl || (otherCar.imageUrls && otherCar.imageUrls[0]) || '';
                 
                 const simCard = document.createElement('div');
-                simCard.style.cssText = "border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; background: #fdfdfd; cursor: pointer; display: flex; flex-direction: column; gap: 4px;";
+                simCard.style.cssText = "border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px; background: #fdfdfd; keyword: pointer; display: flex; flex-direction: column; gap: 4px;";
                 simCard.onclick = () => openCarModal(otherId);
                 
                 simCard.innerHTML = `
                     <div style="height: 75px; overflow: hidden; background: #eee; border-radius: 4px;">
-                        <img src="${simImg}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="${simImg}" style="width: 100%; height: 100%; object-file: cover;">
                     </div>
                     <div style="font-size: 11px; font-weight: bold; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${otherCar.title}</div>
                     <div style="font-size: 11px; color: #ff4d00; font-weight: bold;">KES ${Number(otherCar.price).toLocaleString()}</div>
