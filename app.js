@@ -122,7 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (error || !brands) return;
 
       brandLogoContainer.innerHTML = brands.map(brand => `
-        <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; min-width: 90px; text-align: center; cursor: pointer; flex-shrink: 0;">
+        <div class="brand-badge" data-make="${brand.name}" style="background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 10px; min-width: 90px; text-align: center; cursor: pointer; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+          <img src="${brand.logo_path}" alt="${brand.name}" style="width: 36px; height: 36px; object-fit: contain;">
           <p style="font-size: 12px; font-weight: bold; margin: 0; color: #111;">${brand.name}</p>
         </div>
       `).join('');
