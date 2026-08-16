@@ -34,7 +34,6 @@
         button:hover { opacity: 0.9; }
         .btn-bot { background-color: #4f46e5; width: 100%; margin-top: 10px; }
         .btn-danger { background-color: var(--danger); }
-        table { width: 100%
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { color: var(--text-secondary); font-weight: 600; }
@@ -189,14 +188,13 @@
                 document.getElementById('car-make').value = detectedMake;
             }
 
-            // 2. Detect Year (4-digit number starting with 19 or 20)
+            // 2. Detect Year
             const yearMatch = rawText.match(/\b(19\d{2}|20\d{2})\b/);
             if (yearMatch) {
                 document.getElementById('car-year').value = yearMatch[0];
             }
 
-            // 3. Detect Price (Look for numbers with M, ksh, million, or large numbers)
-            // Tries to parse inputs like "2.8M", "1,500,000", "1.5 million"
+            // 3. Detect Price
             const priceRegex = /(?:kes|ksh|rs)?\s*([0-9.,]+)\s*(m|million)?/gi;
             let match;
             let foundPrice = "";
@@ -204,10 +202,10 @@
                 let numStr = match[1].replace(/,/g, '');
                 let num = parseFloat(numStr);
                 if (!isNaN(num)) {
-                    if (match[2] || num < 50) { // e.g., 2.8M or 2.5 million
+                    if (match[2] || num < 50) {
                         foundPrice = Math.round(num * 1000000);
                         break;
-                    } else if (num > 50000) { // e.g. 1500000
+                    } else if (num > 50000) {
                         foundPrice = num;
                         break;
                     }
@@ -233,9 +231,9 @@
                 }
             }
 
-            // 6. Push all text into More Information / Description
+            // 6. Push all raw description text into More Information
             document.getElementById('car-more-info').value = rawText;
-            alert("✨ Bot successfully extracted main fields and stored all description notes into 'More Information'!");
+            alert("✨ Bot successfully extracted main fields and stored description notes into 'More Information'!");
         }
 
         const carForm = document.getElementById('car-form');
