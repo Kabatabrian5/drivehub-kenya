@@ -34,6 +34,7 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { color: var(--text-secondary); font-weight: 600; }
         .status-msg { margin-top: 10px; font-size: 14px; font-weight: 500; }
+        .car-thumb { width: 50px; height: 35px; object-fit: cover; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -83,26 +84,25 @@
             <table>
                 <thead>
                     <tr>
+                        <th>Image</th>
                         <th>Car</th>
                         <th>Price</th>
                         <th>Year</th>
                         <th>Action</th>
                     </tr>
-                </i>
+                </thead>
                 <tbody id="inventory-table">
-                    <tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">Loading inventory...</td></tr>
+                    <tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">Loading inventory...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Firebase SDK Scripts (Compat builds for easy standard JS usage) -->
+    <!-- Firebase SDK Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
     <script>
-        // Your exact Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBxdXaRmelsJjHkY9VvFl63p3ID_Daq0SE",
             authDomain: "kabata-motors.firebaseapp.com",
@@ -113,24 +113,31 @@
             measurementId: "G-VRPVCV0XQV"
         };
 
-        // Initialize Firebase
+        // Initialize Firebase (Firestore only)
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
-        // Check connection indicator
         document.getElementById('connection-status').innerText = "Connected to Firebase ✅";
         document.getElementById('connection-status').style.color = "var(--success)";
 
-        // Handle Form Submission
         const carForm = document.getElementById('car-form');
         const submitBtn = document.getElementById('submit-btn');
         const formStatus = document.getElementById('form-status');
 
+        // Helper function to convert uploaded image file to Base64 text
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         carForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             submitBtn.disabled = true;
-            submitBtn.innerText = "Uploading...";
+            submitBtn.innerText = "Processing Image...";
             formStatus.innerText = "";
 
             const title = document.getElementById('car-title').value;
@@ -140,12 +147,11 @@
             const imageFile = document.getElementById('car-image').files[0];
 
             try {
-                // 1. Upload image to Firebase Storage
-                const storageRef = storage.ref(`cars/${Date.now()}_${imageFile.name}`);
-                const snapshot = await storageRef.put(imageFile);
-                const imageUrl = await snapshot.ref.getDownloadURL();
+                submitBtn.innerText = "Saving to Database...";
+                // Convert image directly to Base64 string
+                const imageUrl = await getBase64(imageFile);
 
-                // 2. Save car metadata into Firestore database
+                // Save metadata and image string directly to Firestore
                 await db.collection('cars').add({
                     title,
                     price: Number(price),
@@ -158,7 +164,6 @@
                 formStatus.style.color = "var(--success)";
                 formStatus.innerText = "Car successfully listed!";
                 carForm.reset();
-                loadInventory();
             } catch (error) {
                 console.error("Error adding document: ", error);
                 formStatus.style.color = "var(--danger)";
@@ -175,7 +180,7 @@
             
             db.collection('cars').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">No cars listed yet.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">No cars listed yet.</td></tr>`;
                     return;
                 }
 
@@ -184,6 +189,7 @@
                     const car = doc.data();
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
+                        <td><img src="${car.imageUrl}" class="car-thumb" alt="Car"></td>
                         <td><strong>${car.title}</strong><br><small style="color:var(--text-secondary);">${car.transmission}</small></td>
                         <td>KES ${Number(car.price).toLocaleString()}</td>
                         <td>${car.year}</td>
@@ -196,7 +202,6 @@
             });
         }
 
-        // Delete Car Function
         window.deleteCar = async function(id) {
             if (confirm("Are you sure you want to delete this listing?")) {
                 try {
@@ -207,7 +212,6 @@
             }
         }
 
-        // Run fetch on startup
         loadInventory();
     </script>
 </body>
