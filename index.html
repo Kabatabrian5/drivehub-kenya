@@ -43,7 +43,7 @@
     .search-filter, main { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     
     /* Filters Grid */
-    .filters-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .filters-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     @media(min-width: 500px) {
       .filters-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -51,6 +51,11 @@
       .filters-grid { grid-template-columns: repeat(3, 1fr); }
     }
     .filters-grid select, .filters-grid input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
+    
+    .filter-actions { display: flex; gap: 8px; grid-column: 1 / -1; margin-top: 4px; }
+    .filter-actions button { flex: 1; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; border: none; }
+    #applyFilterBtn { background: #ff4d00; color: #fff; }
+    #resetFilterBtn { background: #e2e8f0; color: #334155; }
 
     /* Car Grid Listings */
     .car-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
@@ -113,33 +118,86 @@
   <!-- Main Website Wrapper -->
   <div class="main-layout-wrapper">
     
-    <!-- Filter Section -->
+    <!-- Expanded Search & Filter Section -->
     <div class="search-filter">
-      <h3 style="font-size: 1rem; margin-top: 0; margin-bottom: 12px; color: #111;">Search & Filter Inventory</h3>
+      <h3 style="font-size: 1rem; margin-top: 0; margin-bottom: 12px; color: #111;">Search & Filter Kenya Inventory</h3>
       <div class="filters-grid">
+        <!-- Comprehensive Kenyan Car Makes -->
         <select id="makeFilter">
-          <option value="">All Makes</option>
+          <option value="">All Makes (Kenya Market)</option>
           <option value="Toyota">Toyota</option>
           <option value="Nissan">Nissan</option>
           <option value="Subaru">Subaru</option>
           <option value="Mazda">Mazda</option>
           <option value="Honda">Honda</option>
           <option value="Mercedes-Benz">Mercedes-Benz</option>
+          <option value="BMW">BMW</option>
+          <option value="Volkswagen">Volkswagen</option>
+          <option value="Mitsubishi">Mitsubishi</option>
+          <option value="Land Rover">Land Rover</option>
+          <option value="Audi">Audi</option>
+          <option value="Suzuki">Suzuki</option>
+          <option value="Lexus">Lexus</option>
+          <option value="Isuzu">Isuzu</option>
+          <option value="Ford">Ford</option>
+          <option value="Hyundai">Hyundai</option>
+          <option value="Kia">Kia</option>
+          <option value="Peugeot">Peugeot</option>
+          <option value="Porsche">Porsche</option>
         </select>
-        <input type="text" id="searchInput" placeholder="Search model...">
-        <select id="priceFilter"><option value="">Max Price (Ksh)</option></select>
-        <select id="yearFilter"><option value="">Min Year</option></select>
+
+        <!-- Search Model/Keyword Input -->
+        <input type="text" id="searchInput" placeholder="Search model or keyword (e.g. Demio, Vitz)...">
+
+        <!-- Price Range Filter -->
+        <select id="priceRangeFilter">
+          <option value="">All Price Ranges (KES)</option>
+          <option value="0-1000000">Under 1 Million KES</option>
+          <option value="1000000-2000000">1M - 2M KES</option>
+          <option value="2000000-3500000">2M - 3.5M KES</option>
+          <option value="3500000-5000000">3.5M - 5M KES</option>
+          <option value="5000000-10000000">5M - 10M KES</option>
+          <option value="10000000-999999999">Above 10M KES</option>
+        </select>
+
+        <!-- Year Range Filter -->
+        <select id="yearRangeFilter">
+          <option value="">All Year Ranges</option>
+          <option value="2020-2026">2020 - 2026 (Newer)</option>
+          <option value="2015-2019">2015 - 2019</option>
+          <option value="2010-2014">2010 - 2014</option>
+          <option value="2000-2009">2000 - 2009</option>
+        </select>
+
+        <!-- Comprehensive Kenyan Locations -->
         <select id="locationFilter">
-          <option value="">All Locations</option>
+          <option value="">All Locations in Kenya</option>
           <option value="Nairobi">Nairobi</option>
           <option value="Mombasa">Mombasa</option>
           <option value="Nakuru">Nakuru</option>
+          <option value="Eldoret">Eldoret</option>
+          <option value="Kisumu">Kisumu</option>
+          <option value="Thika">Thika</option>
+          <option value="Meru">Meru</option>
+          <option value="Nyeri">Nyeri</option>
+          <option value="Machakos">Machakos</option>
+          <option value="Kitengela">Kitengela</option>
+          <option value="Naivasha">Naivasha</option>
         </select>
+
+        <!-- Transmission Filter -->
         <select id="transmissionFilter">
-          <option value="">Transmission</option>
+          <option value="">All Transmissions</option>
           <option value="Automatic">Automatic</option>
           <option value="Manual">Manual</option>
+          <option value="CVT">CVT</option>
         </select>
+
+        <!-- Filter Action Buttons -->
+        <div class="filter-actions">
+          <button id="applyFilterBtn">🔍 Apply Filters</button>
+          <button id="resetFilterBtn">🔄 Reset</button>
+        </div>
       </div>
     </div>
 
@@ -220,51 +278,83 @@
     const carListingsContainer = document.getElementById('carListings');
     let allCarsData = {};
 
-    // Helper function to calculate time ago from a Firestore timestamp or date
+    // Helper function to calculate time ago
     function getTimeAgo(createdAt) {
         if (!createdAt) return 'Recently posted';
-        
-        // Handle Firestore Timestamp or standard date
         const postedDate = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
         const now = new Date();
         const diffInSeconds = Math.floor((now - postedDate) / 1000);
 
-        if (diffInSeconds < 60) {
-            return 'Posted just now';
-        }
+        if (diffInSeconds < 60) return 'Posted just now';
         const diffInMinutes = Math.floor(diffInSeconds / 60);
-        if (diffInMinutes < 60) {
-            return `Posted ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
-        }
+        if (diffInMinutes < 60) return `Posted ${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
         const diffInHours = Math.floor(diffInMinutes / 60);
-        if (diffInHours < 24) {
-            return `Posted ${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
-        }
+        if (diffInHours < 24) return `Posted ${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
         const diffInDays = Math.floor(diffInHours / 24);
-        if (diffInDays === 1) {
-            return 'Posted 1 day ago';
-        }
-        if (diffInDays < 30) {
-            return `Posted ${diffInDays} days ago`;
-        }
+        if (diffInDays === 1) return 'Posted 1 day ago';
+        if (diffInDays < 30) return `Posted ${diffInDays} days ago`;
         const diffInMonths = Math.floor(diffInDays / 30);
         return `Posted ${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
     }
 
+    // Fetch initial dataset from Firestore
     db.collection('cars').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-        if (snapshot.empty) {
-            carListingsContainer.innerHTML = `<p style="color: #666; grid-column: 1 / -1; text-align: center; font-size: 14px;">No cars currently listed. Add some via the admin dashboard!</p>`;
-            return;
-        }
+        allCarsData = {};
+        snapshot.forEach((doc) => {
+            allCarsData[doc.id] = doc.data();
+        });
+        renderCars(allCarsData);
+    }, (error) => {
+        console.error("Error fetching inventory: ", error);
+        carListingsContainer.innerHTML = `<p style="color: #d97706; grid-column: 1 / -1; text-align: center; font-size: 14px;">Unable to load inventory. Please check your network connection.</p>`;
+    });
+
+    // Render Function with Active Filters Applied
+    function renderCars(carsMap) {
+        const makeVal = document.getElementById('makeFilter').value.toLowerCase();
+        const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+        const priceRangeVal = document.getElementById('priceRangeFilter').value;
+        const yearRangeVal = document.getElementById('yearRangeFilter').value;
+        const locationVal = document.getElementById('locationFilter').value.toLowerCase();
+        const transmissionVal = document.getElementById('transmissionFilter').value.toLowerCase();
 
         carListingsContainer.innerHTML = "";
-        snapshot.forEach((doc) => {
-            const car = doc.data();
-            allCarsData[doc.id] = car;
-            
+        let displayedCount = 0;
+
+        for (const [id, car] of Object.entries(carsMap)) {
+            // Filter: Make
+            if (makeVal && (!car.make || car.make.toLowerCase() !== makeVal)) continue;
+
+            // Filter: Keyword / Model Search
+            if (searchVal) {
+                const searchableText = `${car.title || ''} ${car.make || ''} ${car.moreInfo || ''}`.toLowerCase();
+                if (!searchableText.includes(searchVal)) continue;
+            }
+
+            // Filter: Price Range
+            if (priceRangeVal) {
+                const [minPrice, maxPrice] = priceRangeVal.split('-').map(Number);
+                const carPrice = Number(car.price) || 0;
+                if (carPrice < minPrice || carPrice > maxPrice) continue;
+            }
+
+            // Filter: Year Range
+            if (yearRangeVal) {
+                const [minYear, maxYear] = yearRangeVal.split('-').map(Number);
+                const carYear = Number(car.year) || 0;
+                if (carYear < minYear || carYear > maxYear) continue;
+            }
+
+            // Filter: Location
+            if (locationVal && (!car.location || !car.location.toLowerCase().includes(locationVal))) continue;
+
+            // Filter: Transmission
+            if (transmissionVal && (!car.transmission || car.transmission.toLowerCase() !== transmissionVal)) continue;
+
+            displayedCount++;
             const mainImage = car.imageUrl || (car.imageUrls && car.imageUrls[0]) || 'https://via.placeholder.com/300x200?text=No+Image';
             const timeAgoText = getTimeAgo(car.createdAt);
-            
+
             const card = document.createElement('div');
             card.style.cssText = "border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column;";
             
@@ -282,14 +372,36 @@
                         <span>📍 ${car.location || 'N/A'}</span>
                     </div>
                     <div style="font-size: 11px; color: #2563eb; font-weight: 500; margin-top: 2px;">🕒 ${timeAgoText}</div>
-                    <button onclick="openCarModal('${doc.id}')" style="margin-top: 8px; background: #111; color: #fff; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; font-size: 13px;">View More Information</button>
+                    <button onclick="openCarModal('${id}')" style="margin-top: 8px; background: #111; color: #fff; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; font-size: 13px;">View More Information</button>
                 </div>
             `;
             carListingsContainer.appendChild(card);
-        });
-    }, (error) => {
-        console.error("Error fetching inventory: ", error);
-    });
+        }
+
+        if (displayedCount === 0) {
+            carListingsContainer.innerHTML = `<p style="color: #666; grid-column: 1 / -1; text-align: center; font-size: 14px; padding: 20px;">No vehicles match your selected search and filter criteria.</p>`;
+        }
+    }
+
+    // Attach event listeners for real-time filter reactivity and manual action buttons
+    document.getElementById('applyFilterBtn').onclick = () => renderCars(allCarsData);
+    document.getElementById('resetFilterBtn').onclick = () => {
+        document.getElementById('makeFilter').value = '';
+        document.getElementById('searchInput').value = '';
+        document.getElementById('priceRangeFilter').value = '';
+        document.getElementById('yearRangeFilter').value = '';
+        document.getElementById('locationFilter').value = '';
+        document.getElementById('transmissionFilter').value = '';
+        renderCars(allCarsData);
+    };
+
+    // Live search input tracking
+    document.getElementById('searchInput').oninput = () => renderCars(allCarsData);
+    document.getElementById('makeFilter').onchange = () => renderCars(allCarsData);
+    document.getElementById('priceRangeFilter').onchange = () => renderCars(allCarsData);
+    document.getElementById('yearRangeFilter').onchange = () => renderCars(allCarsData);
+    document.getElementById('locationFilter').onchange = () => renderCars(allCarsData);
+    document.getElementById('transmissionFilter').onchange = () => renderCars(allCarsData);
 
     function openCarModal(id) {
         const car = allCarsData[id];
