@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    // Expanded comprehensive Kenyan market car makes dataset list integration
+    // Populate standard general filter options
     const kenyanMarketMakes = [
       ...cars.map(c => c.make),
       'Toyota', 'Mazda', 'Subaru', 'Nissan', 'Honda', 'Mitsubishi', 
@@ -204,7 +204,31 @@ document.addEventListener('DOMContentLoaded', () => {
     populateSelect(fuelFilter, cars.map(c => c.fuel));
     populateSelect(yearFilter, cars.map(c => c.year));
     populateSelect(ccFilter, cars.map(c => c.cc));
-    populateSelect(priceFilter, [1000000, 2000000, 3000000, 5000000, 10000000]);
+
+    // Custom Natural English Price Filter Options Populator
+    if (priceFilter) {
+      priceFilter.innerHTML = '<option value="">Max Price (Ksh)</option>';
+      const priceOptions = [
+        { label: 'Below 500k', value: 500000 },
+        { label: 'Below 1 Million', value: 1000000 },
+        { label: 'Below 1.5 Million', value: 1500000 },
+        { label: 'Below 2 Million', value: 2000000 },
+        { label: 'Below 2.5 Million', value: 2500000 },
+        { label: 'Below 3 Million', value: 3000000 },
+        { label: 'Below 4 Million', value: 4000000 },
+        { label: 'Below 5 Million', value: 5000000 },
+        { label: 'Below 6 Million', value: 6000000 },
+        { label: 'Below 8 Million', value: 8000000 },
+        { label: 'Below 10 Million', value: 10000000 }
+      ];
+
+      priceOptions.forEach(optData => {
+        const opt = document.createElement('option');
+        opt.value = optData.value;
+        opt.textContent = optData.label;
+        priceFilter.appendChild(opt);
+      });
+    }
 
     window.filterInventory = function() {
       const query = searchInput ? searchInput.value.toLowerCase() : '';
