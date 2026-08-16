@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Broker Admin Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 15px; color: #111; }
+    .admin-container { max-width: 500px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h2 { margin-top: 0; color: #ff4d00; font-size: 1.4rem; text-align: center; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+    button { width: 100%; background: #ff4d00; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; }
+    button:active { background: #e04300; }
+    #statusMsg { text-align: center; margin-top: 10px; font-weight: bold; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-container">
+    <h2>🚗 Post Vehicle from Phone</h2>
+    
+    <form id="carUploadForm">
+      <div class="form-group">
+        <label>Car Photos (Select multiple or snap)</label>
+        <input type="file" id="carImages" accept="image/*" multiple capture="environment" required>
+      </div>
+
+      <div class="form-group">
+        <label>Make</label>
+        <select id="make" required>
+          <option value="">Select Make...</option>
+          <option value="Toyota">Toyota</option>
+          <option value="Mazda">Mazda</option>
+          <option value="Subaru">Subaru</option>
+          <option value="Nissan">Nissan</option>
+          <option value="Honda">Honda</option>
+          <option value="Mercedes-Benz">Mercedes-Benz</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Model</label>
+        <input type="text" id="model" placeholder="e.g. Harrier, CX-5" required>
+      </div>
+
+      <div class="form-group">
+        <label>Price (Ksh)</label>
+        <input type="number" id="price" placeholder="e.g. 3200000" required>
+      </div>
+
+      <div class="form-group">
+        <label>Year of Manufacture</label>
+        <input type="number" id="year" placeholder="e.g. 2020" required>
+      </div>
+
+      <div class="form-group">
+        <label>Location</label>
+        <select id="location" required>
+          <option value="Nairobi">Nairobi</option>
+          <option value="Mombasa">Mombasa</option>
+          <option value="Nakuru">Nakuru</option>
+          <option value="Kisumu">Kisumu</option>
+          <option value="Eldoret">Eldoret</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Transmission</label>
+        <select id="transmission">
+          <option value="Automatic">Automatic</option>
+          <option value="Manual">Manual</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Fuel Type</label>
+        <select id="fuel">
+          <option value="Petrol">Petrol</option>
+          <option value="Diesel">Diesel</option>
+          <option value="Hybrid">Hybrid</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Engine CC</label>
+        <input type="text" id="cc" placeholder="e.g. 2000">
+      </div>
+
+      <button type="submit" id="submitBtn">Upload to Live Site</button>
+      <p id="statusMsg"></p>
+    </form>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseClient = supabase.createClient(
+      'https://qzqvyceabwxvzeyifnpw.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cXZ5Y2VhYnd4dnpleWxmbnB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NzEzMzUsImV4cCI6MjEwMjM0NzMzNX0.9fDJGRjaCamvZhxkfhwu08vFTTPcabZ00VBvi_av1wk'
+    );
+
+    const form = document.getElementById('carUploadForm');
+    const statusMsg = document.getElementById('statusMsg');
+    const submitBtn = document.getElementById('submitBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      statusMsg.style.color = '#111';
+      statusMsg.textContent = 'Uploading images and posting...';
+
+      try {
+        const imageFiles = document.getElementById('carImages').files;
+        let uploadedImageUrls = [];
+
+        // 1. Upload images to Supabase Storage Bucket named 'car-images'
+        for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          const fileName = `${Date.now()}-${file.name}`;
+          
+          const { data: uploadData, error: uploadError } = await supabaseClient.storage
+            .from('car-images')
+            .upload(fileName, file);
+
+          if (uploadError) throw uploadError;
+
+          // Get public URL of the uploaded image
+          const { data: publicUrlData } = supabaseClient.storage
+            .from('car-images')
+            .getPublicUrl(fileName);
+
+          uploadedImageUrls.push(publicUrlData.publicUrl);
+        }
+
+        // 2. Insert car details record into your Supabase database table ('cars')
+        const { error: dbError } = await supabaseClient.from('cars').insert([
+          {
+            make: document.getElementById('make').value,
+            model: document.getElementById('model').value,
+            price: Number(document.getElementById('price').value),
+            year: Number(document.getElementById('year').value),
+            location: document.getElementById('location').value,
+            transmission: document.getElementById('transmission').value,
+            fuel: document.getElementById('fuel').value,
+            cc: document.getElementById('cc').value,
+            images: uploadedImageUrls,
+            created_at: new Date().toISOString()
+          }
+        ]);
+
+        if (dbError) throw dbError;
+
+        statusMsg.style.color = 'green';
+        statusMsg.textContent = 'Vehicle posted successfully! Check the buyer site.';
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        statusMsg.style.color = 'red';
+        statusMsg.textContent = 'Error: ' + err.message;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
