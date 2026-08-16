@@ -10,7 +10,7 @@
     h2 { margin-top: 0; color: #ff4d00; font-size: 1.4rem; text-align: center; }
     .form-group { margin-bottom: 15px; }
     label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; }
-    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fff; }
     button { width: 100%; background: #ff4d00; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; }
     button:active { background: #e04300; }
     #statusMsg { text-align: center; margin-top: 10px; font-weight: bold; font-size: 13px; }
@@ -36,13 +36,27 @@
           <option value="Subaru">Subaru</option>
           <option value="Nissan">Nissan</option>
           <option value="Honda">Honda</option>
+          <option value="Mitsubishi">Mitsubishi</option>
           <option value="Mercedes-Benz">Mercedes-Benz</option>
+          <option value="BMW">BMW</option>
+          <option value="Volkswagen">Volkswagen</option>
+          <option value="Audi">Audi</option>
+          <option value="Lexus">Lexus</option>
+          <option value="Land Rover">Land Rover</option>
+          <option value="Range Rover">Range Rover</option>
+          <option value="Ford">Ford</option>
+          <option value="Hyundai">Hyundai</option>
+          <option value="Kia">Kia</option>
+          <option value="Suzuki">Suzuki</option>
+          <option value="Isuzu">Isuzu</option>
+          <option value="Peugeot">Peugeot</option>
+          <option value="Porsche">Porsche</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>Model</label>
-        <input type="text" id="model" placeholder="e.g. Harrier, CX-5" required>
+        <input type="text" id="model" placeholder="e.g. Harrier, CX-5, Forester" required>
       </div>
 
       <div class="form-group">
@@ -58,34 +72,57 @@
       <div class="form-group">
         <label>Location</label>
         <select id="location" required>
+          <option value="">Select Location...</option>
           <option value="Nairobi">Nairobi</option>
           <option value="Mombasa">Mombasa</option>
-          <option value="Nakuru">Nakuru</option>
           <option value="Kisumu">Kisumu</option>
+          <option value="Nakuru">Nakuru</option>
           <option value="Eldoret">Eldoret</option>
+          <option value="Thika">Thika</option>
+          <option value="Kitengela">Kitengela</option>
+          <option value="Ruiru">Ruiru</option>
+          <option value="Kiambu">Kiambu</option>
+          <option value="Machakos">Machakos</option>
+          <option value="Meru">Meru</option>
+          <option value="Nyeri">Nyeri</option>
+          <option value="Kakamega">Kakamega</option>
+          <option value="Kisii">Kisii</option>
+          <option value="Malindi">Malindi</option>
+          <option value="Naivasha">Naivasha</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>Transmission</label>
-        <select id="transmission">
+        <select id="transmission" required>
           <option value="Automatic">Automatic</option>
           <option value="Manual">Manual</option>
+          <option value="Electric">Electric</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>Fuel Type</label>
-        <select id="fuel">
+        <select id="fuel" required>
           <option value="Petrol">Petrol</option>
           <option value="Diesel">Diesel</option>
           <option value="Hybrid">Hybrid</option>
+          <option value="Electric">Electric</option>
         </select>
       </div>
 
       <div class="form-group">
         <label>Engine CC</label>
-        <input type="text" id="cc" placeholder="e.g. 2000">
+        <select id="cc" required>
+          <option value="">Select CC Range...</option>
+          <option value="Under 1,000 CC">Under 1,000 CC</option>
+          <option value="1,000 CC - 1,300 CC">1,000 CC - 1,300 CC</option>
+          <option value="1,300 CC - 1,500 CC">1,300 CC - 1,500 CC</option>
+          <option value="1,500 CC - 2,000 CC">1,500 CC - 2,000 CC</option>
+          <option value="2,000 CC - 2,500 CC">2,000 CC - 2,500 CC</option>
+          <option value="2,500 CC - 3,000 CC">2,500 CC - 3,000 CC</option>
+          <option value="Above 3,000 CC">Above 3,000 CC</option>
+        </select>
       </div>
 
       <button type="submit" id="submitBtn">Upload to Live Site</button>
@@ -115,7 +152,6 @@
         const imageFiles = document.getElementById('carImages').files;
         let uploadedImageUrls = [];
 
-        // 1. Upload images to Supabase Storage Bucket named 'car-images'
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
           const fileName = `${Date.now()}-${file.name}`;
@@ -126,7 +162,6 @@
 
           if (uploadError) throw uploadError;
 
-          // Get public URL of the uploaded image
           const { data: publicUrlData } = supabaseClient.storage
             .from('car-images')
             .getPublicUrl(fileName);
@@ -134,7 +169,6 @@
           uploadedImageUrls.push(publicUrlData.publicUrl);
         }
 
-        // 2. Insert car details record into your Supabase database table ('cars')
         const { error: dbError } = await supabaseClient.from('cars').insert([
           {
             make: document.getElementById('make').value,
