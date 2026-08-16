@@ -1,263 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Car Broker Admin Panel</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 15px; color: #111; }
-    .admin-container { max-width: 500px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h2 { margin-top: 0; color: #ff4d00; font-size: 1.4rem; text-align: center; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; }
-    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fff; }
-    textarea { resize: vertical; height: 70px; }
-    .smart-box { background: #fff8f5; border: 1px dashed #ff4d00; padding: 10px; border-radius: 6px; margin-bottom: 20px; }
-    button { width: 100%; background: #ff4d00; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; }
-    button:active { background: #e04300; }
-    #statusMsg { text-align: center; margin-top: 10px; font-weight: bold; font-size: 13px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kabata Motors - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --danger: #ef4444;
+            --success: #22c55e;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        h1 { font-size: 24px; color: var(--text); }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group.full { grid-column: span 2; }
+        label { display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; background-color: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px; }
+        button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        .btn-danger { background-color: var(--danger); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        th { color: var(--text-secondary); font-weight: 600; }
+        .status-msg { margin-top: 10px; font-size: 14px; font-weight: 500; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>Kabata Motors Admin</h1>
+            <span id="connection-status" style="color: var(--text-secondary);">Connecting to Firebase...</span>
+        </header>
 
-  <div class="admin-container">
-    <h2>🚗 Smart Post Admin Panel</h2>
+        <!-- Add Car Form -->
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">Add New Car Listing</h3>
+            <form id="car-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Make & Model (e.g., Toyota Crown)</label>
+                        <input type="text" id="car-title" required placeholder="Toyota Crown">
+                    </div>
+                    <div class="form-group">
+                        <label>Price (KES)</label>
+                        <input type="number" id="car-price" required placeholder="1,500,000">
+                    </div>
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="car-year" required placeholder="2018">
+                    </div>
+                    <div class="form-group">
+                        <label>Transmission</label>
+                        <select id="car-transmission">
+                            <option value="Automatic">Automatic</option>
+                            <option value="Manual">Manual</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>Car Image</label>
+                        <input type="file" id="car-image" accept="image/*" required>
+                    </div>
+                </div>
+                <button type="submit" id="submit-btn">Publish Listing</button>
+                <div id="form-status" class="status-msg"></div>
+            </form>
+        </div>
 
-    <!-- Smart Paste Box for WhatsApp Text -->
-    <div class="smart-box">
-      <label style="color: #ff4d00;">⚡ Quick WhatsApp Text Parser</label>
-      <label style="font-weight: normal; font-size: 12px; margin-bottom: 5px;">Paste messy paragraph here and click Auto-Fill:</label>
-      <textarea id="rawWhatsAppText" placeholder="e.g. Toyota Harrier 2021 pearl white 3.8M Nairobi..."></textarea>
-      <button type="button" id="parseBtn" style="background: #333; margin-top: 8px; padding: 8px; font-size: 13px;">Auto-Fill Form Fields</button>
+        <!-- Inventory List -->
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">Current Inventory</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Car</th>
+                        <th>Price</th>
+                        <th>Year</th>
+                        <th>Action</th>
+                    </tr>
+                </i>
+                <tbody id="inventory-table">
+                    <tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">Loading inventory...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    
-    <form id="carUploadForm">
-      <div class="form-group">
-        <label>Car Photos (Choose from folder/gallery)</label>
-        <input type="file" id="carImages" accept="image/*" multiple required>
-      </div>
 
-      <div class="form-group">
-        <label>Make</label>
-        <select id="make">
-          <option value="">Select Make...</option>
-          <option value="Toyota">Toyota</option>
-          <option value="Mazda">Mazda</option>
-          <option value="Subaru">Subaru</option>
-          <option value="Nissan">Nissan</option>
-          <option value="Honda">Honda</option>
-          <option value="Mitsubishi">Mitsubishi</option>
-          <option value="Mercedes-Benz">Mercedes-Benz</option>
-          <option value="BMW">BMW</option>
-          <option value="Volkswagen">Volkswagen</option>
-          <option value="Audi">Audi</option>
-          <option value="Lexus">Lexus</option>
-          <option value="Land Rover">Land Rover</option>
-          <option value="Range Rover">Range Rover</option>
-          <option value="Ford">Ford</option>
-          <option value="Hyundai">Hyundai</option>
-          <option value="Kia">Kia</option>
-          <option value="Suzuki">Suzuki</option>
-          <option value="Isuzu">Isuzu</option>
-          <option value="Peugeot">Peugeot</option>
-          <option value="Porsche">Porsche</option>
-        </select>
-      </div>
+    <!-- Firebase SDK Scripts (Compat builds for easy standard JS usage) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
 
-      <div class="form-group">
-        <label>Model</label>
-        <input type="text" id="model" placeholder="e.g. Harrier, CX-5, Forester">
-      </div>
+    <script>
+        // Your exact Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBxdXaRmelsJjHkY9VvFl63p3ID_Daq0SE",
+            authDomain: "kabata-motors.firebaseapp.com",
+            projectId: "kabata-motors",
+            storageBucket: "kabata-motors.firebasestorage.app",
+            messagingSenderId: "836867497965",
+            appId: "1:836867497965:web:592205194b4382d643d1e4",
+            measurementId: "G-VRPVCV0XQV"
+        };
 
-      <div class="form-group">
-        <label>Price (Ksh)</label>
-        <input type="number" id="price" placeholder="e.g. 3200000" required>
-      </div>
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-      <div class="form-group">
-        <label>Year of Manufacture</label>
-        <input type="number" id="year" placeholder="e.g. 2020">
-      </div>
+        // Check connection indicator
+        document.getElementById('connection-status').innerText = "Connected to Firebase ✅";
+        document.getElementById('connection-status').style.color = "var(--success)";
 
-      <div class="form-group">
-        <label>Location</label>
-        <select id="location">
-          <option value="">Select Location...</option>
-          <option value="Nairobi">Nairobi</option>
-          <option value="Mombasa">Mombasa</option>
-          <option value="Kisumu">Kisumu</option>
-          <option value="Nakuru">Nakuru</option>
-          <option value="Eldoret">Eldoret</option>
-          <option value="Thika">Thika</option>
-          <option value="Kitengela">Kitengela</option>
-          <option value="Ruiru">Ruiru</option>
-          <option value="Kiambu">Kiambu</option>
-          <option value="Machakos">Machakos</option>
-          <option value="Meru">Meru</option>
-          <option value="Nyeri">Nyeri</option>
-          <option value="Kakamega">Kakamega</option>
-          <option value="Kisii">Kisii</option>
-          <option value="Malindi">Malindi</option>
-          <option value="Naivasha">Naivasha</option>
-        </select>
-      </div>
+        // Handle Form Submission
+        const carForm = document.getElementById('car-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formStatus = document.getElementById('form-status');
 
-      <div class="form-group">
-        <label>Transmission</label>
-        <select id="transmission">
-          <option value="">Select Transmission...</option>
-          <option value="Automatic">Automatic</option>
-          <option value="Manual">Manual</option>
-          <option value="Electric">Electric</option>
-        </select>
-      </div>
+        carForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Uploading...";
+            formStatus.innerText = "";
 
-      <div class="form-group">
-        <label>Fuel Type</label>
-        <select id="fuel">
-          <option value="">Select Fuel Type...</option>
-          <option value="Petrol">Petrol</option>
-          <option value="Diesel">Diesel</option>
-          <option value="Hybrid">Hybrid</option>
-          <option value="Electric">Electric</option>
-        </select>
-      </div>
+            const title = document.getElementById('car-title').value;
+            const price = document.getElementById('car-price').value;
+            const year = document.getElementById('car-year').value;
+            const transmission = document.getElementById('car-transmission').value;
+            const imageFile = document.getElementById('car-image').files[0];
 
-      <div class="form-group">
-        <label>Engine CC</label>
-        <select id="cc">
-          <option value="">Select CC Range...</option>
-          <option value="Under 1,000 CC">Under 1,000 CC</option>
-          <option value="1,000 CC - 1,300 CC">1,000 CC - 1,300 CC</option>
-          <option value="1,300 CC - 1,500 CC">1,300 CC - 1,500 CC</option>
-          <option value="1,500 CC - 2,000 CC">1,500 CC - 2,000 CC</option>
-          <option value="2,000 CC - 2,500 CC">2,000 CC - 2,500 CC</option>
-          <option value="2,500 CC - 3,000 CC">2,500 CC - 3,000 CC</option>
-          <option value="Above 3,000 CC">Above 3,000 CC</option>
-        </select>
-      </div>
+            try {
+                // 1. Upload image to Firebase Storage
+                const storageRef = storage.ref(`cars/${Date.now()}_${imageFile.name}`);
+                const snapshot = await storageRef.put(imageFile);
+                const imageUrl = await snapshot.ref.getDownloadURL();
 
-      <button type="submit" id="submitBtn">Upload to Live Site</button>
-      <p id="statusMsg"></p>
-    </form>
-  </div>
+                // 2. Save car metadata into Firestore database
+                await db.collection('cars').add({
+                    title,
+                    price: Number(price),
+                    year: Number(year),
+                    transmission,
+                    imageUrl,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
 
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const supabaseClient = supabase.createClient(
-      'https://zzlwuvddgjktyldenmklu.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6bHd1dmRkZ2t0eWxkZW5ta2x1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4Nzc4NTQsImV4cCI6MjEwMjQ1Mzg1NH0.7Wfo5M5W_gpNvKID91UnfXUlLQDQlC9-T75RXhUV1vg'
-    );
+                formStatus.style.color = "var(--success)";
+                formStatus.innerText = "Car successfully listed!";
+                carForm.reset();
+                loadInventory();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                formStatus.style.color = "var(--danger)";
+                formStatus.innerText = "Error: " + error.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Publish Listing";
+            }
+        });
 
-    // Smart Text Parser Logic
-    document.getElementById('parseBtn').addEventListener('click', () => {
-      const text = document.getElementById('rawWhatsAppText').value;
-      if (!text.trim()) return alert('Please paste some text first!');
+        // Load Inventory in Real-Time
+        function loadInventory() {
+            const tableBody = document.getElementById('inventory-table');
+            
+            db.collection('cars').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+                if (snapshot.empty) {
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">No cars listed yet.</td></tr>`;
+                    return;
+                }
 
-      const makes = ['Toyota', 'Mazda', 'Subaru', 'Nissan', 'Honda', 'Mitsubishi', 'Mercedes-Benz', 'BMW', 'Volkswagen', 'Audi', 'Lexus', 'Land Rover', 'Range Rover', 'Ford', 'Hyundai', 'Kia', 'Suzuki', 'Isuzu', 'Peugeot', 'Porsche'];
-      const foundMake = makes.find(m => text.toLowerCase().includes(m.toLowerCase()));
-      if (foundMake) document.getElementById('make').value = foundMake;
-
-      const yearMatch = text.match(/20\d{2}/);
-      if (yearMatch) document.getElementById('year').value = yearMatch[0];
-
-      const priceMatch = text.match(/(\d+(\.\d+)?)\s*(m|mil|million)/i);
-      if (priceMatch) {
-        const calculatedPrice = parseFloat(priceMatch[1]) * 1000000;
-        document.getElementById('price').value = calculatedPrice;
-      } else {
-        const rawNumMatch = text.match(/\b\d{6,8}\b/);
-        if (rawNumMatch) document.getElementById('price').value = rawNumMatch[0];
-      }
-
-      const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Thika', 'Kitengela', 'Ruiru', 'Kiambu', 'Machakos', 'Meru', 'Nyeri', 'Kakamega', 'Kisii', 'Malindi', 'Naivasha'];
-      const foundLoc = locations.find(l => text.toLowerCase().includes(l.toLowerCase()));
-      if (foundLoc) document.getElementById('location').value = foundLoc;
-
-      if (text.toLowerCase().includes('manual')) {
-        document.getElementById('transmission').value = 'Manual';
-      } else if (text.toLowerCase().includes('electric')) {
-        document.getElementById('transmission').value = 'Electric';
-      } else if (text.toLowerCase().includes('auto') || text.toLowerCase().includes('automatic')) {
-        document.getElementById('transmission').value = 'Automatic';
-      }
-
-      if (text.toLowerCase().includes('diesel')) {
-        document.getElementById('fuel').value = 'Diesel';
-      } else if (text.toLowerCase().includes('hybrid')) {
-        document.getElementById('fuel').value = 'Hybrid';
-      } else if (text.toLowerCase().includes('electric')) {
-        document.getElementById('fuel').value = 'Electric';
-      } else if (text.toLowerCase().includes('petrol')) {
-        document.getElementById('fuel').value = 'Petrol';
-      }
-
-      alert('Auto-fill complete! Review values and click upload.');
-    });
-
-    // Form submission handler
-    const form = document.getElementById('carUploadForm');
-    const statusMsg = document.getElementById('statusMsg');
-    const submitBtn = document.getElementById('submitBtn');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      submitBtn.disabled = true;
-      statusMsg.style.color = '#111';
-      statusMsg.textContent = 'Uploading images and posting...';
-
-      try {
-        const imageFiles = document.getElementById('carImages').files;
-        let uploadedImageUrls = [];
-
-        for (let i = 0; i < imageFiles.length; i++) {
-          const file = imageFiles[i];
-          const fileExt = file.name.split('.').pop() || 'jpg';
-          const fileName = Date.now() + '_' + Math.floor(Math.random() * 100000) + '.' + fileExt;
-          
-          const { data: uploadData, error: uploadError } = await supabaseClient.storage
-            .from('car-images')
-            .upload(fileName, file);
-
-          if (uploadError) throw uploadError;
-
-          const { data: publicUrlData } = supabaseClient.storage
-            .from('car-images')
-            .getPublicUrl(fileName);
-
-          uploadedImageUrls.push(publicUrlData.publicUrl);
+                tableBody.innerHTML = "";
+                snapshot.forEach((doc) => {
+                    const car = doc.data();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${car.title}</strong><br><small style="color:var(--text-secondary);">${car.transmission}</small></td>
+                        <td>KES ${Number(car.price).toLocaleString()}</td>
+                        <td>${car.year}</td>
+                        <td><button class="btn-danger" onclick="deleteCar('${doc.id}')" style="padding: 5px 10px; font-size: 12px;">Delete</button></td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }, (error) => {
+                console.error("Error loading inventory:", error);
+            });
         }
 
-        const { error: dbError } = await supabaseClient.from('cars').insert([
-          {
-            make: document.getElementById('make').value || 'Other',
-            model: document.getElementById('model').value || 'Vehicle',
-            price: Number(document.getElementById('price').value) || 0,
-            year: Number(document.getElementById('year').value) || 2020,
-            location: document.getElementById('location').value || 'Nairobi',
-            transmission: document.getElementById('transmission').value || 'Automatic',
-            fuel: document.getElementById('fuel').value || 'Petrol',
-            cc: document.getElementById('cc').value || 'N/A',
-            images: uploadedImageUrls,
-            created_at: new Date().toISOString()
-          }
-        ]);
+        // Delete Car Function
+        window.deleteCar = async function(id) {
+            if (confirm("Are you sure you want to delete this listing?")) {
+                try {
+                    await db.collection('cars').doc(id).delete();
+                } catch (error) {
+                    alert("Error deleting record: " + error.message);
+                }
+            }
+        }
 
-        if (dbError) throw dbError;
-
-        statusMsg.style.color = 'green';
-        statusMsg.textContent = 'Vehicle posted successfully! Check the buyer site.';
-        form.reset();
-        document.getElementById('rawWhatsAppText').value = '';
-      } catch (err) {
-        console.error(err);
-        statusMsg.style.color = 'red';
-        statusMsg.textContent = 'Error: ' + err.message;
-      } finally {
-        submitBtn.disabled = false;
-      }
-    });
-  </script>
+        // Run fetch on startup
+        loadInventory();
+    </script>
 </body>
 </html>
