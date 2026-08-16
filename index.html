@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kabata Motors - Kenya's Trusted Car Marketplace</title>
   
-  <!-- Embedded Responsive Fixes to override styles.css mobile bugs -->
+  <!-- Embedded Responsive Fixes -->
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #f4f6f8; color: #333; }
@@ -36,19 +36,19 @@
     .hero-section { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80') center/cover; padding: 40px 16px; text-align: center; color: #fff; }
     .hero-content h2 { font-size: 1.6rem; margin: 0 0 8px 0; letter-spacing: 1px; }
 
-    /* Main Layout Wrapper - Mobile Stack */
+    /* Main Website Wrapper - Full Width Now */
     .main-layout-wrapper { display: flex; flex-direction: column; gap: 16px; padding: 16px; max-width: 1200px; margin: 0 auto; }
-    @media(min-width: 900px) {
-      .main-layout-wrapper { display: grid; grid-template-columns: 280px 1fr; align-items: start; }
-    }
 
-    /* Cards & Containers */
-    .sidebar-card, .search-filter, main { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    /* Containers */
+    .search-filter, main { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     
     /* Filters Grid */
     .filters-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
     @media(min-width: 500px) {
       .filters-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media(min-width: 768px) {
+      .filters-grid { grid-template-columns: repeat(3, 1fr); }
     }
     .filters-grid select, .filters-grid input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
 
@@ -98,6 +98,7 @@
       <a href="#">🛠️ Our Services</a>
       <a href="#">📑 Import Duty Guide</a>
       <a href="#">⭐ Verified Sellers</a>
+      <a href="https://wa.me/254721876026?text=Hello%20Kabata%20Motors,%20I%20want%20to%20sell%20my%20car%20through%20brokerage." target="_blank" style="color: #ff4d00; font-weight: bold;">💬 WhatsApp Car Broker Desk</a>
     </div>
   </div>
 
@@ -109,81 +110,46 @@
     </div>
   </section>
 
-  <!-- Main Website Wrapper -->
+  <!-- Main Website Wrapper (Sidebar Completely Removed) -->
   <div class="main-layout-wrapper">
     
-    <!-- LEFT SIDEBAR -->
-    <aside style="display: flex; flex-direction: column; gap: 16px;">
-      <div class="sidebar-card">
-        <h3 style="margin-top: 0; font-size: 1rem;">Quick Links</h3>
-        <ul style="list-style: none; padding: 0; margin: 8px 0 0 0;">
-          <li style="padding: 6px 0;"><a href="#" style="text-decoration: none; color: #333; font-size: 14px;">🔥 Hot Deals</a></li>
-          <li style="padding: 6px 0;"><a href="#" style="text-decoration: none; color: #333; font-size: 14px;">⭐ Verified Sellers</a></li>
-          <li style="padding: 6px 0;"><a href="#" style="text-decoration: none; color: #333; font-size: 14px;">🛠️ Car Inspection Tips</a></li>
-          <li style="padding: 6px 0;"><a href="#" style="text-decoration: none; color: #333; font-size: 14px;">📑 Import Duty Guide</a></li>
-        </ul>
+    <!-- Filter Section -->
+    <div class="search-filter">
+      <h3 style="font-size: 1rem; margin-top: 0; margin-bottom: 12px; color: #111;">Search & Filter Inventory</h3>
+      <div class="filters-grid">
+        <select id="makeFilter">
+          <option value="">All Makes</option>
+          <option value="Toyota">Toyota</option>
+          <option value="Nissan">Nissan</option>
+          <option value="Subaru">Subaru</option>
+          <option value="Mazda">Mazda</option>
+          <option value="Honda">Honda</option>
+          <option value="Mercedes-Benz">Mercedes-Benz</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search model...">
+        <select id="priceFilter"><option value="">Max Price (Ksh)</option></select>
+        <select id="yearFilter"><option value="">Min Year</option></select>
+        <select id="locationFilter">
+          <option value="">All Locations</option>
+          <option value="Nairobi">Nairobi</option>
+          <option value="Mombasa">Mombasa</option>
+          <option value="Nakuru">Nakuru</option>
+        </select>
+        <select id="transmissionFilter">
+          <option value="">Transmission</option>
+          <option value="Automatic">Automatic</option>
+          <option value="Manual">Manual</option>
+        </select>
       </div>
-
-      <div class="sidebar-card">
-        <h3 style="margin-top: 0; font-size: 1rem;">Trending Makes</h3>
-        <p style="font-size: 13px; color: #666; margin-bottom: 8px;">Most searched in Kenya:</p>
-        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-          <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Toyota</span>
-          <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Nissan</span>
-          <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Subaru</span>
-          <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Mazda</span>
-        </div>
-      </div>
-
-      <div class="sidebar-card">
-        <h3 style="margin-top: 0; font-size: 1rem;">Car Broker Desk</h3>
-        <p style="font-size: 13px; color: #555; margin-bottom: 12px;">Looking to buy or sell a second-hand car quickly? Connect directly with our broker service.</p>
-        <a href="https://wa.me/254721876026?text=Hello%20Kabata%20Motors,%20I%20want%20to%20sell%20my%20car%20through%20brokerage." target="_blank" style="display: block; text-align: center; background: #ff4d00; color: #fff; text-decoration: none; padding: 10px; border-radius: 6px; font-weight: bold; font-size: 14px;">WhatsApp Broker</a>
-      </div>
-    </aside>
-
-    <!-- RIGHT CONTENT AREA -->
-    <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
-      
-      <!-- Filter Section -->
-      <div class="search-filter">
-        <h3 style="font-size: 1rem; margin-top: 0; margin-bottom: 12px; color: #111;">Search & Filter Inventory</h3>
-        <div class="filters-grid">
-          <select id="makeFilter">
-            <option value="">All Makes</option>
-            <option value="Toyota">Toyota</option>
-            <option value="Nissan">Nissan</option>
-            <option value="Subaru">Subaru</option>
-            <option value="Mazda">Mazda</option>
-            <option value="Honda">Honda</option>
-            <option value="Mercedes-Benz">Mercedes-Benz</option>
-          </select>
-          <input type="text" id="searchInput" placeholder="Search model...">
-          <select id="priceFilter"><option value="">Max Price (Ksh)</option></select>
-          <select id="yearFilter"><option value="">Min Year</option></select>
-          <select id="locationFilter">
-            <option value="">All Locations</option>
-            <option value="Nairobi">Nairobi</option>
-            <option value="Mombasa">Mombasa</option>
-            <option value="Nakuru">Nakuru</option>
-          </select>
-          <select id="transmissionFilter">
-            <option value="">Transmission</option>
-            <option value="Automatic">Automatic</option>
-            <option value="Manual">Manual</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Listings Grid Section -->
-      <main>
-        <h3 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 16px; color: #111; border-left: 4px solid #ff4d00; padding-left: 8px;">Fresh Listings in Kenya</h3>
-        <div id="carListings" class="car-grid">
-          <p style="color: #666; font-size: 14px;">Loading available cars from inventory...</p>
-        </div>
-      </main>
-
     </div>
+
+    <!-- Listings Grid Section -->
+    <main>
+      <h3 style="font-size: 1.1rem; margin-top: 0; margin-bottom: 16px; color: #111; border-left: 4px solid #ff4d00; padding-left: 8px;">Fresh Listings in Kenya</h3>
+      <div id="carListings" class="car-grid">
+        <p style="color: #666; font-size: 14px;">Loading available cars from inventory...</p>
+      </div>
+    </main>
 
   </div>
 
