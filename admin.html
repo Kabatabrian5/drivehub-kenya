@@ -10,7 +10,9 @@
     h2 { margin-top: 0; color: #ff4d00; font-size: 1.4rem; text-align: center; }
     .form-group { margin-bottom: 15px; }
     label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 5px; }
-    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fff; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; background: #fff; }
+    textarea { resize: vertical; height: 70px; }
+    .smart-box { background: #fff8f5; border: 1px dashed #ff4d00; padding: 10px; border-radius: 6px; margin-bottom: 20px; }
     button { width: 100%; background: #ff4d00; color: #fff; border: none; padding: 12px; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; }
     button:active { background: #e04300; }
     #statusMsg { text-align: center; margin-top: 10px; font-weight: bold; font-size: 13px; }
@@ -19,7 +21,15 @@
 <body>
 
   <div class="admin-container">
-    <h2>🚗 Post Vehicle from Phone</h2>
+    <h2>🚗 Smart Post Admin Panel</h2>
+
+    <!-- Smart Paste Box for WhatsApp Text -->
+    <div class="smart-box">
+      <label style="color: #ff4d00;">⚡ Quick WhatsApp Text Parser</label>
+      <label style="font-weight: normal; font-size: 12px; margin-bottom: 5px;">Paste messy paragraph here and click Auto-Fill:</label>
+      <textarea id="rawWhatsAppText" placeholder="e.g. Toyota Harrier 2021 pearl white 3.8M Nairobi automatic petrol..."></textarea>
+      <button type="button" id="parseBtn" style="background: #333; margin-top: 8px; padding: 8px; font-size: 13px;">Auto-Fill Form Fields</button>
+    </div>
     
     <form id="carUploadForm">
       <div class="form-group">
@@ -138,6 +148,60 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cXZ5Y2VhYnd4dnpleWxmbnB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NzEzMzUsImV4cCI6MjEwMjM0NzMzNX0.9fDJGRjaCamvZhxkfhwu08vFTTPcabZ00VBvi_av1wk'
     );
 
+    // Smart Text Parser Logic
+    document.getElementById('parseBtn').addEventListener('click', () => {
+      const text = document.getElementById('rawWhatsAppText').value;
+      if (!text.trim()) return alert('Please paste some text first!');
+
+      // 1. Detect Make
+      const makes = ['Toyota', 'Mazda', 'Subaru', 'Nissan', 'Honda', 'Mitsubishi', 'Mercedes-Benz', 'BMW', 'Volkswagen', 'Audi', 'Lexus', 'Land Rover', 'Range Rover', 'Ford', 'Hyundai', 'Kia', 'Suzuki', 'Isuzu', 'Peugeot', 'Porsche'];
+      const foundMake = makes.find(m => text.toLowerCase().includes(m.toLowerCase()));
+      if (foundMake) document.getElementById('make').value = foundMake;
+
+      // 2. Detect Year (looks for 20xx)
+      const yearMatch = text.match(/20\d{2}/);
+      if (yearMatch) document.getElementById('year').value = yearMatch[0];
+
+      // 3. Detect Price (looks for numbers with 'M', 'm', or millions formatting)
+      const priceMatch = text.match(/(\d+(\.\d+)?)\s*(m|mil|million)/i);
+      if (priceMatch) {
+        const calculatedPrice = parseFloat(priceMatch[1]) * 1000000;
+        document.getElementById('price').value = calculatedPrice;
+      } else {
+        // Fallback search for raw numbers like 3200000
+        const rawNumMatch = text.match(/\b\d{6,8}\b/);
+        if (rawNumMatch) document.getElementById('price').value = rawNumMatch[0];
+      }
+
+      // 4. Detect Location
+      const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Thika', 'Kitengela', 'Ruiru', 'Kiambu', 'Machakos', 'Meru', 'Nyeri', 'Kakamega', 'Kisii', 'Malindi', 'Naivasha'];
+      const foundLoc = locations.find(l => text.toLowerCase().includes(l.toLowerCase()));
+      if (foundLoc) document.getElementById('location').value = foundLoc;
+
+      // 5. Detect Transmission
+      if (text.toLowerCase().includes('manual')) {
+        document.getElementById('transmission').value = 'Manual';
+      } else if (text.toLowerCase().includes('electric')) {
+        document.getElementById('transmission').value = 'Electric';
+      } else {
+        document.getElementById('transmission').value = 'Automatic';
+      }
+
+      // 6. Detect Fuel Type
+      if (text.toLowerCase().includes('diesel')) {
+        document.getElementById('fuel').value = 'Diesel';
+      } else if (text.toLowerCase().includes('hybrid')) {
+        document.getElementById('fuel').value = 'Hybrid';
+      } else if (text.toLowerCase().includes('electric')) {
+        document.getElementById('fuel').value = 'Electric';
+      } else {
+        document.getElementById('fuel').value = 'Petrol';
+      }
+
+      alert('Form auto-filled successfully from text! Review values and click upload.');
+    });
+
+    // Form submission handler
     const form = document.getElementById('carUploadForm');
     const statusMsg = document.getElementById('statusMsg');
     const submitBtn = document.getElementById('submitBtn');
@@ -189,6 +253,7 @@
         statusMsg.style.color = 'green';
         statusMsg.textContent = 'Vehicle posted successfully! Check the buyer site.';
         form.reset();
+        document.getElementById('rawWhatsAppText').value = '';
       } catch (err) {
         console.error(err);
         statusMsg.style.color = 'red';
