@@ -19,49 +19,103 @@
             --bot-bg: #312e81;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-        h1 { font-size: 24px; color: var(--text); }
-        .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        body { background-color: var(--bg); color: var(--text); padding: 10px; }
+        .container { max-width: 1000px; margin: 0 auto; width: 100%; }
+        
+        header { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+            gap: 8px; 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 12px; 
+        }
+        @media (min-width: 640px) {
+            header { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+        
+        h1 { font-size: 22px; color: var(--text); }
+        .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        @media (min-width: 640px) {
+            .card { padding: 20px; margin-bottom: 20px; }
+        }
+        
         .bot-card { background-color: var(--bot-bg); border: 1px solid #6366f1; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group.full { grid-column: span 2; }
-        label { display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; background-color: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        @media (min-width: 640px) {
+            .form-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+        }
+        
+        .form-group { margin-bottom: 10px; }
+        .form-group.full { grid-column: span 1; }
+        @media (min-width: 640px) {
+            .form-group.full { grid-column: span 2; }
+        }
+        
+        label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; background-color: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 16px; } /* 16px prevents iOS zoom-in on focus */
         textarea { resize: vertical; min-height: 80px; }
-        button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+        
+        button { background-color: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-size: 14px; width: 100%; }
+        @media (min-width: 640px) {
+            button { width: auto; }
+        }
         button:hover { opacity: 0.9; }
+        
         .btn-bot { background-color: #4f46e5; width: 100%; margin-top: 10px; }
-        .btn-danger { background-color: var(--danger); padding: 5px 10px; font-size: 12px; }
-        .btn-warning { background-color: var(--warning); color: #000; padding: 5px 10px; font-size: 12px; font-weight: bold; margin-right: 5px; }
-        .btn-secondary { background-color: #64748b; margin-left: 10px; display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
+        
+        .action-btns { display: flex; flex-direction: column; gap: 6px; }
+        @media (min-width: 640px) {
+            .action-btns { flex-direction: row; gap: 4px; }
+        }
+        
+        .btn-danger { background-color: var(--danger); padding: 6px 12px; font-size: 12px; width: 100%; }
+        .btn-warning { background-color: var(--warning); color: #000; padding: 6px 12px; font-size: 12px; font-weight: bold; width: 100%; }
+        .btn-secondary { background-color: #64748b; margin-top: 10px; display: none; width: 100%; }
+        @media (min-width: 640px) {
+            .btn-secondary { margin-top: 0; margin-left: 10px; width: auto; }
+        }
+        
+        .form-actions { display: flex; flex-direction: column; }
+        @media (min-width: 640px) {
+            .form-actions { flex-direction: row; align-items: center; }
+        }
+
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+        @media (min-width: 640px) {
+            th, td { padding: 12px; font-size: 14px; }
+        }
         th { color: var(--text-secondary); font-weight: 600; }
+        
         .status-msg { margin-top: 10px; font-size: 14px; font-weight: 500; }
-        .car-thumb { width: 50px; height: 35px; object-fit: cover; border-radius: 4px; margin-right: 3px; }
+        .car-thumb { width: 45px; height: 32px; object-fit: cover; border-radius: 4px; margin-right: 2px; }
+        @media (min-width: 640px) {
+            .car-thumb { width: 50px; height: 35px; margin-right: 3px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Kabata Motors Admin</h1>
-            <span id="connection-status" style="color: var(--text-secondary);">Connecting to Firebase...</span>
+            <span id="connection-status" style="color: var(--text-secondary); font-size: 13px;">Connecting to Firebase...</span>
         </header>
 
         <!-- AI Bot Text Parser Box -->
         <div class="card bot-card">
-            <h3 style="margin-bottom: 8px;">🤖 AI Listing Bot Parser</h3>
-            <p style="font-size: 13px; color: #c7d2fe; margin-bottom: 12px;">Paste any unstructured car text description below, and our bot will automatically fill out the form fields and route all extra notes into "More Information".</p>
+            <h3 style="margin-bottom: 8px; font-size: 16px;">🤖 AI Listing Bot Parser</h3>
+            <p style="font-size: 12px; color: #c7d2fe; margin-bottom: 12px;">Paste any unstructured car text description below, and our bot will automatically fill out the form fields and route all extra notes into "More Information".</p>
             <textarea id="bot-raw-text" placeholder="Paste car details here (e.g. Nissan Note 2018, 1.2L, pearl white, clean interior, located in Nairobi, asking 1.2M negotiable call 07...)..."></textarea>
             <button type="button" class="btn-bot" onclick="parseTextWithBot()">✨ Parse with AI Bot</button>
         </div>
 
         <!-- Add / Edit Car Form -->
         <div class="card">
-            <h3 id="form-title" style="margin-bottom: 15px;">Add New Car Listing</h3>
+            <h3 id="form-title" style="margin-bottom: 15px; font-size: 16px;">Add New Car Listing</h3>
             <form id="car-form">
                 <input type="hidden" id="editing-car-id" value="">
                 <div class="form-grid">
@@ -117,11 +171,11 @@
                         <textarea id="car-more-info" placeholder="Extra information like engine capacity, features, insurance status, condition, negotiation terms..."></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>Car Images <small id="image-hint" style="color: var(--text-secondary);">(Select new images to replace existing ones, or leave blank to keep current images)</small></label>
+                        <label>Car Images <small id="image-hint" style="color: var(--text-secondary); display: block; margin-top: 2px;">(Select new images to replace existing ones, or leave blank to keep current images)</small></label>
                         <input type="file" id="car-images" accept="image/*" multiple>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center;">
+                <div class="form-actions">
                     <button type="submit" id="submit-btn">Publish Listing</button>
                     <button type="button" id="cancel-edit-btn" class="btn-secondary" onclick="cancelEditMode()">Cancel Edit</button>
                 </div>
@@ -131,22 +185,24 @@
 
         <!-- Inventory List -->
         <div class="card">
-            <h3 style="margin-bottom: 15px;">Current Inventory</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Images</th>
-                        <th>Car</th>
-                        <th>Location</th>
-                        <th>Price</th>
-                        <th>Year</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="inventory-table">
-                    <tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">Loading inventory...</td></tr>
-                </tbody>
-            </table>
+            <h3 style="margin-bottom: 15px; font-size: 16px;">Current Inventory</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Images</th>
+                            <th>Car</th>
+                            <th>Location</th>
+                            <th>Price</th>
+                            <th>Year</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table">
+                        <tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">Loading inventory...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -329,13 +385,11 @@
                 submitBtn.innerText = "Saving to Database...";
 
                 if (editingId) {
-                    // Update existing record
                     await db.collection('cars').doc(editingId).update(updateData);
                     formStatus.style.color = "var(--success)";
                     formStatus.innerText = "Car listing successfully updated!";
                     cancelEditMode();
                 } else {
-                    // Create new record
                     if (imageFiles.length === 0) {
                         alert("Please select at least one image for a new listing!");
                         submitBtn.disabled = false;
@@ -390,8 +444,10 @@
                         <td>KES ${Number(car.price).toLocaleString()}</td>
                         <td>${car.year || 'N/A'}</td>
                         <td>
-                            <button class="btn-warning" onclick="startEditCar('${doc.id}')">Edit</button>
-                            <button class="btn-danger" onclick="deleteCar('${doc.id}')">Delete</button>
+                            <div class="action-btns">
+                                <button class="btn-warning" onclick="startEditCar('${doc.id}')">Edit</button>
+                                <button class="btn-danger" onclick="deleteCar('${doc.id}')">Delete</button>
+                            </div>
                         </td>
                     `;
                     tableBody.appendChild(tr);
@@ -416,7 +472,7 @@
             
             document.getElementById('form-title').innerText = `Edit Listing: ${car.title}`;
             document.getElementById('submit-btn').innerText = "Update Listing";
-            document.getElementById('cancel-edit-btn').style.display = 'inline-block';
+            document.getElementById('cancel-edit-btn').style.display = 'block';
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
