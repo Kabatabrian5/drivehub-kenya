@@ -71,12 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
         
         <h2 style="margin-top:0; font-size:1.6rem; color:#111;">${car.make} ${car.model} ${car.year} ${car.color || ''}</h2>
         
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap:wrap;">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap:wrap; align-items:center;">
           <span style="background:#f2f2f2; padding:5px 10px; border-radius:4px; font-size:12px; font-weight:bold;">📅 ${car.year}</span>
           <span style="background:#f2f2f2; padding:5px 10px; border-radius:4px; font-size:12px; font-weight:bold;">⚙️ ${car.transmission}</span>
           <span style="background:#f2f2f2; padding:5px 10px; border-radius:4px; font-size:12px; font-weight:bold;">⛽ ${car.fuel}</span>
           <span style="background:#f2f2f2; padding:5px 10px; border-radius:4px; font-size:12px; font-weight:bold;">📍 ${car.location}</span>
-          <button onclick="compareSamePrice(${car.price}, '${car.make} ${car.model}')" style="margin-left:auto; background:#ffc107; border:none; padding:8px 16px; border-radius:4px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:5px;">⚖️ Compare Price</button>
+          
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <button onclick="compareSamePrice(${car.price}, '${car.make} ${car.model}')" style="background:#ffc107; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">⚖️ Compare Price</button>
+            <button onclick="compareSameMakeModel(${carIndex})" style="background:#111; color:#fff; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">🚗 Compare Same Model</button>
+          </div>
         </div>
 
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start;">
@@ -115,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     modalWrapper.style.display = 'none';
   };
 
-  // Compare Vehicles of Similar Price (+/- 20% margin)
+  // 1. Compare Vehicles of Similar Price (+/- 20% margin)
   window.compareSamePrice = function(targetPrice, currentCarName) {
     const compSection = document.getElementById('comparisonSection');
     if (!compSection) return;
@@ -129,13 +133,44 @@ document.addEventListener('DOMContentLoaded', () => {
     compSection.innerHTML = `
       <h3 style="font-size:1.2rem; color:#111; margin-bottom:12px;">⚖️ Vehicles with Similar Price (Ksh ${lowerBound.toLocaleString()} - Ksh ${upperBound.toLocaleString()})</h3>
       ${similarCars.length === 0 ? '<p style="color:#666;">No other vehicles found in this direct price range.</p>' : `
-        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:15px;">
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
           ${similarCars.map(sc => `
             <div style="background:#fff; border:1px solid #ddd; border-radius:6px; padding:10px;">
               <img src="${sc.image}" style="width:100%; height:110px; object-fit:cover; border-radius:4px;">
               <h4 style="font-size:1rem; margin:8px 0 4px 0;">${sc.make} ${sc.model}</h4>
               <p style="color:#ff4d00; font-weight:bold; font-size:0.95rem; margin:0 0 4px 0;">Ksh ${sc.price.toLocaleString()}</p>
               <p style="font-size:12px; color:#666; margin:0;">Year: ${sc.year} | ${sc.transmission}</p>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    `;
+  };
+
+  // 2. Compare with Another of the Same Make & Model
+  window.compareSameMakeModel = function(carIndex) {
+    const currentCar = cars[carIndex];
+    const compSection = document.getElementById('comparisonSection');
+    if (!currentCar || !compSection) return;
+
+    // Filter cars with same make and model, excluding the exact same array item
+    const matchingModels = cars.filter((c, idx) => 
+      c.make.toLowerCase() === currentCar.make.toLowerCase() && 
+      c.model.toLowerCase() === currentCar.model.toLowerCase() && 
+      idx !== carIndex
+    );
+
+    compSection.style.display = 'block';
+    compSection.innerHTML = `
+      <h3 style="font-size:1.2rem; color:#111; margin-bottom:12px;">🚗 Other Options for ${currentCar.make} ${currentCar.model} in System</h3>
+      ${matchingModels.length === 0 ? '<p style="color:#666;">No other listings of this exact make and model found in the system right now.</p>' : `
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
+          ${matchingModels.map(mc => `
+            <div style="background:#fff; border:1px solid #ddd; border-radius:6px; padding:10px;">
+              <img src="${mc.image}" style="width:100%; height:110px; object-fit:cover; border-radius:4px;">
+              <h4 style="font-size:1rem; margin:8px 0 4px 0;">${mc.make} ${mc.model} (${mc.year})</h4>
+              <p style="color:#ff4d00; font-weight:bold; font-size:0.95rem; margin:0 0 4px 0;">Ksh ${mc.price.toLocaleString()}</p>
+              <p style="font-size:12px; color:#666; margin:0;">Loc: ${mc.location} | ${mc.transmission}</p>
             </div>
           `).join('')}
         </div>
