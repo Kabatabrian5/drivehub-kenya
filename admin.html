@@ -50,8 +50,23 @@
             <form id="car-form">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Make & Model (e.g., Toyota Crown)</label>
-                        <input type="text" id="car-title" required placeholder="Toyota Crown">
+                        <label>Car Make</label>
+                        <select id="car-make" required>
+                            <option value="">Select Make</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Nissan">Nissan</option>
+                            <option value="Subaru">Subaru</option>
+                            <option value="Mazda">Mazda</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Mercedes-Benz">Mercedes-Benz</option>
+                            <option value="BMW">BMW</option>
+                            <option value="Volkswagen">Volkswagen</option>
+                            <option value="Mitsubishi">Mitsubishi</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Model & Details</label>
+                        <input type="text" id="car-model" required placeholder="e.g. Crown / Axela / Impreza">
                     </div>
                     <div class="form-group">
                         <label>Price (KES)</label>
@@ -66,6 +81,18 @@
                         <select id="car-transmission">
                             <option value="Automatic">Automatic</option>
                             <option value="Manual">Manual</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <select id="car-location" required>
+                            <option value="">Select Location</option>
+                            <option value="Nairobi">Nairobi</option>
+                            <option value="Mombasa">Mombasa</option>
+                            <option value="Nakuru">Nakuru</option>
+                            <option value="Eldoret">Eldoret</option>
+                            <option value="Kisumu">Kisumu</option>
+                            <option value="Thika">Thika</option>
                         </select>
                     </div>
                     <div class="form-group full">
@@ -86,13 +113,14 @@
                     <tr>
                         <th>Image</th>
                         <th>Car</th>
+                        <th>Location</th>
                         <th>Price</th>
                         <th>Year</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="inventory-table">
-                    <tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">Loading inventory...</td></tr>
+                    <tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">Loading inventory...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -113,7 +141,6 @@
             measurementId: "G-VRPVCV0XQV"
         };
 
-        // Initialize Firebase (Firestore only)
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -124,7 +151,6 @@
         const submitBtn = document.getElementById('submit-btn');
         const formStatus = document.getElementById('form-status');
 
-        // Helper function to convert uploaded image file to Base64 text
         function getBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -140,23 +166,27 @@
             submitBtn.innerText = "Processing Image...";
             formStatus.innerText = "";
 
-            const title = document.getElementById('car-title').value;
+            const make = document.getElementById('car-make').value;
+            const model = document.getElementById('car-model').value;
+            const title = `${make} ${model}`;
             const price = document.getElementById('car-price').value;
             const year = document.getElementById('car-year').value;
             const transmission = document.getElementById('car-transmission').value;
+            const location = document.getElementById('car-location').value;
             const imageFile = document.getElementById('car-image').files[0];
 
             try {
                 submitBtn.innerText = "Saving to Database...";
-                // Convert image directly to Base64 string
                 const imageUrl = await getBase64(imageFile);
 
-                // Save metadata and image string directly to Firestore
                 await db.collection('cars').add({
+                    make,
+                    model,
                     title,
                     price: Number(price),
                     year: Number(year),
                     transmission,
+                    location,
                     imageUrl,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -174,13 +204,12 @@
             }
         });
 
-        // Load Inventory in Real-Time
         function loadInventory() {
             const tableBody = document.getElementById('inventory-table');
             
             db.collection('cars').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
                 if (snapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">No cars listed yet.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">No cars listed yet.</td></tr>`;
                     return;
                 }
 
@@ -191,6 +220,7 @@
                     tr.innerHTML = `
                         <td><img src="${car.imageUrl}" class="car-thumb" alt="Car"></td>
                         <td><strong>${car.title}</strong><br><small style="color:var(--text-secondary);">${car.transmission}</small></td>
+                        <td>${car.location || 'N/A'}</td>
                         <td>KES ${Number(car.price).toLocaleString()}</td>
                         <td>${car.year}</td>
                         <td><button class="btn-danger" onclick="deleteCar('${doc.id}')" style="padding: 5px 10px; font-size: 12px;">Delete</button></td>
