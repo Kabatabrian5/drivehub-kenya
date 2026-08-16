@@ -10,6 +10,26 @@ if (closeDrawerBtn && mobileNavDrawer) {
   closeDrawerBtn.addEventListener('click', () => mobileNavDrawer.classList.remove('open'));
 }
 
+// Helper Function for Relative Time Formatting (e.g., "2 mins ago", "3 days ago")
+function getRelativeTimeString(dateString) {
+  if (!dateString) return 'Recently posted';
+  const now = new Date();
+  const postedDate = new Date(dateString);
+  const diffInSeconds = Math.floor((now - postedDate) / 1000);
+
+  if (diffInSeconds < 60) return 'Just now';
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} min${diffInMinutes > 1 ? 's' : ''} ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
+  const diffInYears = Math.floor(diffInMonths / 12);
+  return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('carListings');
   const searchInput = document.getElementById('searchInput');
@@ -28,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   modalWrapper.style.cssText = 'display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:9999; overflow-y:auto; padding:20px;';
   document.body.appendChild(modalWrapper);
 
-  // 1. Render Cars with "View Details" Button
+  // 1. Render Cars with Timestamps and "View Details" Button
   function renderCars(items) {
     if (!container) return;
     if (items.length === 0) {
@@ -41,28 +61,36 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    container.innerHTML = items.map((car, index) => `
-      <div class="car-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display:flex; flex-direction:column; justify-content:space-between;">
-        <div class="car-img-container">
-          <img src="${car.image || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'}" alt="${car.make} ${car.model}" style="width: 100%; height: 160px; object-fit: cover;">
+    container.innerHTML = items.map((car, index) => {
+      const timeAgo = getRelativeTimeString(car.created_at || car.dateAdded);
+      return `
+        <div class="car-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display:flex; flex-direction:column; justify-content:space-between; position:relative;">
+          <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.75); color:#fff; font-size:11px; padding:3px 8px; border-radius:12px; font-weight:bold; z-index:2;">
+            ⏱️ ${timeAgo}
+          </div>
+          <div class="car-img-container">
+            <img src="${car.image || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'}" alt="${car.make} ${car.model}" style="width: 100%; height: 160px; object-fit: cover;">
+          </div>
+          <div class="car-details" style="padding: 15px;">
+            <h3 style="font-size: 1.1rem; color: #111; margin: 0 0 8px 0;">${car.make} ${car.model}</h3>
+            <p style="font-weight: 800; color: #ff4d00; font-size: 1.1rem; margin: 0 0 6px 0;">Ksh ${car.price.toLocaleString()}</p>
+            <p style="font-size: 13px; color: #555; margin: 2px 0;">Year: ${car.year} | Loc: ${car.location}</p>
+            <p style="font-size: 13px; color: #555; margin: 2px 0;">Trans: ${car.transmission} | Fuel: ${car.fuel}</p>
+          </div>
+          <div style="padding: 0 15px 15px 15px;">
+            <button onclick="openCarDetails(${index})" style="width: 100%; background: #111; color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">View Details</button>
+          </div>
         </div>
-        <div class="car-details" style="padding: 15px;">
-          <h3 style="font-size: 1.1rem; color: #111; margin: 0 0 8px 0;">${car.make} ${car.model}</h3>
-          <p style="font-weight: 800; color: #ff4d00; font-size: 1.1rem; margin: 0 0 6px 0;">Ksh ${car.price.toLocaleString()}</p>
-          <p style="font-size: 13px; color: #555; margin: 2px 0;">Year: ${car.year} | Loc: ${car.location}</p>
-          <p style="font-size: 13px; color: #555; margin: 2px 0;">Trans: ${car.transmission} | Fuel: ${car.fuel}</p>
-        </div>
-        <div style="padding: 0 15px 15px 15px;">
-          <button onclick="openCarDetails(${index})" style="width: 100%; background: #111; color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">View Details</button>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   // Global Function to Open Detailed Car Modal
   window.openCarDetails = function(carIndex) {
     const car = cars[carIndex];
     if (!car) return;
+
+    const timeAgo = getRelativeTimeString(car.created_at || car.dateAdded);
 
     modalWrapper.style.display = 'block';
     modalWrapper.innerHTML = `
@@ -76,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span style="background:#f2f2f2; padding:5px 10px; border-radius:4px; font-size:12px; font-weight:bold;">⚙️ ${car.transmission}</span>
           <span style="background:#f2f2f2; padding:5px 10px; border-radius:4px; font-size:12px; font-weight:bold;">⛽ ${car.fuel}</span>
           <span style="background:#f2f2f2; padding:5px 10px; border-radius:4px; font-size:12px; font-weight:bold;">📍 ${car.location}</span>
+          <span style="background:#e6f4ea; color:#137333; padding:5px 10px; border-radius:4px; font-size:12px; font-weight:bold;">⏱️ Posted ${timeAgo}</span>
           
           <div style="margin-left:auto; display:flex; gap:8px;">
             <button onclick="compareSamePrice(${car.price}, '${car.make} ${car.model}')" style="background:#ffc107; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">⚖️ Compare Price</button>
@@ -199,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     populateSelect(makeFilter, kenyanMarketMakes);
 
-    // 1. Kenyan Towns & Cities Location Populator
+    // Kenyan Towns & Cities Location Populator
     if (locationFilter) {
       locationFilter.innerHTML = '<option value="">All Locations</option>';
       const kenyanTowns = [
@@ -215,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 2. Transmission Filter Populator (Automatic, Manual, Electric)
+    // Transmission Filter Populator (Automatic, Manual, Electric)
     if (transmissionFilter) {
       transmissionFilter.innerHTML = '<option value="">Transmission</option>';
       ['Automatic', 'Manual', 'Electric'].forEach(trans => {
@@ -226,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 3. Fuel Type Filter Populator
+    // Fuel Type Filter Populator
     if (fuelFilter) {
       fuelFilter.innerHTML = '<option value="">Fuel Type</option>';
       ['Petrol', 'Diesel', 'Hybrid', 'Electric'].forEach(fuel => {
@@ -237,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 4. Engine CC Range Populator
+    // Engine CC Range Populator
     if (ccFilter) {
       ccFilter.innerHTML = '<option value="">Engine CC</option>';
       const ccOptions = [
@@ -252,14 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       ccOptions.forEach(ccOpt => {
         const opt = document.createElement('option');
-        // Store JSON string containing range limits to filter dynamically
         opt.value = JSON.stringify({ min: ccOpt.min || 0, max: ccOpt.max || 99999 });
         opt.textContent = ccOpt.label;
         ccFilter.appendChild(opt);
       });
     }
 
-    // 5. Custom Year Range Filter Populator (2010+ to 2023+)
+    // Custom Year Range Filter Populator (2010+ to 2023+)
     if (yearFilter) {
       yearFilter.innerHTML = '<option value="">Min Year</option>';
       const yearOptions = [
@@ -287,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 6. Custom Natural English Price Filter Options Populator
+    // Custom Natural English Price Filter Options Populator
     if (priceFilter) {
       priceFilter.innerHTML = '<option value="">Max Price (Ksh)</option>';
       const priceOptions = [
