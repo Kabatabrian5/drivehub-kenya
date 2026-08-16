@@ -198,12 +198,68 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     populateSelect(makeFilter, kenyanMarketMakes);
-    populateSelect(locationFilter, cars.map(c => c.location));
-    populateSelect(transmissionFilter, cars.map(c => c.transmission));
-    populateSelect(fuelFilter, cars.map(c => c.fuel));
-    populateSelect(ccFilter, cars.map(c => c.cc));
 
-    // Custom Year Range Filter Populator (2010+ to 2023+)
+    // 1. Kenyan Towns & Cities Location Populator
+    if (locationFilter) {
+      locationFilter.innerHTML = '<option value="">All Locations</option>';
+      const kenyanTowns = [
+        'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 
+        'Thika', 'Kitengela', 'Ruiru', 'Kiambu', 'Machakos', 
+        'Meru', 'Nyeri', 'Kakamega', 'Kisii', 'Malindi', 'Naivasha'
+      ];
+      kenyanTowns.sort().forEach(town => {
+        const opt = document.createElement('option');
+        opt.value = town;
+        opt.textContent = town;
+        locationFilter.appendChild(opt);
+      });
+    }
+
+    // 2. Transmission Filter Populator (Automatic, Manual, Electric)
+    if (transmissionFilter) {
+      transmissionFilter.innerHTML = '<option value="">Transmission</option>';
+      ['Automatic', 'Manual', 'Electric'].forEach(trans => {
+        const opt = document.createElement('option');
+        opt.value = trans;
+        opt.textContent = trans;
+        transmissionFilter.appendChild(opt);
+      });
+    }
+
+    // 3. Fuel Type Filter Populator
+    if (fuelFilter) {
+      fuelFilter.innerHTML = '<option value="">Fuel Type</option>';
+      ['Petrol', 'Diesel', 'Hybrid', 'Electric'].forEach(fuel => {
+        const opt = document.createElement('option');
+        opt.value = fuel;
+        opt.textContent = fuel;
+        fuelFilter.appendChild(opt);
+      });
+    }
+
+    // 4. Engine CC Range Populator
+    if (ccFilter) {
+      ccFilter.innerHTML = '<option value="">Engine CC</option>';
+      const ccOptions = [
+        { label: 'Under 1,000 CC', max: 1000 },
+        { label: '1,000 CC - 1,300 CC', min: 1000, max: 1300 },
+        { label: '1,300 CC - 1,500 CC', min: 1300, max: 1500 },
+        { label: '1,500 CC - 2,000 CC', min: 1500, max: 2000 },
+        { label: '2,000 CC - 2,500 CC', min: 2000, max: 2500 },
+        { label: '2,500 CC - 3,000 CC', min: 2500, max: 3000 },
+        { label: 'Above 3,000 CC', min: 3000 }
+      ];
+
+      ccOptions.forEach(ccOpt => {
+        const opt = document.createElement('option');
+        // Store JSON string containing range limits to filter dynamically
+        opt.value = JSON.stringify({ min: ccOpt.min || 0, max: ccOpt.max || 99999 });
+        opt.textContent = ccOpt.label;
+        ccFilter.appendChild(opt);
+      });
+    }
+
+    // 5. Custom Year Range Filter Populator (2010+ to 2023+)
     if (yearFilter) {
       yearFilter.innerHTML = '<option value="">Min Year</option>';
       const yearOptions = [
@@ -231,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Custom Natural English Price Filter Options Populator
+    // 6. Custom Natural English Price Filter Options Populator
     if (priceFilter) {
       priceFilter.innerHTML = '<option value="">Max Price (Ksh)</option>';
       const priceOptions = [
@@ -263,8 +319,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const sTrans = transmissionFilter ? transmissionFilter.value.toLowerCase() : '';
       const sFuel = fuelFilter ? fuelFilter.value.toLowerCase() : '';
       const sYear = yearFilter && yearFilter.value ? Number(yearFilter.value) : null;
-      const sCc = ccFilter ? ccFilter.value : '';
       const sPrice = priceFilter && priceFilter.value ? Number(priceFilter.value) : null;
+      
+      let ccRange = null;
+      if (ccFilter && ccFilter.value) {
+        try {
+          ccRange = JSON.parse(ccFilter.value);
+        } catch(e) {
+          ccRange = null;
+        }
+      }
 
       const filtered = cars.filter(car => {
         const matchesQuery = car.make.toLowerCase().includes(query) || car.model.toLowerCase().includes(query);
@@ -273,8 +337,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const matchesTrans = sTrans === "" || car.transmission.toLowerCase() === sTrans;
         const matchesFuel = sFuel === "" || car.fuel.toLowerCase() === sFuel;
         const matchesYear = sYear === null || Number(car.year) >= sYear;
-        const matchesCc = sCc === "" || Number(car.cc) === Number(sCc);
         const matchesPrice = sPrice === null || Number(car.price) <= sPrice;
+        
+        let matchesCc = true;
+        if (ccRange) {
+          const carCc = Number(car.cc) || 0;
+          matchesCc = carCc >= ccRange.min && carCc <= ccRange.max;
+        }
 
         return matchesQuery && matchesMake && matchesLoc && matchesTrans && matchesFuel && matchesYear && matchesCc && matchesPrice;
       });
