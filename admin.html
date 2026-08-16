@@ -55,7 +55,7 @@
         }
         
         label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 12px; background-color: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 16px; } /* 16px prevents iOS zoom-in on focus */
+        input, select, textarea { width: 100%; padding: 12px; background-color: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 16px; }
         textarea { resize: vertical; min-height: 80px; }
         
         button { background-color: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; font-size: 14px; width: 100%; }
@@ -63,6 +63,7 @@
             button { width: auto; }
         }
         button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .btn-bot { background-color: #4f46e5; width: 100%; margin-top: 10px; }
         
@@ -378,6 +379,16 @@
                         const compressedBase64 = await compressImage(imageFiles[i]);
                         imageUrls.push(compressedBase64);
                     }
+                    
+                    // Check if total data payload size exceeds Firestore 1MB boundary (~900KB safe threshold)
+                    const approximatePayloadSize = JSON.stringify(updateData).length + JSON.stringify(imageUrls).length;
+                    if (approximatePayloadSize > 900000) {
+                        alert("⚠️ Warning: The selected images are too large combined and exceed Firestore's 1MB database document limit. Please select fewer images or smaller files.");
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = editingId ? "Update Listing" : "Publish Listing";
+                        return;
+                    }
+
                     updateData.imageUrls = imageUrls;
                     updateData.imageUrl = imageUrls[0];
                 }
