@@ -15,6 +15,7 @@
             --border: #334155;
             --danger: #ef4444;
             --success: #22c55e;
+            --bot-bg: #312e81;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg); color: var(--text); padding: 20px; }
@@ -22,13 +23,16 @@
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
         h1 { font-size: 24px; color: var(--text); }
         .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        .bot-card { background-color: var(--bot-bg); border: 1px solid #6366f1; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { margin-bottom: 15px; }
         .form-group.full { grid-column: span 2; }
         label { display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 5px; }
         input, select, textarea { width: 100%; padding: 10px; background-color: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px; }
+        textarea { resize: vertical; min-height: 80px; }
         button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
         button:hover { opacity: 0.9; }
+        .btn-bot { background-color: #4f46e5; width: 100%; margin-top: 10px; }
         .btn-danger { background-color: var(--danger); }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
@@ -43,6 +47,14 @@
             <h1>Kabata Motors Admin</h1>
             <span id="connection-status" style="color: var(--text-secondary);">Connecting to Firebase...</span>
         </header>
+
+        <!-- AI Bot Text Parser Box -->
+        <div class="card bot-card">
+            <h3 style="margin-bottom: 8px;">🤖 AI Listing Bot Parser</h3>
+            <p style="font-size: 13px; color: #c7d2fe; margin-bottom: 12px;">Paste any unstructured car text description below, and our bot will automatically fill out the form fields and route all extra notes into "More Information".</p>
+            <textarea id="bot-raw-text" placeholder="Paste car details here (e.g. Toyota Crown 2018, 2.5L Hybrid, pearl white, clean leather interior, located in Nairobi, asking 2.8M negotiable call 07...)..."></textarea>
+            <button type="button" class="btn-bot" onclick="parseTextWithBot()">✨ Parse with AI Bot</button>
+        </div>
 
         <!-- Add Car Form -->
         <div class="card">
@@ -97,6 +109,10 @@
                         </select>
                     </div>
                     <div class="form-group full">
+                        <label>More Information / Additional Description & Specs</label>
+                        <textarea id="car-more-info" placeholder="Extra information like engine capacity, features, insurance status, condition, negotiation terms..."></textarea>
+                    </div>
+                    <div class="form-group full">
                         <label>Car Images (Select multiple)</label>
                         <input type="file" id="car-images" accept="image/*" multiple required>
                     </div>
@@ -148,11 +164,82 @@
         document.getElementById('connection-status').innerText = "Connected to Firebase ✅";
         document.getElementById('connection-status').style.color = "var(--success)";
 
+        // AI Bot Text Parser Function
+        function parseTextWithBot() {
+            const rawText = document.getElementById('bot-raw-text').value.trim();
+            if (!rawText) {
+                alert("Please paste some text into the bot parser box first!");
+                return;
+            }
+
+            const textLower = rawText.toLowerCase();
+
+            // 1. Detect Make
+            const makes = ["toyota", "nissan", "subaru", "mazda", "honda", "mercedes-benz", "bmw", "volkswagen", "mitsubishi"];
+            let detectedMake = "";
+            for (let make of makes) {
+                if (textLower.includes(make)) {
+                    detectedMake = make.charAt(0).toUpperCase() + make.slice(1);
+                    if(detectedMake === "Mercedes-benz") detectedMake = "Mercedes-Benz";
+                    break;
+                }
+            }
+            if (detectedMake) {
+                document.getElementById('car-make').value = detectedMake;
+            }
+
+            // 2. Detect Year
+            const yearMatch = rawText.match(/\b(19\d{2}|20\d{2})\b/);
+            if (yearMatch) {
+                document.getElementById('car-year').value = yearMatch[0];
+            }
+
+            // 3. Detect Price
+            const priceRegex = /(?:kes|ksh|rs)?\s*([0-9.,]+)\s*(m|million)?/gi;
+            let match;
+            let foundPrice = "";
+            while ((match = priceRegex.exec(rawText)) !== null) {
+                let numStr = match[1].replace(/,/g, '');
+                let num = parseFloat(numStr);
+                if (!isNaN(num)) {
+                    if (match[2] || num < 50) {
+                        foundPrice = Math.round(num * 1000000);
+                        break;
+                    } else if (num > 50000) {
+                        foundPrice = num;
+                        break;
+                    }
+                }
+            }
+            if (foundPrice) {
+                document.getElementById('car-price').value = foundPrice;
+            }
+
+            // 4. Detect Transmission
+            if (textLower.includes("manual")) {
+                document.getElementById('car-transmission').value = "Manual";
+            } else if (textLower.includes("auto") || textLower.includes("triptronic")) {
+                document.getElementById('car-transmission').value = "Automatic";
+            }
+
+            // 5. Detect Location
+            const locations = ["nairobi", "mombasa", "nakuru", "eldoret", "kisumu", "thika"];
+            for (let loc of locations) {
+                if (textLower.includes(loc)) {
+                    document.getElementById('car-location').value = loc.charAt(0).toUpperCase() + loc.slice(1);
+                    break;
+                }
+            }
+
+            // 6. Push all raw description text into More Information
+            document.getElementById('car-more-info').value = rawText;
+            alert("✨ Bot successfully extracted main fields and stored description notes into 'More Information'!");
+        }
+
         const carForm = document.getElementById('car-form');
         const submitBtn = document.getElementById('submit-btn');
         const formStatus = document.getElementById('form-status');
 
-        // Function to resize image and compress to JPEG so it fits well under the 1MB limit
         function compressImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -164,8 +251,6 @@
                         const canvas = document.createElement('canvas');
                         let width = img.width;
                         let height = img.height;
-
-                        // Max dimensions constraint to keep file sizes low
                         const MAX_WIDTH = 800;
                         const MAX_HEIGHT = 600;
 
@@ -185,10 +270,7 @@
                         canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-
-                        // Compress to JPEG format with 0.7 quality
-                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-                        resolve(compressedDataUrl);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
                     };
                     img.onerror = error => reject(error);
                 };
@@ -209,6 +291,7 @@
             const year = document.getElementById('car-year').value;
             const transmission = document.getElementById('car-transmission').value;
             const location = document.getElementById('car-location').value;
+            const moreInfo = document.getElementById('car-more-info').value;
             const imageFiles = document.getElementById('car-images').files;
 
             try {
@@ -227,6 +310,7 @@
                     year: year ? Number(year) : '',
                     transmission: transmission || 'N/A',
                     location: location || 'N/A',
+                    moreInfo: moreInfo || 'No additional details provided.',
                     imageUrls,
                     imageUrl: imageUrls[0],
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -235,6 +319,7 @@
                 formStatus.style.color = "var(--success)";
                 formStatus.innerText = "Car successfully listed and saved!";
                 carForm.reset();
+                document.getElementById('bot-raw-text').value = '';
             } catch (error) {
                 console.error("Error adding document: ", error);
                 formStatus.style.color = "var(--danger)";
@@ -258,7 +343,6 @@
                 snapshot.forEach((doc) => {
                     const car = doc.data();
                     let imagesHtml = '';
-                    
                     const imgs = car.imageUrls || [car.imageUrl];
                     imgs.slice(0, 3).forEach(img => {
                         if(img) imagesHtml += `<img src="${img}" class="car-thumb" alt="Car">`;
