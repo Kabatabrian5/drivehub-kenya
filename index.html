@@ -133,9 +133,30 @@
 
   </div>
 
-  <!-- FIREBASE DATA FETCHING SCRIPT -->
+  <!-- Modal Popup for Car Details -->
+  <div id="carModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: #fff; width: 100%; max-width: 600px; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; position: relative;">
+      <button onclick="closeModal()" style="position: absolute; top: 10px; right: 10px; background: #333; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 10;">&times;</button>
+      <div id="modalImageContainer" style="width: 100%; height: 280px; background: #000; overflow: hidden;">
+        <img id="modalMainImg" src="" alt="Car Image" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div id="modalThumbnails" style="display: flex; gap: 8px; padding: 10px; background: #f4f4f4; overflow-x: auto;"></div>
+      <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+        <h2 id="modalTitle" style="margin: 0; color: #111;"></h2>
+        <h3 id="modalPrice" style="margin: 0; color: #ff4d00;"></h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; color: #444; background: #f9f9f9; padding: 12px; border-radius: 6px;">
+          <div><strong>Year:</strong> <span id="modalYear"></span></div>
+          <div><strong>Transmission:</strong> <span id="modalTransmission"></span></div>
+          <div><strong>Location:</strong> <span id="modalLocation"></span></div>
+          <div><strong>Make:</strong> <span id="modalMake"></span></div>
+        </div>
+        <a id="whatsappInquiryBtn" href="#" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 10px;">💬 Enquire via WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE DATA FETCHING & MODAL SCRIPT -->
   <script>
-    // Initialize Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyBxdXaRmelsJjHkY9VvFl63p3ID_Daq0SE",
         authDomain: "kabata-motors.firebaseapp.com",
@@ -150,17 +171,19 @@
     const db = firebase.firestore();
 
     const carListingsContainer = document.getElementById('carListings');
+    let allCarsData = {};
 
-    // Real-time listener to fetch cars from the 'cars' collection
     db.collection('cars').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
         if (snapshot.empty) {
-            carListingsContainer.innerHTML = `<p style="color: #666; grid-column: 1 / -1; text-align: center;">No cars currently listed. Check back soon or add some via the admin dashboard!</p>`;
+            carListingsContainer.innerHTML = `<p style="color: #666; grid-column: 1 / -1; text-align: center;">No cars currently listed. Add some via the admin dashboard!</p>`;
             return;
         }
 
         carListingsContainer.innerHTML = "";
         snapshot.forEach((doc) => {
             const car = doc.data();
+            allCarsData[doc.id] = car; // Save data for modal reference
+            
             const mainImage = car.imageUrl || (car.imageUrls && car.imageUrls[0]) || 'https://via.placeholder.com/300x200?text=No+Image';
             
             const card = document.createElement('div');
@@ -173,19 +196,60 @@
                 <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
                     <h4 style="font-size: 1.1rem; color: #111; margin: 0;">${car.title}</h4>
                     <p style="color: #ff4d00; font-weight: bold; font-size: 1.1rem; margin: 0;">KES ${Number(car.price).toLocaleString()}</p>
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-top: auto; padding-top: 10px; border-top: 1px solid #f0f0f0;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-top: 5px;">
                         <span>📅 ${car.year || 'N/A'}</span>
                         <span>⚙️ ${car.transmission || 'N/A'}</span>
                         <span>📍 ${car.location || 'N/A'}</span>
                     </div>
+                    <button onclick="openCarModal('${doc.id}')" style="margin-top: auto; background: #111; color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%;">View More Information</button>
                 </div>
             `;
             carListingsContainer.appendChild(card);
         });
     }, (error) => {
         console.error("Error fetching inventory: ", error);
-        carListingsContainer.innerHTML = `<p style="color: red; grid-column: 1 / -1;">Failed to load inventory. Check console for details.</p>`;
+        carListingsContainer.innerHTML = `<p style="color: red; grid-column: 1 / -1;">Failed to load inventory.</p>`;
     });
+
+    function openCarModal(id) {
+        const car = allCarsData[id];
+        if(!car) return;
+
+        document.getElementById('modalTitle').innerText = car.title;
+        document.getElementById('modalPrice').innerText = `KES ${Number(car.price).toLocaleString()}`;
+        document.getElementById('modalYear').innerText = car.year || 'N/A';
+        document.getElementById('modalTransmission').innerText = car.transmission || 'N/A';
+        document.getElementById('modalLocation').innerText = car.location || 'N/A';
+        document.getElementById('modalMake').innerText = car.make || 'N/A';
+
+        const images = car.imageUrls || [car.imageUrl];
+        document.getElementById('modalMainImg').src = images[0];
+
+        // Build thumbnail selector inside modal
+        const thumbContainer = document.getElementById('modalThumbnails');
+        thumbContainer.innerHTML = '';
+        images.forEach(img => {
+            if(img) {
+                const thumb = document.createElement('img');
+                thumb.src = img;
+                thumb.style.cssText = "width: 60px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;";
+                thumb.onclick = () => {
+                    document.getElementById('modalMainImg').src = img;
+                };
+                thumbContainer.appendChild(thumb);
+            }
+        });
+
+        // WhatsApp inquiry link generator
+        const whatsappMsg = encodeURIComponent(`Hello Kabata Motors, I am interested in the ${car.title} listed for KES ${Number(car.price).toLocaleString()} located in ${car.location}. Is it still available?`);
+        document.getElementById('whatsappInquiryBtn').href = `https://wa.me/254700000000?text=${whatsappMsg}`;
+
+        document.getElementById('carModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('carModal').style.display = 'none';
+    }
   </script>
 
   <!-- Mobile Bottom Navigation Bar -->
