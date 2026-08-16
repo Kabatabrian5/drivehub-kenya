@@ -63,13 +63,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     container.innerHTML = items.map((car, index) => {
       const timeAgo = getRelativeTimeString(car.created_at || car.dateAdded);
+      // Support primary image or array of images
+      const mainImage = Array.isArray(car.images) && car.images.length > 0 ? car.images[0] : (car.image || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf');
+      
       return `
         <div class="car-card" style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display:flex; flex-direction:column; justify-content:space-between; position:relative;">
           <div style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.75); color:#fff; font-size:11px; padding:3px 8px; border-radius:12px; font-weight:bold; z-index:2;">
             ⏱️ ${timeAgo}
           </div>
           <div class="car-img-container">
-            <img src="${car.image || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'}" alt="${car.make} ${car.model}" style="width: 100%; height: 160px; object-fit: cover;">
+            <img src="${mainImage}" alt="${car.make} ${car.model}" style="width: 100%; height: 160px; object-fit: cover;">
           </div>
           <div class="car-details" style="padding: 15px;">
             <h3 style="font-size: 1.1rem; color: #111; margin: 0 0 8px 0;">${car.make} ${car.model}</h3>
@@ -85,12 +88,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }).join('');
   }
 
-  // Global Function to Open Detailed Car Modal
+  // Global Function to Open Detailed Car Modal with Image Gallery Switcher
   window.openCarDetails = function(carIndex) {
     const car = cars[carIndex];
     if (!car) return;
 
     const timeAgo = getRelativeTimeString(car.created_at || car.dateAdded);
+    
+    // Normalize images: support array `car.images`, single `car.image`, or fallbacks
+    let imageList = [];
+    if (Array.isArray(car.images) && car.images.length > 0) {
+      imageList = car.images;
+    } else if (car.image) {
+      imageList = [car.image];
+    } else {
+      imageList = ['https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'];
+    }
 
     modalWrapper.style.display = 'block';
     modalWrapper.innerHTML = `
@@ -114,7 +127,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: start;">
           <div>
-            <img src="${car.image || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'}" style="width:100%; height:350px; object-fit:cover; border-radius:8px;">
+            <!-- Main Active Image Viewer -->
+            <div style="position:relative;">
+              <img id="activeCarImage" src="${imageList[0]}" style="width:100%; height:320px; object-fit:cover; border-radius:8px; border:1px solid #ddd;">
+              <span style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.6); color:#fff; font-size:11px; padding:4px 8px; border-radius:4px;">Click thumbnails below to switch view</span>
+            </div>
+
+            <!-- Thumbnail Gallery ("See More Images") -->
+            <div style="margin-top: 12px;">
+              <p style="font-size: 13px; font-weight: bold; color: #333; margin: 0 0 6px 0;">📸 Vehicle Angles & Gallery (${imageList.length} Photos):</p>
+              <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px;">
+                ${imageList.map((imgUrl, i) => `
+                  <img src="${imgUrl}" onclick="switchModalImage('${imgUrl}', this)" style="width: 75px; height: 55px; object-fit: cover; border-radius: 4px; cursor: pointer; border: ${i === 0 ? '2px solid #ff4d00' : '1px solid #ccc'}; opacity: ${i === 0 ? '1' : '0.7'}; transition:all 0.2s;" class="gallery-thumb" alt="Angle ${i+1}">
+                `).join('')}
+              </div>
+            </div>
+
             <h3 style="margin-top:20px; font-size:1.2rem;">Description</h3>
             <p style="color:#555; line-height:1.5;">Well-maintained and slightly used ${car.make} ${car.model} on sale. Locally used, ${car.transmission}, ${car.fuel}. Excellent deal ready for driving in Kenya.</p>
             
@@ -144,6 +172,19 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   };
 
+  // Helper Function to Switch Active Image on Thumbnail Click
+  window.switchModalImage = function(url, thumbElement) {
+    const mainImg = document.getElementById('activeCarImage');
+    if (mainImg) mainImg.src = url;
+
+    document.querySelectorAll('.gallery-thumb').forEach(t => {
+      t.style.border = '1px solid #ccc';
+      t.style.opacity = '0.7';
+    });
+    thumbElement.style.border = '2px solid #ff4d00';
+    thumbElement.style.opacity = '1';
+  };
+
   window.closeCarDetails = function() {
     modalWrapper.style.display = 'none';
   };
@@ -165,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
           ${similarCars.map(sc => `
             <div style="background:#fff; border:1px solid #ddd; border-radius:6px; padding:10px;">
-              <img src="${sc.image}" style="width:100%; height:110px; object-fit:cover; border-radius:4px;">
+              <img src="${Array.isArray(sc.images) ? sc.images[0] : sc.image}" style="width:100%; height:110px; object-fit:cover; border-radius:4px;">
               <h4 style="font-size:1rem; margin:8px 0 4px 0;">${sc.make} ${sc.model}</h4>
               <p style="color:#ff4d00; font-weight:bold; font-size:0.95rem; margin:0 0 4px 0;">Ksh ${sc.price.toLocaleString()}</p>
               <p style="font-size:12px; color:#666; margin:0;">Year: ${sc.year} | ${sc.transmission}</p>
@@ -195,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
           ${matchingModels.map(mc => `
             <div style="background:#fff; border:1px solid #ddd; border-radius:6px; padding:10px;">
-              <img src="${mc.image}" style="width:100%; height:110px; object-fit:cover; border-radius:4px;">
+              <img src="${Array.isArray(mc.images) ? mc.images[0] : mc.image}" style="width:100%; height:110px; object-fit:cover; border-radius:4px;">
               <h4 style="font-size:1rem; margin:8px 0 4px 0;">${mc.make} ${mc.model} (${mc.year})</h4>
               <p style="color:#ff4d00; font-weight:bold; font-size:0.95rem; margin:0 0 4px 0;">Ksh ${mc.price.toLocaleString()}</p>
               <p style="font-size:12px; color:#666; margin:0;">Loc: ${mc.location} | ${mc.transmission}</p>
@@ -244,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Transmission Filter Populator (Automatic, Manual, Electric)
+    // Transmission Filter Populator
     if (transmissionFilter) {
       transmissionFilter.innerHTML = '<option value="">Transmission</option>';
       ['Automatic', 'Manual', 'Electric'].forEach(trans => {
@@ -287,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Custom Year Range Filter Populator (2010+ to 2023+)
+    // Custom Year Range Filter Populator
     if (yearFilter) {
       yearFilter.innerHTML = '<option value="">Min Year</option>';
       const yearOptions = [
@@ -315,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Custom Natural English Price Filter Options Populator
+    // Custom Price Filter Options Populator
     if (priceFilter) {
       priceFilter.innerHTML = '<option value="">Max Price (Ksh)</option>';
       const priceOptions = [
