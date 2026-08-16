@@ -15,6 +15,7 @@
             --border: #334155;
             --danger: #ef4444;
             --success: #22c55e;
+            --warning: #f59e0b;
             --bot-bg: #312e81;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -33,7 +34,9 @@
         button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
         button:hover { opacity: 0.9; }
         .btn-bot { background-color: #4f46e5; width: 100%; margin-top: 10px; }
-        .btn-danger { background-color: var(--danger); }
+        .btn-danger { background-color: var(--danger); padding: 5px 10px; font-size: 12px; }
+        .btn-warning { background-color: var(--warning); color: #000; padding: 5px 10px; font-size: 12px; font-weight: bold; margin-right: 5px; }
+        .btn-secondary { background-color: #64748b; margin-left: 10px; display: none; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { color: var(--text-secondary); font-weight: 600; }
@@ -52,14 +55,15 @@
         <div class="card bot-card">
             <h3 style="margin-bottom: 8px;">🤖 AI Listing Bot Parser</h3>
             <p style="font-size: 13px; color: #c7d2fe; margin-bottom: 12px;">Paste any unstructured car text description below, and our bot will automatically fill out the form fields and route all extra notes into "More Information".</p>
-            <textarea id="bot-raw-text" placeholder="Paste car details here (e.g. Toyota Crown 2018, 2.5L Hybrid, pearl white, clean leather interior, located in Nairobi, asking 2.8M negotiable call 07...)..."></textarea>
+            <textarea id="bot-raw-text" placeholder="Paste car details here (e.g. Nissan Note 2018, 1.2L, pearl white, clean interior, located in Nairobi, asking 1.2M negotiable call 07...)..."></textarea>
             <button type="button" class="btn-bot" onclick="parseTextWithBot()">✨ Parse with AI Bot</button>
         </div>
 
-        <!-- Add Car Form -->
+        <!-- Add / Edit Car Form -->
         <div class="card">
-            <h3 style="margin-bottom: 15px;">Add New Car Listing</h3>
+            <h3 id="form-title" style="margin-bottom: 15px;">Add New Car Listing</h3>
             <form id="car-form">
+                <input type="hidden" id="editing-car-id" value="">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Car Make</label>
@@ -78,7 +82,7 @@
                     </div>
                     <div class="form-group">
                         <label>Model & Details</label>
-                        <input type="text" id="car-model" placeholder="e.g. Crown / Axela / Impreza">
+                        <input type="text" id="car-model" placeholder="e.g. Note / Axela / Impreza">
                     </div>
                     <div class="form-group">
                         <label>Price (KES)</label>
@@ -113,11 +117,14 @@
                         <textarea id="car-more-info" placeholder="Extra information like engine capacity, features, insurance status, condition, negotiation terms..."></textarea>
                     </div>
                     <div class="form-group full">
-                        <label>Car Images (Select multiple)</label>
-                        <input type="file" id="car-images" accept="image/*" multiple required>
+                        <label>Car Images <small id="image-hint" style="color: var(--text-secondary);">(Select new images to replace existing ones, or leave blank to keep current images)</small></label>
+                        <input type="file" id="car-images" accept="image/*" multiple>
                     </div>
                 </div>
-                <button type="submit" id="submit-btn">Publish Listing</button>
+                <div style="display: flex; align-items: center;">
+                    <button type="submit" id="submit-btn">Publish Listing</button>
+                    <button type="button" id="cancel-edit-btn" class="btn-secondary" onclick="cancelEditMode()">Cancel Edit</button>
+                </div>
                 <div id="form-status" class="status-msg"></div>
             </form>
         </div>
@@ -133,7 +140,7 @@
                         <th>Location</th>
                         <th>Price</th>
                         <th>Year</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="inventory-table">
@@ -163,6 +170,8 @@
 
         document.getElementById('connection-status').innerText = "Connected to Firebase ✅";
         document.getElementById('connection-status').style.color = "var(--success)";
+
+        let cachedCars = {};
 
         // AI Bot Text Parser Function
         function parseTextWithBot() {
@@ -281,9 +290,9 @@
         carForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             submitBtn.disabled = true;
-            submitBtn.innerText = "Compressing Images...";
             formStatus.innerText = "";
 
+            const editingId = document.getElementById('editing-car-id').value;
             const make = document.getElementById('car-make').value;
             const model = document.getElementById('car-model').value;
             const title = model ? `${make} ${model}` : make;
@@ -295,14 +304,7 @@
             const imageFiles = document.getElementById('car-images').files;
 
             try {
-                let imageUrls = [];
-                for (let i = 0; i < imageFiles.length; i++) {
-                    const compressedBase64 = await compressImage(imageFiles[i]);
-                    imageUrls.push(compressedBase64);
-                }
-
-                submitBtn.innerText = "Saving to Database...";
-                await db.collection('cars').add({
+                let updateData = {
                     make,
                     model: model || '',
                     title,
@@ -310,23 +312,52 @@
                     year: year ? Number(year) : '',
                     transmission: transmission || 'N/A',
                     location: location || 'N/A',
-                    moreInfo: moreInfo || 'No additional details provided.',
-                    imageUrls,
-                    imageUrl: imageUrls[0],
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                    moreInfo: moreInfo || 'No additional details provided.'
+                };
 
-                formStatus.style.color = "var(--success)";
-                formStatus.innerText = "Car successfully listed and saved!";
-                carForm.reset();
-                document.getElementById('bot-raw-text').value = '';
+                if (imageFiles.length > 0) {
+                    submitBtn.innerText = "Compressing Images...";
+                    let imageUrls = [];
+                    for (let i = 0; i < imageFiles.length; i++) {
+                        const compressedBase64 = await compressImage(imageFiles[i]);
+                        imageUrls.push(compressedBase64);
+                    }
+                    updateData.imageUrls = imageUrls;
+                    updateData.imageUrl = imageUrls[0];
+                }
+
+                submitBtn.innerText = "Saving to Database...";
+
+                if (editingId) {
+                    // Update existing record
+                    await db.collection('cars').doc(editingId).update(updateData);
+                    formStatus.style.color = "var(--success)";
+                    formStatus.innerText = "Car listing successfully updated!";
+                    cancelEditMode();
+                } else {
+                    // Create new record
+                    if (imageFiles.length === 0) {
+                        alert("Please select at least one image for a new listing!");
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "Publish Listing";
+                        return;
+                    }
+                    updateData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    await db.collection('cars').add(updateData);
+                    formStatus.style.color = "var(--success)";
+                    formStatus.innerText = "Car successfully listed and saved!";
+                    carForm.reset();
+                    document.getElementById('bot-raw-text').value = '';
+                }
             } catch (error) {
-                console.error("Error adding document: ", error);
+                console.error("Error saving document: ", error);
                 formStatus.style.color = "var(--danger)";
                 formStatus.innerText = "Error: " + error.message;
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "Publish Listing";
+                if (!document.getElementById('editing-car-id').value) {
+                    submitBtn.innerText = "Publish Listing";
+                }
             }
         });
 
@@ -339,9 +370,12 @@
                     return;
                 }
 
+                cachedCars = {};
                 tableBody.innerHTML = "";
                 snapshot.forEach((doc) => {
                     const car = doc.data();
+                    cachedCars[doc.id] = car;
+
                     let imagesHtml = '';
                     const imgs = car.imageUrls || [car.imageUrl];
                     imgs.slice(0, 3).forEach(img => {
@@ -355,7 +389,10 @@
                         <td>${car.location || 'N/A'}</td>
                         <td>KES ${Number(car.price).toLocaleString()}</td>
                         <td>${car.year || 'N/A'}</td>
-                        <td><button class="btn-danger" onclick="deleteCar('${doc.id}')" style="padding: 5px 10px; font-size: 12px;">Delete</button></td>
+                        <td>
+                            <button class="btn-warning" onclick="startEditCar('${doc.id}')">Edit</button>
+                            <button class="btn-danger" onclick="deleteCar('${doc.id}')">Delete</button>
+                        </td>
                     `;
                     tableBody.appendChild(tr);
                 });
@@ -364,10 +401,43 @@
             });
         }
 
+        window.startEditCar = function(id) {
+            const car = cachedCars[id];
+            if (!car) return;
+
+            document.getElementById('editing-car-id').value = id;
+            document.getElementById('car-make').value = car.make || '';
+            document.getElementById('car-model').value = car.model || '';
+            document.getElementById('car-price').value = car.price || '';
+            document.getElementById('car-year').value = car.year || '';
+            document.getElementById('car-transmission').value = car.transmission === 'N/A' ? '' : (car.transmission || '');
+            document.getElementById('car-location').value = car.location === 'N/A' ? '' : (car.location || '');
+            document.getElementById('car-more-info').value = car.moreInfo === 'No additional details provided.' ? '' : (car.moreInfo || '');
+            
+            document.getElementById('form-title').innerText = `Edit Listing: ${car.title}`;
+            document.getElementById('submit-btn').innerText = "Update Listing";
+            document.getElementById('cancel-edit-btn').style.display = 'inline-block';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.cancelEditMode = function() {
+            document.getElementById('editing-car-id').value = '';
+            carForm.reset();
+            document.getElementById('bot-raw-text').value = '';
+            document.getElementById('form-title').innerText = "Add New Car Listing";
+            document.getElementById('submit-btn').innerText = "Publish Listing";
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+            document.getElementById('form-status').innerText = "";
+        }
+
         window.deleteCar = async function(id) {
             if (confirm("Are you sure you want to delete this listing?")) {
                 try {
                     await db.collection('cars').doc(id).delete();
+                    if (document.getElementById('editing-car-id').value === id) {
+                        cancelEditMode();
+                    }
                 } catch (error) {
                     alert("Error deleting record: " + error.message);
                 }
