@@ -53,82 +53,85 @@
     </div>
   </section>
 
-  <!-- Main Website Wrapper with 3-Column App Shell Layout -->
-  <div class="main-layout-wrapper">
+  <!-- Main Website Wrapper with 2-Column Layout (Left Sidebar + Expanded Right Content) -->
+  <div class="main-layout-wrapper" style="display: grid; grid-template-columns: 280px 1fr; gap: 30px; max-width: 1400px; margin: 30px auto; padding: 0 20px;">
     
-    <!-- LEFT SIDEBAR (Completely filled with Navigation, Quick Links, Broker Desk, Financing & Ads) -->
-    <aside class="sidebar left-sidebar">
-      <div class="sidebar-card">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar left-sidebar" style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="sidebar-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
         <h3>Quick Links</h3>
-        <ul>
-          <li><a href="#">🔥 Hot Deals</a></li>
-          <li><a href="#">⭐ Verified Sellers</a></li>
-          <li><a href="#">🛠️ Car Inspection Tips</a></li>
-          <li><a href="#">📑 Import Duty Guide</a></li>
+        <ul style="list-style: none; padding: 0; margin: 10px 0 0 0;">
+          <li style="padding: 6px 0;"><a href="#" style="text-decoration: none; color: #333;">🔥 Hot Deals</a></li>
+          <li style="padding: 6px 0;"><a href="#" style="text-decoration: none; color: #333;">⭐ Verified Sellers</a></li>
+          <li style="padding: 6px 0;"><a href="#" style="text-decoration: none; color: #333;">🛠️ Car Inspection Tips</a></li>
+          <li style="padding: 6px 0;"><a href="#" style="text-decoration: none; color: #333;">📑 Import Duty Guide</a></li>
         </ul>
       </div>
 
-      <div class="sidebar-card">
+      <div class="sidebar-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
         <h3>Trending Makes</h3>
         <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Most searched in Kenya:</p>
-        <span class="tag">Toyota Harrier</span>
-        <span class="tag">Mazda CX-5</span>
-        <span class="tag">Subaru Forester</span>
-        <span class="tag">Toyota Voxy</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+          <span class="tag" style="background: #f2f2f2; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Toyota Harrier</span>
+          <span class="tag" style="background: #f2f2f2; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Mazda CX-5</span>
+          <span class="tag" style="background: #f2f2f2; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Subaru Forester</span>
+          <span class="tag" style="background: #f2f2f2; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Toyota Voxy</span>
+        </div>
       </div>
 
-      <div class="sidebar-card">
+      <div class="sidebar-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
         <h3>Car Broker Desk</h3>
         <p style="font-size: 13px; color: #555; margin-bottom: 12px;">Looking to buy or sell a second-hand car quickly? Connect directly with our broker service.</p>
         <button style="width: 100%; background: #ff4d00; color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">WhatsApp Broker</button>
       </div>
 
-      <div class="sidebar-card">
+      <div class="sidebar-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
         <h3>Asset Financing</h3>
         <p style="font-size: 13px; color: #555; margin-bottom: 10px;">Get up to 70% bank financing for your car purchase with flexible terms.</p>
         <a href="#" style="color: #ff4d00; font-weight: bold; font-size: 13px; text-decoration: none;">Calculate Loan &rarr;</a>
       </div>
 
-      <div class="sidebar-card ad-banner">
+      <div class="sidebar-card ad-banner" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px dashed #ccc;">
         <h3>Your Ad Here</h3>
-        <p style="font-size: 12px; color: #777;">Promote your spare parts shop, car wash, or insurance firm here.</p>
+        <p style="font-size: 12px; color: #777; margin-top: 6px;">Promote your spare parts shop, car wash, or insurance firm here.</p>
       </div>
     </aside>
 
-    <!-- CENTER CONTENT (Dedicated fully to Filters, Brand Bar, and Car Grid Inventory) -->
-    <div class="center-content">
+    <!-- RIGHT CONTENT AREA (Search, Filters, Brands, and Vehicle Inventory Grid) -->
+    <div class="center-content" style="display: flex; flex-direction: column; gap: 25px;">
       
       <!-- Filter Section -->
-      <div class="search-filter">
+      <div class="search-filter" style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
         <h3 style="font-size: 1.1rem; margin-bottom: 15px; color: #111;">Search & Filter Inventory</h3>
-        <div class="filters-grid">
-          <select id="makeFilter"><option value="">All Makes</option></select>
-          <input type="text" id="searchInput" placeholder="Search model...">
-          <select id="priceFilter"><option value="">Max Price (Ksh)</option></select>
-          <select id="yearFilter"><option value="">Min Year</option></select>
-          <select id="locationFilter"><option value="">All Locations</option></select>
-          <select id="transmissionFilter"><option value="">Transmission</option></select>
-          <select id="fuelFilter"><option value="">Fuel Type</option></select>
-          <select id="ccFilter"><option value="">Engine CC</option></select>
+        <div class="filters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+          <select id="makeFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Makes</option></select>
+          <input type="text" id="searchInput" placeholder="Search model..." style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+          <select id="priceFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Max Price (Ksh)</option></select>
+          <select id="yearFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Min Year</option></select>
+          <select id="locationFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">All Locations</option></select>
+          <select id="transmissionFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Transmission</option></select>
+          <select id="fuelFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Fuel Type</option></select>
+          <select id="ccFilter" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;"><option value="">Engine CC</option></select>
         </div>
       </div>
 
       <!-- Brand Logo Quick Filter Bar -->
-      <div style="margin-bottom: 30px;">
+      <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
         <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #111;">Browse by Make</h3>
-        <div id="brandLogoContainer" class="brand-logo-scroll"></div>
+        <div id="brandLogoContainer" class="brand-logo-scroll" style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px;"></div>
       </div>
 
-      <!-- Listings -->
-      <main>
+      <!-- Listings Grid Section -->
+      <main style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
         <h3 style="font-size: 1.3rem; margin-bottom: 20px; color: #111; border-left: 4px solid #ff4d00; padding-left: 10px;">Fresh Listings in Kenya</h3>
-        <div id="carListings" class="car-grid"></div>
+        <div id="carListings" class="car-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;"></div>
       </main>
 
     </div>
 
   </div>
 
+  <!-- FIXED SCRIPT LOADING ORDER -->
   <script src="cars-data.js"></script>
   <script src="app.js"></script>
 
