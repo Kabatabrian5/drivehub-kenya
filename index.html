@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kabata Motors - Admin Dashboard</title>
+    <title>Kabata Motors - Quality Cars for Sale</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,133 +13,58 @@
             --text: #f8fafc;
             --text-secondary: #94a3b8;
             --border: #334155;
-            --danger: #ef4444;
-            --success: #22c55e;
-            --bot-bg: #312e81;
+            --accent: #38bdf8;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-        h1 { font-size: 24px; color: var(--text); }
-        .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
-        .bot-card { background-color: var(--bot-bg); border: 1px solid #6366f1; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group.full { grid-column: span 2; }
-        label { display: block; font-size: 14px; color: var(--text-secondary); margin-bottom: 5px; }
-        input, select, textarea { width: 100%; padding: 10px; background-color: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 14px; }
-        textarea { resize: vertical; min-height: 80px; }
-        button { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
-        .btn-bot { background-color: #4f46e5; width: 100%; margin-top: 10px; }
-        .btn-danger { background-color: var(--danger); }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
-        th { color: var(--text-secondary); font-weight: 600; }
-        .status-msg { margin-top: 10px; font-size: 14px; font-weight: 500; }
-        .car-thumb { width: 50px; height: 35px; object-fit: cover; border-radius: 4px; margin-right: 3px; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 50px; }
+        
+        header { background-color: var(--card-bg); border-bottom: 1px solid var(--border); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 20px; font-weight: 700; color: var(--text); }
+        .logo span { color: var(--accent); }
+        .admin-link { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; transition: 0.2s; }
+        .admin-link:hover { background-color: var(--border); color: var(--text); }
+
+        .hero { text-align: center; padding: 40px 20px; }
+        .hero h1 { font-size: 32px; margin-bottom: 10px; }
+        .hero p { color: var(--text-secondary); font-size: 16px; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        .car-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-top: 20px; }
+        
+        .car-card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+        .car-img-container { position: relative; height: 200px; background-color: #000; }
+        .car-img { width: 100%; height: 100%; object-fit: cover; }
+        .car-price-tag { position: absolute; bottom: 10px; left: 10px; background-color: rgba(15, 23, 42, 0.85); color: var(--accent); padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 16px; border: 1px solid var(--border); }
+        
+        .car-body { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .car-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+        .car-details { display: flex; gap: 10px; font-size: 13px; color: var(--text-secondary); margin-bottom: 15px; }
+        .car-details span { background-color: var(--bg); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border); }
+        
+        .more-info-box { background-color: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 13px; color: var(--text-secondary); margin-bottom: 15px; max-height: 80px; overflow-y: auto; }
+        
+        .whatsapp-btn { background-color: #22c55e; color: white; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; display: block; transition: opacity 0.2s; }
+        .whatsapp-btn:hover { opacity: 0.9; }
+
+        .empty-state { text-align: center; color: var(--text-secondary); grid-column: 1 / -1; padding: 40px; font-size: 16px; }
     </style>
 </head>
 <body>
+
+    <header>
+        <div class="logo">Kabata <span>Motors</span></div>
+        <a href="admin.html" class="admin-link">Admin Portal ⚙️</a>
+    </header>
+
+    <div class="hero">
+        <h1>Find Your Dream Car</h1>
+        <p>Browse our verified inventory of quality vehicles available on sale.</p>
+    </div>
+
     <div class="container">
-        <header>
-            <h1>Kabata Motors Admin</h1>
-            <span id="connection-status" style="color: var(--text-secondary);">Connecting to Firebase...</span>
-        </header>
-
-        <!-- AI Bot Text Parser Box -->
-        <div class="card bot-card">
-            <h3 style="margin-bottom: 8px;">🤖 AI Listing Bot Parser</h3>
-            <p style="font-size: 13px; color: #c7d2fe; margin-bottom: 12px;">Paste any unstructured car text description below, and our bot will automatically fill out the form fields and route all extra notes into "More Information".</p>
-            <textarea id="bot-raw-text" placeholder="Paste car details here (e.g. Toyota Crown 2018, 2.5L Hybrid, pearl white, clean leather interior, located in Nairobi, asking 2.8M negotiable call 07...)..."></textarea>
-            <button type="button" class="btn-bot" onclick="parseTextWithBot()">✨ Parse with AI Bot</button>
-        </div>
-
-        <!-- Add Car Form -->
-        <div class="card">
-            <h3 style="margin-bottom: 15px;">Add New Car Listing</h3>
-            <form id="car-form">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Car Make</label>
-                        <select id="car-make" required>
-                            <option value="">Select Make</option>
-                            <option value="Toyota">Toyota</option>
-                            <option value="Nissan">Nissan</option>
-                            <option value="Subaru">Subaru</option>
-                            <option value="Mazda">Mazda</option>
-                            <option value="Honda">Honda</option>
-                            <option value="Mercedes-Benz">Mercedes-Benz</option>
-                            <option value="BMW">BMW</option>
-                            <option value="Volkswagen">Volkswagen</option>
-                            <option value="Mitsubishi">Mitsubishi</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Model & Details</label>
-                        <input type="text" id="car-model" placeholder="e.g. Crown / Axela / Impreza">
-                    </div>
-                    <div class="form-group">
-                        <label>Price (KES)</label>
-                        <input type="number" id="car-price" required placeholder="1,500,000">
-                    </div>
-                    <div class="form-group">
-                        <label>Year</label>
-                        <input type="number" id="car-year" placeholder="2018">
-                    </div>
-                    <div class="form-group">
-                        <label>Transmission</label>
-                        <select id="car-transmission">
-                            <option value="">Select Transmission</option>
-                            <option value="Automatic">Automatic</option>
-                            <option value="Manual">Manual</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Location</label>
-                        <select id="car-location">
-                            <option value="">Select Location</option>
-                            <option value="Nairobi">Nairobi</option>
-                            <option value="Mombasa">Mombasa</option>
-                            <option value="Nakuru">Nakuru</option>
-                            <option value="Eldoret">Eldoret</option>
-                            <option value="Kisumu">Kisumu</option>
-                            <option value="Thika">Thika</option>
-                        </select>
-                    </div>
-                    <div class="form-group full">
-                        <label>More Information / Additional Description & Specs</label>
-                        <textarea id="car-more-info" placeholder="Extra information like engine capacity, features, insurance status, condition, negotiation terms..."></textarea>
-                    </div>
-                    <div class="form-group full">
-                        <label>Car Images (Select multiple)</label>
-                        <input type="file" id="car-images" accept="image/*" multiple required>
-                    </div>
-                </div>
-                <button type="submit" id="submit-btn">Publish Listing</button>
-                <div id="form-status" class="status-msg"></div>
-            </form>
-        </div>
-
-        <!-- Inventory List -->
-        <div class="card">
-            <h3 style="margin-bottom: 15px;">Current Inventory</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Images</th>
-                        <th>Car</th>
-                        <th>Location</th>
-                        <th>Price</th>
-                        <th>Year</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="inventory-table">
-                    <tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">Loading inventory...</td></tr>
-                </tbody>
-            </table>
+        <div id="car-grid" class="car-grid">
+            <div class="empty-state">Loading inventory...</div>
         </div>
     </div>
 
@@ -161,220 +86,48 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        document.getElementById('connection-status').innerText = "Connected to Firebase ✅";
-        document.getElementById('connection-status').style.color = "var(--success)";
+        const grid = document.getElementById('car-grid');
 
-        // AI Bot Text Parser Function
-        function parseTextWithBot() {
-            const rawText = document.getElementById('bot-raw-text').value.trim();
-            if (!rawText) {
-                alert("Please paste some text into the bot parser box first!");
+        db.collection('cars').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+            if (snapshot.empty) {
+                grid.innerHTML = `<div class="empty-state">No cars currently listed in inventory. Check back soon!</div>`;
                 return;
             }
 
-            const textLower = rawText.toLowerCase();
-
-            // 1. Detect Make
-            const makes = ["toyota", "nissan", "subaru", "mazda", "honda", "mercedes-benz", "bmw", "volkswagen", "mitsubishi"];
-            let detectedMake = "";
-            for (let make of makes) {
-                if (textLower.includes(make)) {
-                    detectedMake = make.charAt(0).toUpperCase() + make.slice(1);
-                    if(detectedMake === "Mercedes-benz") detectedMake = "Mercedes-Benz";
-                    break;
-                }
-            }
-            if (detectedMake) {
-                document.getElementById('car-make').value = detectedMake;
-            }
-
-            // 2. Detect Year
-            const yearMatch = rawText.match(/\b(19\d{2}|20\d{2})\b/);
-            if (yearMatch) {
-                document.getElementById('car-year').value = yearMatch[0];
-            }
-
-            // 3. Detect Price
-            const priceRegex = /(?:kes|ksh|rs)?\s*([0-9.,]+)\s*(m|million)?/gi;
-            let match;
-            let foundPrice = "";
-            while ((match = priceRegex.exec(rawText)) !== null) {
-                let numStr = match[1].replace(/,/g, '');
-                let num = parseFloat(numStr);
-                if (!isNaN(num)) {
-                    if (match[2] || num < 50) {
-                        foundPrice = Math.round(num * 1000000);
-                        break;
-                    } else if (num > 50000) {
-                        foundPrice = num;
-                        break;
-                    }
-                }
-            }
-            if (foundPrice) {
-                document.getElementById('car-price').value = foundPrice;
-            }
-
-            // 4. Detect Transmission
-            if (textLower.includes("manual")) {
-                document.getElementById('car-transmission').value = "Manual";
-            } else if (textLower.includes("auto") || textLower.includes("triptronic")) {
-                document.getElementById('car-transmission').value = "Automatic";
-            }
-
-            // 5. Detect Location
-            const locations = ["nairobi", "mombasa", "nakuru", "eldoret", "kisumu", "thika"];
-            for (let loc of locations) {
-                if (textLower.includes(loc)) {
-                    document.getElementById('car-location').value = loc.charAt(0).toUpperCase() + loc.slice(1);
-                    break;
-                }
-            }
-
-            // 6. Push all raw description text into More Information
-            document.getElementById('car-more-info').value = rawText;
-            alert("✨ Bot successfully extracted main fields and stored description notes into 'More Information'!");
-        }
-
-        const carForm = document.getElementById('car-form');
-        const submitBtn = document.getElementById('submit-btn');
-        const formStatus = document.getElementById('form-status');
-
-        function compressImage(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = event => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        const MAX_WIDTH = 800;
-                        const MAX_HEIGHT = 600;
-
-                        if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height = Math.round((height * MAX_WIDTH) / width);
-                                width = MAX_WIDTH;
-                            }
-                        } else {
-                            if (height > MAX_HEIGHT) {
-                                width = Math.round((width * MAX_HEIGHT) / height);
-                                height = MAX_HEIGHT;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7));
-                    };
-                    img.onerror = error => reject(error);
-                };
-                reader.onerror = error => reject(error);
+            grid.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const car = doc.data();
+                const displayImg = car.imageUrl || (car.imageUrls && car.imageUrls[0]) || '';
+                
+                const card = document.createElement('div');
+                card.className = 'car-card';
+                card.innerHTML = `
+                    <div class="car-img-container">
+                        <img src="${displayImg}" class="car-img" alt="${car.title}">
+                        <div class="car-price-tag">KES ${Number(car.price).toLocaleString()}</div>
+                    </div>
+                    <div class="car-body">
+                        <div>
+                            <div class="car-title">${car.title}</div>
+                            <div class="car-details">
+                                <span>📅 ${car.year || 'N/A'}</span>
+                                <span>📍 ${car.location || 'N/A'}</span>
+                                <span>⚙️ ${car.transmission || 'N/A'}</span>
+                            </div>
+                            <div class="more-info-box">
+                                <strong>More Information:</strong><br>
+                                ${car.moreInfo || 'No extra notes provided.'}
+                            </div>
+                        </div>
+                        <a href="https://wa.me/?text=Hello,%20I%20am%20interested%20in%20the%20${encodeURIComponent(car.title)}%20listed%20at%20KES%20${car.price}" target="_blank" class="whatsapp-btn">💬 Inquire via WhatsApp</a>
+                    </div>
+                `;
+                grid.appendChild(card);
             });
-        }
-
-        carForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Compressing Images...";
-            formStatus.innerText = "";
-
-            const make = document.getElementById('car-make').value;
-            const model = document.getElementById('car-model').value;
-            const title = model ? `${make} ${model}` : make;
-            const price = document.getElementById('car-price').value;
-            const year = document.getElementById('car-year').value;
-            const transmission = document.getElementById('car-transmission').value;
-            const location = document.getElementById('car-location').value;
-            const moreInfo = document.getElementById('car-more-info').value;
-            const imageFiles = document.getElementById('car-images').files;
-
-            try {
-                let imageUrls = [];
-                for (let i = 0; i < imageFiles.length; i++) {
-                    const compressedBase64 = await compressImage(imageFiles[i]);
-                    imageUrls.push(compressedBase64);
-                }
-
-                submitBtn.innerText = "Saving to Database...";
-                await db.collection('cars').add({
-                    make,
-                    model: model || '',
-                    title,
-                    price: Number(price),
-                    year: year ? Number(year) : '',
-                    transmission: transmission || 'N/A',
-                    location: location || 'N/A',
-                    moreInfo: moreInfo || 'No additional details provided.',
-                    imageUrls,
-                    imageUrl: imageUrls[0],
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                formStatus.style.color = "var(--success)";
-                formStatus.innerText = "Car successfully listed and saved!";
-                carForm.reset();
-                document.getElementById('bot-raw-text').value = '';
-            } catch (error) {
-                console.error("Error adding document: ", error);
-                formStatus.style.color = "var(--danger)";
-                formStatus.innerText = "Error: " + error.message;
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Publish Listing";
-            }
+        }, (error) => {
+            console.error("Error loading cars:", error);
+            grid.innerHTML = `<div class="empty-state">Error loading inventory. Please check your connection.</div>`;
         });
-
-        function loadInventory() {
-            const tableBody = document.getElementById('inventory-table');
-            
-            db.collection('cars').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
-                if (snapshot.empty) {
-                    tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">No cars listed yet.</td></tr>`;
-                    return;
-                }
-
-                tableBody.innerHTML = "";
-                snapshot.forEach((doc) => {
-                    const car = doc.data();
-                    let imagesHtml = '';
-                    const imgs = car.imageUrls || [car.imageUrl];
-                    imgs.slice(0, 3).forEach(img => {
-                        if(img) imagesHtml += `<img src="${img}" class="car-thumb" alt="Car">`;
-                    });
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${imagesHtml}</td>
-                        <td><strong>${car.title}</strong><br><small style="color:var(--text-secondary);">${car.transmission || ''}</small></td>
-                        <td>${car.location || 'N/A'}</td>
-                        <td>KES ${Number(car.price).toLocaleString()}</td>
-                        <td>${car.year || 'N/A'}</td>
-                        <td><button class="btn-danger" onclick="deleteCar('${doc.id}')" style="padding: 5px 10px; font-size: 12px;">Delete</button></td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
-            }, (error) => {
-                console.error("Error loading inventory:", error);
-            });
-        }
-
-        window.deleteCar = async function(id) {
-            if (confirm("Are you sure you want to delete this listing?")) {
-                try {
-                    await db.collection('cars').doc(id).delete();
-                } catch (error) {
-                    alert("Error deleting record: " + error.message);
-                }
-            }
-        }
-
-        loadInventory();
     </script>
 </body>
 </html>
