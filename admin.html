@@ -220,9 +220,9 @@
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
           
-          // Completely safe filename generator (removes all weird characters/dots from original file name)
+          // FIXED: Clean filename string concatenation without weird dot characters
           const fileExt = file.name.split('.').pop() || 'jpg';
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+          const fileName = Date.now() + '_' + Math.floor(Math.random() * 100000) + '.' + fileExt;
           
           const { data: uploadData, error: uploadError } = await supabaseClient.storage
             .from('car-images')
