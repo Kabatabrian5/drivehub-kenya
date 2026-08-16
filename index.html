@@ -6,7 +6,7 @@
   <title>Kabata Motors - Kenya's Trusted Car Marketplace</title>
   <link rel="stylesheet" href="styles.css">
   
-  <!-- Firebase SDK Scripts (Compat version to match your admin panel) -->
+  <!-- Firebase SDK Scripts -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
@@ -16,12 +16,10 @@
   <header class="full-header">
     <div class="nav-container">
       <div style="display: flex; align-items: center; gap: 20px;">
-        <!-- Mobile Menu Toggle Button -->
         <button id="menuToggleBtn" class="mobile-menu-btn">☰</button>
         <h1 class="brand-title">KABATA <span style="color: #ff4d00;">MOTORS</span></h1>
       </div>
       
-      <!-- Desktop Nav Links -->
       <nav id="desktopNav" class="desktop-nav">
         <a href="#" class="nav-link active">Home</a>
         <a href="#" class="nav-link">🔥 Hot Deals</a>
@@ -55,7 +53,7 @@
     </div>
   </section>
 
-  <!-- Main Website Wrapper with 2-Column Layout -->
+  <!-- Main Website Wrapper -->
   <div class="main-layout-wrapper">
     
     <!-- LEFT SIDEBAR -->
@@ -84,7 +82,7 @@
       <div class="sidebar-card" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
         <h3>Car Broker Desk</h3>
         <p style="font-size: 13px; color: #555; margin-bottom: 12px;">Looking to buy or sell a second-hand car quickly? Connect directly with our broker service.</p>
-        <button style="width: 100%; background: #ff4d00; color: #fff; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">WhatsApp Broker</button>
+        <a href="https://wa.me/254721876026?text=Hello%20Kabata%20Motors,%20I%20want%20to%20sell%20my%20car%20through%20brokerage." target="_blank" style="display: block; text-align: center; background: #ff4d00; color: #fff; text-decoration: none; padding: 10px; border-radius: 4px; font-weight: bold;">WhatsApp Broker</a>
       </div>
     </aside>
 
@@ -133,29 +131,42 @@
 
   </div>
 
-  <!-- Modal Popup for Car Details -->
+  <!-- Modal Popup for Car Details & Comparison -->
   <div id="carModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
-    <div style="background: #fff; width: 100%; max-width: 600px; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; position: relative;">
+    <div style="background: #fff; width: 100%; max-width: 650px; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; position: relative;">
       <button onclick="closeModal()" style="position: absolute; top: 10px; right: 10px; background: #333; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 10;">&times;</button>
-      <div id="modalImageContainer" style="width: 100%; height: 280px; background: #000; overflow: hidden;">
-        <img id="modalMainImg" src="" alt="Car Image" style="width: 100%; height: 100%; object-fit: cover;">
+      
+      <!-- Fixed Proportion Image Viewer (Prevents squeezing) -->
+      <div style="width: 100%; background: #111; display: flex; justify-content: center; align-items: center; max-height: 320px; overflow: hidden;">
+        <img id="modalMainImg" src="" alt="Car Image" style="max-width: 100%; max-height: 320px; object-fit: contain;">
       </div>
+      
       <div id="modalThumbnails" style="display: flex; gap: 8px; padding: 10px; background: #f4f4f4; overflow-x: auto;"></div>
-      <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+      
+      <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px;">
         <h2 id="modalTitle" style="margin: 0; color: #111;"></h2>
         <h3 id="modalPrice" style="margin: 0; color: #ff4d00;"></h3>
+        
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; color: #444; background: #f9f9f9; padding: 12px; border-radius: 6px;">
           <div><strong>Year:</strong> <span id="modalYear"></span></div>
           <div><strong>Transmission:</strong> <span id="modalTransmission"></span></div>
           <div><strong>Location:</strong> <span id="modalLocation"></span></div>
           <div><strong>Make:</strong> <span id="modalMake"></span></div>
         </div>
-        <a id="whatsappInquiryBtn" href="#" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 10px;">💬 Enquire via WhatsApp</a>
+
+        <!-- WhatsApp Seller Talk Button -->
+        <a id="whatsappInquiryBtn" href="#" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold;">💬 Talk to Seller on WhatsApp</a>
+
+        <!-- Compare / Similar Vehicles Section -->
+        <div style="border-top: 1px solid #eee; padding-top: 15px;">
+          <h4 style="margin-bottom: 10px; color: #111; font-size: 1rem;">⚖️ Similar Cars & Price Comparisons</h4>
+          <div id="similarCarsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- FIREBASE DATA FETCHING & MODAL SCRIPT -->
+  <!-- SCRIPT -->
   <script>
     const firebaseConfig = {
         apiKey: "AIzaSyBxdXaRmelsJjHkY9VvFl63p3ID_Daq0SE",
@@ -182,7 +193,7 @@
         carListingsContainer.innerHTML = "";
         snapshot.forEach((doc) => {
             const car = doc.data();
-            allCarsData[doc.id] = car; // Save data for modal reference
+            allCarsData[doc.id] = car;
             
             const mainImage = car.imageUrl || (car.imageUrls && car.imageUrls[0]) || 'https://via.placeholder.com/300x200?text=No+Image';
             
@@ -190,7 +201,7 @@
             card.style.cssText = "border: 1px solid #eee; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.04); display: flex; flex-direction: column;";
             
             card.innerHTML = `
-                <div style="height: 180px; overflow: hidden; background: #f9f9f9;">
+                <div style="height: 180px; overflow: hidden; background: #f9f9f9; display: flex; align-items: center; justify-content: center;">
                     <img src="${mainImage}" alt="${car.title}" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
@@ -208,7 +219,6 @@
         });
     }, (error) => {
         console.error("Error fetching inventory: ", error);
-        carListingsContainer.innerHTML = `<p style="color: red; grid-column: 1 / -1;">Failed to load inventory.</p>`;
     });
 
     function openCarModal(id) {
@@ -225,7 +235,6 @@
         const images = car.imageUrls || [car.imageUrl];
         document.getElementById('modalMainImg').src = images[0];
 
-        // Build thumbnail selector inside modal
         const thumbContainer = document.getElementById('modalThumbnails');
         thumbContainer.innerHTML = '';
         images.forEach(img => {
@@ -233,16 +242,49 @@
                 const thumb = document.createElement('img');
                 thumb.src = img;
                 thumb.style.cssText = "width: 60px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent;";
-                thumb.onclick = () => {
-                    document.getElementById('modalMainImg').src = img;
-                };
+                thumb.onclick = () => { document.getElementById('modalMainImg').src = img; };
                 thumbContainer.appendChild(thumb);
             }
         });
 
-        // WhatsApp inquiry link generator
-        const whatsappMsg = encodeURIComponent(`Hello Kabata Motors, I am interested in the ${car.title} listed for KES ${Number(car.price).toLocaleString()} located in ${car.location}. Is it still available?`);
-        document.getElementById('whatsappInquiryBtn').href = `https://wa.me/254700000000?text=${whatsappMsg}`;
+        // WhatsApp Direct Talk Button to +254721876026
+        const whatsappMsg = encodeURIComponent(`Hello Kabata Motors, I want to talk about this car: ${car.title} priced at KES ${Number(car.price).toLocaleString()} (Ref ID: ${id}). Is it available?`);
+        document.getElementById('whatsappInquiryBtn').href = `https://wa.me/254721876026?text=${whatsappMsg}`;
+
+        // Find and render similar / comparable cars
+        const similarContainer = document.getElementById('similarCarsContainer');
+        similarContainer.innerHTML = '';
+        
+        let foundSimilar = 0;
+        for (const [otherId, otherCar] of Object.entries(allCarsData)) {
+            if (otherId === id) continue; // Skip current car
+            
+            // Match same make or similar price range (within 30% difference)
+            const priceDiff = Math.abs(otherCar.price - car.price) / car.price;
+            if (otherCar.make === car.make || priceDiff <= 0.3) {
+                foundSimilar++;
+                const simImg = otherCar.imageUrl || (otherCar.imageUrls && otherCar.imageUrls[0]) || '';
+                
+                const simCard = document.createElement('div');
+                simCard.style.cssText = "border: 1px solid #ddd; border-radius: 6px; padding: 8px; background: #fdfdfd; cursor: pointer; display: flex; flex-direction: column; gap: 4px;";
+                simCard.onclick = () => openCarModal(otherId);
+                
+                simCard.innerHTML = `
+                    <div style="height: 90px; overflow: hidden; background: #eee; border-radius: 4px;">
+                        <img src="${simImg}" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div style="font-size: 12px; font-weight: bold; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${otherCar.title}</div>
+                    <div style="font-size: 12px; color: #ff4d00; font-weight: bold;">KES ${Number(otherCar.price).toLocaleString()}</div>
+                `;
+                similarContainer.appendChild(simCard);
+                
+                if (foundSimilar >= 3) break; // Limit to 3 comparison items
+            }
+        }
+
+        if (foundSimilar === 0) {
+            similarContainer.innerHTML = `<p style="font-size: 13px; color: #777; grid-column: 1/-1;">No similar vehicles found for comparison right now.</p>`;
+        }
 
         document.getElementById('carModal').style.display = 'flex';
     }
@@ -251,25 +293,5 @@
         document.getElementById('carModal').style.display = 'none';
     }
   </script>
-
-  <!-- Mobile Bottom Navigation Bar -->
-  <nav class="mobile-bottom-nav">
-    <a href="#" class="nav-item active">
-      <span class="nav-icon">🏠</span>
-      <span>Home</span>
-    </a>
-    <a href="#" class="nav-item">
-      <span class="nav-icon">🔥</span>
-      <span>Deals</span>
-    </a>
-    <a href="#" class="nav-item">
-      <span class="nav-icon">💬</span>
-      <span>Broker</span>
-    </a>
-    <a href="#" class="nav-item">
-      <span class="nav-icon">📑</span>
-      <span>Guides</span>
-    </a>
-  </nav>
 </body>
 </html>
