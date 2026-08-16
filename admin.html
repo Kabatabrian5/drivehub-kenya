@@ -152,11 +152,46 @@
         const submitBtn = document.getElementById('submit-btn');
         const formStatus = document.getElementById('form-status');
 
-        function getBase64(file) {
+        // Function to resize image and compress to JPEG so it fits well under the 1MB limit
+        function compressImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Max dimensions constraint to keep file sizes low
+                        const MAX_WIDTH = 800;
+                        const MAX_HEIGHT = 600;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height = Math.round((height * MAX_WIDTH) / width);
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width = Math.round((width * MAX_HEIGHT) / height);
+                                height = MAX_HEIGHT;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Compress to JPEG format with 0.7 quality
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        resolve(compressedDataUrl);
+                    };
+                    img.onerror = error => reject(error);
+                };
                 reader.onerror = error => reject(error);
             });
         }
@@ -164,7 +199,7 @@
         carForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             submitBtn.disabled = true;
-            submitBtn.innerText = "Processing Images...";
+            submitBtn.innerText = "Compressing Images...";
             formStatus.innerText = "";
 
             const make = document.getElementById('car-make').value;
@@ -177,11 +212,10 @@
             const imageFiles = document.getElementById('car-images').files;
 
             try {
-                submitBtn.innerText = "Converting Images...";
                 let imageUrls = [];
                 for (let i = 0; i < imageFiles.length; i++) {
-                    const base64String = await getBase64(imageFiles[i]);
-                    imageUrls.push(base64String);
+                    const compressedBase64 = await compressImage(imageFiles[i]);
+                    imageUrls.push(compressedBase64);
                 }
 
                 submitBtn.innerText = "Saving to Database...";
@@ -199,7 +233,7 @@
                 });
 
                 formStatus.style.color = "var(--success)";
-                formStatus.innerText = "Car successfully listed!";
+                formStatus.innerText = "Car successfully listed and saved!";
                 carForm.reset();
             } catch (error) {
                 console.error("Error adding document: ", error);
