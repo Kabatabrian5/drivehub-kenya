@@ -27,7 +27,7 @@
     <div class="smart-box">
       <label style="color: #ff4d00;">⚡ Quick WhatsApp Text Parser</label>
       <label style="font-weight: normal; font-size: 12px; margin-bottom: 5px;">Paste messy paragraph here and click Auto-Fill:</label>
-      <textarea id="rawWhatsAppText" placeholder="e.g. Toyota Harrier 2021 pearl white 3.8M Nairobi automatic petrol..."></textarea>
+      <textarea id="rawWhatsAppText" placeholder="e.g. Toyota Harrier 2021 pearl white 3.8M Nairobi..."></textarea>
       <button type="button" id="parseBtn" style="background: #333; margin-top: 8px; padding: 8px; font-size: 13px;">Auto-Fill Form Fields</button>
     </div>
     
@@ -39,7 +39,7 @@
 
       <div class="form-group">
         <label>Make</label>
-        <select id="make" required>
+        <select id="make">
           <option value="">Select Make...</option>
           <option value="Toyota">Toyota</option>
           <option value="Mazda">Mazda</option>
@@ -66,7 +66,7 @@
 
       <div class="form-group">
         <label>Model</label>
-        <input type="text" id="model" placeholder="e.g. Harrier, CX-5, Forester" required>
+        <input type="text" id="model" placeholder="e.g. Harrier, CX-5, Forester">
       </div>
 
       <div class="form-group">
@@ -76,12 +76,12 @@
 
       <div class="form-group">
         <label>Year of Manufacture</label>
-        <input type="number" id="year" placeholder="e.g. 2020" required>
+        <input type="number" id="year" placeholder="e.g. 2020">
       </div>
 
       <div class="form-group">
         <label>Location</label>
-        <select id="location" required>
+        <select id="location">
           <option value="">Select Location...</option>
           <option value="Nairobi">Nairobi</option>
           <option value="Mombasa">Mombasa</option>
@@ -104,7 +104,8 @@
 
       <div class="form-group">
         <label>Transmission</label>
-        <select id="transmission" required>
+        <select id="transmission">
+          <option value="">Select Transmission...</option>
           <option value="Automatic">Automatic</option>
           <option value="Manual">Manual</option>
           <option value="Electric">Electric</option>
@@ -113,7 +114,8 @@
 
       <div class="form-group">
         <label>Fuel Type</label>
-        <select id="fuel" required>
+        <select id="fuel">
+          <option value="">Select Fuel Type...</option>
           <option value="Petrol">Petrol</option>
           <option value="Diesel">Diesel</option>
           <option value="Hybrid">Hybrid</option>
@@ -123,7 +125,7 @@
 
       <div class="form-group">
         <label>Engine CC</label>
-        <select id="cc" required>
+        <select id="cc">
           <option value="">Select CC Range...</option>
           <option value="Under 1,000 CC">Under 1,000 CC</option>
           <option value="1,000 CC - 1,300 CC">1,000 CC - 1,300 CC</option>
@@ -158,17 +160,16 @@
       const foundMake = makes.find(m => text.toLowerCase().includes(m.toLowerCase()));
       if (foundMake) document.getElementById('make').value = foundMake;
 
-      // 2. Detect Year (looks for 20xx)
+      // 2. Detect Year
       const yearMatch = text.match(/20\d{2}/);
       if (yearMatch) document.getElementById('year').value = yearMatch[0];
 
-      // 3. Detect Price (looks for numbers with 'M', 'm', or millions formatting)
+      // 3. Detect Price
       const priceMatch = text.match(/(\d+(\.\d+)?)\s*(m|mil|million)/i);
       if (priceMatch) {
         const calculatedPrice = parseFloat(priceMatch[1]) * 1000000;
         document.getElementById('price').value = calculatedPrice;
       } else {
-        // Fallback search for raw numbers like 3200000
         const rawNumMatch = text.match(/\b\d{6,8}\b/);
         if (rawNumMatch) document.getElementById('price').value = rawNumMatch[0];
       }
@@ -183,7 +184,7 @@
         document.getElementById('transmission').value = 'Manual';
       } else if (text.toLowerCase().includes('electric')) {
         document.getElementById('transmission').value = 'Electric';
-      } else {
+      } else if (text.toLowerCase().includes('auto') || text.toLowerCase().includes('automatic')) {
         document.getElementById('transmission').value = 'Automatic';
       }
 
@@ -194,11 +195,11 @@
         document.getElementById('fuel').value = 'Hybrid';
       } else if (text.toLowerCase().includes('electric')) {
         document.getElementById('fuel').value = 'Electric';
-      } else {
+      } else if (text.toLowerCase().includes('petrol')) {
         document.getElementById('fuel').value = 'Petrol';
       }
 
-      alert('Form auto-filled successfully from text! Review values and click upload.');
+      alert('Auto-fill complete! Review values and click upload.');
     });
 
     // Form submission handler
@@ -235,14 +236,14 @@
 
         const { error: dbError } = await supabaseClient.from('cars').insert([
           {
-            make: document.getElementById('make').value,
-            model: document.getElementById('model').value,
-            price: Number(document.getElementById('price').value),
-            year: Number(document.getElementById('year').value),
-            location: document.getElementById('location').value,
-            transmission: document.getElementById('transmission').value,
-            fuel: document.getElementById('fuel').value,
-            cc: document.getElementById('cc').value,
+            make: document.getElementById('make').value || 'Other',
+            model: document.getElementById('model').value || 'Vehicle',
+            price: Number(document.getElementById('price').value) || 0,
+            year: Number(document.getElementById('year').value) || 2020,
+            location: document.getElementById('location').value || 'Nairobi',
+            transmission: document.getElementById('transmission').value || 'Automatic',
+            fuel: document.getElementById('fuel').value || 'Petrol',
+            cc: document.getElementById('cc').value || 'N/A',
             images: uploadedImageUrls,
             created_at: new Date().toISOString()
           }
