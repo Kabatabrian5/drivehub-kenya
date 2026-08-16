@@ -51,11 +51,6 @@
       .filters-grid { grid-template-columns: repeat(3, 1fr); }
     }
     .filters-grid select, .filters-grid input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
-    
-    .filter-actions { display: flex; gap: 8px; grid-column: 1 / -1; margin-top: 4px; }
-    .filter-actions button { flex: 1; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; border: none; }
-    #applyFilterBtn { background: #ff4d00; color: #fff; }
-    #resetFilterBtn { background: #e2e8f0; color: #334155; }
 
     /* Car Grid Listings - FIXED FOR PROPER SPREAD */
     .car-grid { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; }
@@ -192,12 +187,6 @@
           <option value="Manual">Manual</option>
           <option value="CVT">CVT</option>
         </select>
-
-        <!-- Filter Action Buttons -->
-        <div class="filter-actions">
-          <button id="applyFilterBtn">🔍 Apply Filters</button>
-          <button id="resetFilterBtn">🔄 Reset</button>
-        </div>
       </div>
     </div>
 
@@ -383,20 +372,8 @@
         }
     }
 
-    // Attach event listeners for real-time filter reactivity and manual action buttons
-    document.getElementById('applyFilterBtn').onclick = () => renderCars(allCarsData);
-    document.getElementById('resetFilterBtn').onclick = () => {
-        document.getElementById('makeFilter').value = '';
-        document.getElementById('searchInput').value = '';
-        document.getElementById('priceRangeFilter').value = '';
-        document.getElementById('yearRangeFilter').value = '';
-        document.getElementById('locationFilter').value = '';
-        document.getElementById('transmissionFilter').value = '';
-        renderCars(allCarsData);
-    };
-
-    // Live search input tracking
-    document.getElementById('searchInput').oninput = () => renderCars(allCards = allCarsData);
+    // Live search input tracking & automatic reactivity on filter changes
+    document.getElementById('searchInput').oninput = () => renderCars(allCarsData);
     document.getElementById('makeFilter').onchange = () => renderCars(allCarsData);
     document.getElementById('priceRangeFilter').onchange = () => renderCars(allCarsData);
     document.getElementById('yearRangeFilter').onchange = () => renderCars(allCarsData);
