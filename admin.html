@@ -146,8 +146,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const supabaseClient = supabase.createClient(
-      'https://qzqvyceabwxvzeyifnpw.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cXZ5Y2VhYnd4dnpleWxmbnB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NzEzMzUsImV4cCI6MjEwMjM0NzMzNX0.9fDJGRjaCamvZhxkfhwu08vFTTPcabZ00VBvi_av1wk'
+      'https://zzlwuvddgjktyldenmklu.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp6bHd1dmRkZ2t0eWxkZW5ta2x1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4Nzc4NTQsImV4cCI6MjEwMjQ1Mzg1NH0.7Wfo5M5W_gpNvKID91UnfXUlLQDQlC9-T75RXhUV1vg'
     );
 
     // Smart Text Parser Logic
@@ -155,16 +155,13 @@
       const text = document.getElementById('rawWhatsAppText').value;
       if (!text.trim()) return alert('Please paste some text first!');
 
-      // 1. Detect Make
       const makes = ['Toyota', 'Mazda', 'Subaru', 'Nissan', 'Honda', 'Mitsubishi', 'Mercedes-Benz', 'BMW', 'Volkswagen', 'Audi', 'Lexus', 'Land Rover', 'Range Rover', 'Ford', 'Hyundai', 'Kia', 'Suzuki', 'Isuzu', 'Peugeot', 'Porsche'];
       const foundMake = makes.find(m => text.toLowerCase().includes(m.toLowerCase()));
       if (foundMake) document.getElementById('make').value = foundMake;
 
-      // 2. Detect Year
       const yearMatch = text.match(/20\d{2}/);
       if (yearMatch) document.getElementById('year').value = yearMatch[0];
 
-      // 3. Detect Price
       const priceMatch = text.match(/(\d+(\.\d+)?)\s*(m|mil|million)/i);
       if (priceMatch) {
         const calculatedPrice = parseFloat(priceMatch[1]) * 1000000;
@@ -174,12 +171,10 @@
         if (rawNumMatch) document.getElementById('price').value = rawNumMatch[0];
       }
 
-      // 4. Detect Location
       const locations = ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Thika', 'Kitengela', 'Ruiru', 'Kiambu', 'Machakos', 'Meru', 'Nyeri', 'Kakamega', 'Kisii', 'Malindi', 'Naivasha'];
       const foundLoc = locations.find(l => text.toLowerCase().includes(l.toLowerCase()));
       if (foundLoc) document.getElementById('location').value = foundLoc;
 
-      // 5. Detect Transmission
       if (text.toLowerCase().includes('manual')) {
         document.getElementById('transmission').value = 'Manual';
       } else if (text.toLowerCase().includes('electric')) {
@@ -188,7 +183,6 @@
         document.getElementById('transmission').value = 'Automatic';
       }
 
-      // 6. Detect Fuel Type
       if (text.toLowerCase().includes('diesel')) {
         document.getElementById('fuel').value = 'Diesel';
       } else if (text.toLowerCase().includes('hybrid')) {
@@ -219,8 +213,6 @@
 
         for (let i = 0; i < imageFiles.length; i++) {
           const file = imageFiles[i];
-          
-          // FIXED: Clean filename string concatenation without weird dot characters
           const fileExt = file.name.split('.').pop() || 'jpg';
           const fileName = Date.now() + '_' + Math.floor(Math.random() * 100000) + '.' + fileExt;
           
