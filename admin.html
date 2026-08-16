@@ -66,7 +66,7 @@
                     </div>
                     <div class="form-group">
                         <label>Model & Details</label>
-                        <input type="text" id="car-model" required placeholder="e.g. Crown / Axela / Impreza">
+                        <input type="text" id="car-model" placeholder="e.g. Crown / Axela / Impreza">
                     </div>
                     <div class="form-group">
                         <label>Price (KES)</label>
@@ -74,18 +74,19 @@
                     </div>
                     <div class="form-group">
                         <label>Year</label>
-                        <input type="number" id="car-year" required placeholder="2018">
+                        <input type="number" id="car-year" placeholder="2018">
                     </div>
                     <div class="form-group">
                         <label>Transmission</label>
                         <select id="car-transmission">
+                            <option value="">Select Transmission</option>
                             <option value="Automatic">Automatic</option>
                             <option value="Manual">Manual</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Location</label>
-                        <select id="car-location" required>
+                        <select id="car-location">
                             <option value="">Select Location</option>
                             <option value="Nairobi">Nairobi</option>
                             <option value="Mombasa">Mombasa</option>
@@ -168,7 +169,7 @@
 
             const make = document.getElementById('car-make').value;
             const model = document.getElementById('car-model').value;
-            const title = `${make} ${model}`;
+            const title = model ? `${make} ${model}` : make;
             const price = document.getElementById('car-price').value;
             const year = document.getElementById('car-year').value;
             const transmission = document.getElementById('car-transmission').value;
@@ -186,19 +187,19 @@
                 submitBtn.innerText = "Saving to Database...";
                 await db.collection('cars').add({
                     make,
-                    model,
+                    model: model || '',
                     title,
                     price: Number(price),
-                    year: Number(year),
-                    transmission,
-                    location,
-                    imageUrls, // Saved as an array of images
-                    imageUrl: imageUrls[0], // Primary thumbnail fallback
+                    year: year ? Number(year) : '',
+                    transmission: transmission || 'N/A',
+                    location: location || 'N/A',
+                    imageUrls,
+                    imageUrl: imageUrls[0],
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 formStatus.style.color = "var(--success)";
-                formStatus.innerText = "Car successfully listed with multiple images!";
+                formStatus.innerText = "Car successfully listed!";
                 carForm.reset();
             } catch (error) {
                 console.error("Error adding document: ", error);
@@ -224,7 +225,6 @@
                     const car = doc.data();
                     let imagesHtml = '';
                     
-                    // Support both single and multiple image database schemas
                     const imgs = car.imageUrls || [car.imageUrl];
                     imgs.slice(0, 3).forEach(img => {
                         if(img) imagesHtml += `<img src="${img}" class="car-thumb" alt="Car">`;
@@ -233,10 +233,10 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${imagesHtml}</td>
-                        <td><strong>${car.title}</strong><br><small style="color:var(--text-secondary);">${car.transmission}</small></td>
+                        <td><strong>${car.title}</strong><br><small style="color:var(--text-secondary);">${car.transmission || ''}</small></td>
                         <td>${car.location || 'N/A'}</td>
                         <td>KES ${Number(car.price).toLocaleString()}</td>
-                        <td>${car.year}</td>
+                        <td>${car.year || 'N/A'}</td>
                         <td><button class="btn-danger" onclick="deleteCar('${doc.id}')" style="padding: 5px 10px; font-size: 12px;">Delete</button></td>
                     `;
                     tableBody.appendChild(tr);
