@@ -51,11 +51,6 @@
       .filters-grid { grid-template-columns: repeat(3, 1fr); }
     }
     .filters-grid select, .filters-grid input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
-    
-    .filter-actions { display: flex; gap: 8px; grid-column: 1 / -1; margin-top: 4px; }
-    .filter-actions button { flex: 1; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; border: none; }
-    #applyFilterBtn { background: #ff4d00; color: #fff; }
-    #resetFilterBtn { background: #e2e8f0; color: #334155; }
 
     /* Car Grid Listings */
     .car-grid { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; }
@@ -186,11 +181,6 @@
           <option value="Manual">Manual</option>
           <option value="CVT">CVT</option>
         </select>
-
-        <div class="filter-actions">
-          <button id="applyFilterBtn">🔍 Apply Filters</button>
-          <button id="resetFilterBtn">🔄 Reset</button>
-        </div>
       </div>
     </div>
 
@@ -209,9 +199,9 @@
     <div style="background: #fff; width: 100%; max-width: 600px; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; max-height: 90vh; position: relative;">
       <button onclick="closeModal()" style="position: absolute; top: 10px; right: 10px; background: #333; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 10;">&times;</button>
       
-      <!-- Flexible Image Viewer - OBJECT-FIT COVER TO FILL BLACK AREA -->
-      <div style="width: 100%; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 240px; overflow: hidden;">
-        <img id="modalMainImg" src="" alt="Car Image" style="width: 100%; height: 100%; object-fit: cover;">
+      <!-- Flexible Image Viewer - OBJECT-FIT CONTAIN TO SHOW FULL CAR INSTEAD OF CLOSE-UP -->
+      <div style="width: 100%; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 260px; overflow: hidden;">
+        <img id="modalMainImg" src="" alt="Car Image" style="width: 100%; height: 100%; object-fit: contain;">
       </div>
       
       <div id="modalThumbnails" style="display: flex; gap: 6px; padding: 8px; background: #f4f4f4; overflow-x: auto;"></div>
@@ -302,7 +292,7 @@
         carListingsContainer.innerHTML = `<p style="color: #d97706; grid-column: 1 / -1; text-align: center; font-size: 14px;">Unable to load inventory. Please check your network connection.</p>`;
     });
 
-    // Render Function with Active Filters Applied
+    // Render Function with Live Filters Applied Automatically on Change/Input
     function renderCars(carsMap) {
         const makeVal = document.getElementById('makeFilter').value.toLowerCase();
         const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -370,17 +360,7 @@
         }
     }
 
-    document.getElementById('applyFilterBtn').onclick = () => renderCars(allCarsData);
-    document.getElementById('resetFilterBtn').onclick = () => {
-        document.getElementById('makeFilter').value = '';
-        document.getElementById('searchInput').value = '';
-        document.getElementById('priceRangeFilter').value = '';
-        document.getElementById('yearRangeFilter').value = '';
-        document.getElementById('locationFilter').value = '';
-        document.getElementById('transmissionFilter').value = '';
-        renderCars(allCarsData);
-    };
-
+    // Attach live filter events
     document.getElementById('searchInput').oninput = () => renderCars(allCarsData);
     document.getElementById('makeFilter').onchange = () => renderCars(allCarsData);
     document.getElementById('priceRangeFilter').onchange = () => renderCars(allCarsData);
