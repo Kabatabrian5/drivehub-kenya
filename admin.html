@@ -34,7 +34,7 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 14px; }
         th { color: var(--text-secondary); font-weight: 600; }
         .status-msg { margin-top: 10px; font-size: 14px; font-weight: 500; }
-        .car-thumb { width: 50px; height: 35px; object-fit: cover; border-radius: 4px; }
+        .car-thumb { width: 50px; height: 35px; object-fit: cover; border-radius: 4px; margin-right: 3px; }
     </style>
 </head>
 <body>
@@ -96,8 +96,8 @@
                         </select>
                     </div>
                     <div class="form-group full">
-                        <label>Car Image</label>
-                        <input type="file" id="car-image" accept="image/*" required>
+                        <label>Car Images (Select multiple)</label>
+                        <input type="file" id="car-images" accept="image/*" multiple required>
                     </div>
                 </div>
                 <button type="submit" id="submit-btn">Publish Listing</button>
@@ -111,7 +111,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Image</th>
+                        <th>Images</th>
                         <th>Car</th>
                         <th>Location</th>
                         <th>Price</th>
@@ -163,7 +163,7 @@
         carForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             submitBtn.disabled = true;
-            submitBtn.innerText = "Processing Image...";
+            submitBtn.innerText = "Processing Images...";
             formStatus.innerText = "";
 
             const make = document.getElementById('car-make').value;
@@ -173,12 +173,17 @@
             const year = document.getElementById('car-year').value;
             const transmission = document.getElementById('car-transmission').value;
             const location = document.getElementById('car-location').value;
-            const imageFile = document.getElementById('car-image').files[0];
+            const imageFiles = document.getElementById('car-images').files;
 
             try {
-                submitBtn.innerText = "Saving to Database...";
-                const imageUrl = await getBase64(imageFile);
+                submitBtn.innerText = "Converting Images...";
+                let imageUrls = [];
+                for (let i = 0; i < imageFiles.length; i++) {
+                    const base64String = await getBase64(imageFiles[i]);
+                    imageUrls.push(base64String);
+                }
 
+                submitBtn.innerText = "Saving to Database...";
                 await db.collection('cars').add({
                     make,
                     model,
@@ -187,12 +192,13 @@
                     year: Number(year),
                     transmission,
                     location,
-                    imageUrl,
+                    imageUrls, // Saved as an array of images
+                    imageUrl: imageUrls[0], // Primary thumbnail fallback
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
                 formStatus.style.color = "var(--success)";
-                formStatus.innerText = "Car successfully listed!";
+                formStatus.innerText = "Car successfully listed with multiple images!";
                 carForm.reset();
             } catch (error) {
                 console.error("Error adding document: ", error);
@@ -216,9 +222,17 @@
                 tableBody.innerHTML = "";
                 snapshot.forEach((doc) => {
                     const car = doc.data();
+                    let imagesHtml = '';
+                    
+                    // Support both single and multiple image database schemas
+                    const imgs = car.imageUrls || [car.imageUrl];
+                    imgs.slice(0, 3).forEach(img => {
+                        if(img) imagesHtml += `<img src="${img}" class="car-thumb" alt="Car">`;
+                    });
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><img src="${car.imageUrl}" class="car-thumb" alt="Car"></td>
+                        <td>${imagesHtml}</td>
                         <td><strong>${car.title}</strong><br><small style="color:var(--text-secondary);">${car.transmission}</small></td>
                         <td>${car.location || 'N/A'}</td>
                         <td>KES ${Number(car.price).toLocaleString()}</td>
