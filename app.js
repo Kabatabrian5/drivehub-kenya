@@ -190,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    // Populate standard general filter options
     const kenyanMarketMakes = [
       ...cars.map(c => c.make),
       'Toyota', 'Mazda', 'Subaru', 'Nissan', 'Honda', 'Mitsubishi', 
@@ -202,8 +201,35 @@ document.addEventListener('DOMContentLoaded', () => {
     populateSelect(locationFilter, cars.map(c => c.location));
     populateSelect(transmissionFilter, cars.map(c => c.transmission));
     populateSelect(fuelFilter, cars.map(c => c.fuel));
-    populateSelect(yearFilter, cars.map(c => c.year));
     populateSelect(ccFilter, cars.map(c => c.cc));
+
+    // Custom Year Range Filter Populator (2010+ to 2023+)
+    if (yearFilter) {
+      yearFilter.innerHTML = '<option value="">Min Year</option>';
+      const yearOptions = [
+        { label: '2023 and Newer', value: 2023 },
+        { label: '2022 and Newer', value: 2022 },
+        { label: '2021 and Newer', value: 2021 },
+        { label: '2020 and Newer', value: 2020 },
+        { label: '2019 and Newer', value: 2019 },
+        { label: '2018 and Newer', value: 2018 },
+        { label: '2017 and Newer', value: 2017 },
+        { label: '2016 and Newer', value: 2016 },
+        { label: '2015 and Newer', value: 2015 },
+        { label: '2014 and Newer', value: 2014 },
+        { label: '2013 and Newer', value: 2013 },
+        { label: '2012 and Newer', value: 2012 },
+        { label: '2011 and Newer', value: 2011 },
+        { label: '2010 and Newer', value: 2010 }
+      ];
+
+      yearOptions.forEach(optData => {
+        const opt = document.createElement('option');
+        opt.value = optData.value;
+        opt.textContent = optData.label;
+        yearFilter.appendChild(opt);
+      });
+    }
 
     // Custom Natural English Price Filter Options Populator
     if (priceFilter) {
@@ -236,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const sLoc = locationFilter ? locationFilter.value.toLowerCase() : '';
       const sTrans = transmissionFilter ? transmissionFilter.value.toLowerCase() : '';
       const sFuel = fuelFilter ? fuelFilter.value.toLowerCase() : '';
-      const sYear = yearFilter ? yearFilter.value : '';
+      const sYear = yearFilter && yearFilter.value ? Number(yearFilter.value) : null;
       const sCc = ccFilter ? ccFilter.value : '';
       const sPrice = priceFilter && priceFilter.value ? Number(priceFilter.value) : null;
 
@@ -246,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const matchesLoc = sLoc === "" || car.location.toLowerCase() === sLoc;
         const matchesTrans = sTrans === "" || car.transmission.toLowerCase() === sTrans;
         const matchesFuel = sFuel === "" || car.fuel.toLowerCase() === sFuel;
-        const matchesYear = sYear === "" || Number(car.year) >= Number(sYear);
+        const matchesYear = sYear === null || Number(car.year) >= sYear;
         const matchesCc = sCc === "" || Number(car.cc) === Number(sCc);
         const matchesPrice = sPrice === null || Number(car.price) <= sPrice;
 
