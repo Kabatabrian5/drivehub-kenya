@@ -1,2 +1,2 @@
-# drivehub-kenya
+kabata-motors-kenya
 Free second-hand car marketplace for Kenyan buyers
