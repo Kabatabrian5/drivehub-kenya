@@ -153,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const compSection = document.getElementById('comparisonSection');
     if (!currentCar || !compSection) return;
 
-    // Filter cars with same make and model, excluding the exact same array item
     const matchingModels = cars.filter((c, idx) => 
       c.make.toLowerCase() === currentCar.make.toLowerCase() && 
       c.model.toLowerCase() === currentCar.model.toLowerCase() && 
@@ -191,7 +190,15 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    populateSelect(makeFilter, cars.map(c => c.make));
+    // Expanded comprehensive Kenyan market car makes dataset list integration
+    const kenyanMarketMakes = [
+      ...cars.map(c => c.make),
+      'Toyota', 'Mazda', 'Subaru', 'Nissan', 'Honda', 'Mitsubishi', 
+      'Mercedes-Benz', 'BMW', 'Volkswagen', 'Audi', 'Lexus', 'Land Rover', 
+      'Range Rover', 'Ford', 'Hyundai', 'Kia', 'Suzuki', 'Isuzu', 'Peugeot', 'Porsche'
+    ];
+
+    populateSelect(makeFilter, kenyanMarketMakes);
     populateSelect(locationFilter, cars.map(c => c.location));
     populateSelect(transmissionFilter, cars.map(c => c.transmission));
     populateSelect(fuelFilter, cars.map(c => c.fuel));
@@ -234,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (container) container.innerHTML = `<p style="color:red; text-align:center;">Error: cars-data.js is not loaded properly.</p>`;
   }
 
-  // Safely Load Supabase Brand Logos in Background
   async function loadBrandsAsync() {
     if (!brandLogoContainer || typeof supabase === 'undefined') return;
     try {
