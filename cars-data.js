@@ -89,8 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Global Function to Open Detailed Car Modal with Fast Gallery
   window.openCarDetails = function(carIndex) {
-    const car = cars[carIndex];
+    const activeCarsList = window.filteredCarsData || cars;
+    const car = activeCarsList[carIndex];
     if (!car) return;
+
+    // Find absolute index in the global cars array for reliable comparison lookups
+    const absoluteIndex = cars.findIndex(c => c === car);
 
     const timeAgo = getRelativeTimeString(car.created_at || car.dateAdded);
     
@@ -119,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           <div style="margin-left:auto; display:flex; gap:8px;">
             <button onclick="compareSamePrice(${car.price}, '${car.make} ${car.model}')" style="background:#ffc107; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">⚖️ Compare Price</button>
-            <button onclick="compareSameMakeModel(${carIndex})" style="background:#111; color:#fff; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">🚗 Compare Same Model</button>
+            <button onclick="compareSameMakeModel(${absoluteIndex})" style="background:#111; color:#fff; border:none; padding:8px 12px; border-radius:4px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px; font-size:13px;">🚗 Compare Same Model</button>
           </div>
         </div>
 
@@ -242,6 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   if (typeof cars !== 'undefined') {
+    window.filteredCarsData = cars;
     renderCars(cars);
 
     const populateSelect = (element, values) => {
@@ -383,6 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return matchesQuery && matchesMake && matchesLoc && matchesTrans && matchesFuel && matchesYear && matchesCc && matchesPrice;
       });
 
+      window.filteredCarsData = filtered;
       renderCars(filtered);
     };
 
