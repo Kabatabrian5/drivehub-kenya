@@ -98,7 +98,7 @@
       <a href="#">🛠️ Our Services</a>
       <a href="#">📑 Import Duty Guide</a>
       <a href="#">⭐ Verified Sellers</a>
-      <a href="https://wa.me/254721876026?text=Hello%20Kabata%20Motors,%20I%20want%20to%20sell%20my%20car%20through%20brokerage." target="_blank" style="color: #ff4d00; font-weight: bold;">💬 WhatsApp Car Broker Desk</a>
+      <a href="https://wa.me/254721876026?text=Hello%20Kabata%20Motors,%20I%20want%20to%20sell%20my%20car%20through%20brokerage%20via%20https://kabatamotors.vercel.app." target="_blank" style="color: #ff4d00; font-weight: bold;">💬 WhatsApp Car Broker Desk</a>
     </div>
   </div>
 
@@ -424,10 +424,10 @@
             <div style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:10px; border-radius:6px; font-size:13px; text-align:center; font-weight:bold; margin-bottom:8px;">
               ❌ Unit No Longer Available
             </div>
-            <a href="https://wa.me/254721876026?text=${encodeURIComponent(`Hello Kabata Motors, I saw that this car (${car.title}) is sold. Do you have a similar unit available?`)}" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">💬 Ask WhatsApp Broker for Similar Units</a>
+            <a href="https://wa.me/254721876026?text=${encodeURIComponent(`Hello Kabata Motors, I saw that this car (${car.title}) on https://kabatamotors.vercel.app is sold. Do you have a similar unit available?`)}" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">💬 Ask WhatsApp Broker for Similar Units</a>
           `;
         } else {
-          const whatsappMsg = encodeURIComponent(`Hello Kabata Motors, I want to talk about this car: ${car.title} priced at KES ${Number(car.price).toLocaleString()} (Ref ID: ${id}). Is it available?`);
+          const whatsappMsg = encodeURIComponent(`Hello Kabata Motors, I want to talk about this car: ${car.title} priced at KES ${Number(car.price).toLocaleString()} (Ref ID: ${id}). Check it out on https://kabatamotors.vercel.app. Is it available?`);
           actionContainer.innerHTML = `
             <a id="whatsappInquiryBtn" href="https://wa.me/254721876026?text=${whatsappMsg}" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">💬 Talk to Seller on WhatsApp</a>
           `;
