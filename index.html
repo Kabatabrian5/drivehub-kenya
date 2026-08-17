@@ -200,8 +200,9 @@
       <button onclick="closeModal()" style="position: absolute; top: 10px; right: 10px; background: #333; color: #fff; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; cursor: pointer; z-index: 10;">&times;</button>
       
       <!-- Flexible Image Viewer - OBJECT-FIT CONTAIN TO SHOW FULL CAR INSTEAD OF CLOSE-UP -->
-      <div style="width: 100%; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 260px; overflow: hidden;">
+      <div style="width: 100%; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 260px; overflow: hidden; position: relative;">
         <img id="modalMainImg" src="" alt="Car Image" style="width: 100%; height: 100%; object-fit: contain;">
+        <div id="modalSoldOverlay"></div>
       </div>
       
       <div id="modalThumbnails" style="display: flex; gap: 6px; padding: 8px; background: #f4f4f4; overflow-x: auto;"></div>
@@ -223,8 +224,10 @@
           <p id="modalMoreInfo" style="font-size: 13px; color: #475569; white-space: pre-line; line-height: 1.4; margin: 0;"></p>
         </div>
 
-        <!-- WhatsApp Seller Talk Button -->
-        <a id="whatsappInquiryBtn" href="#" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">💬 Talk to Seller on WhatsApp</a>
+        <!-- WhatsApp Seller Talk Button / Sold Status Box -->
+        <div id="modalActionContainer">
+          <a id="whatsappInquiryBtn" href="#" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">💬 Talk to Seller on WhatsApp</a>
+        </div>
 
         <!-- Same Make & Model Vehicles Section -->
         <div style="border-top: 1px solid #eee; padding-top: 12px;">
@@ -332,24 +335,32 @@
             const mainImage = car.imageUrl || (car.imageUrls && car.imageUrls[0]) || 'https://via.placeholder.com/300x200?text=No+Image';
             const timeAgoText = getTimeAgo(car.createdAt);
 
+            // Check if vehicle is marked as sold
+            const isSold = car.status === 'sold' || car.is_sold === true;
+            const soldBadgeHTML = isSold ? `
+              <div style="position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:3; pointer-events:none;">
+                <span style="background:#dc2626; color:#fff; font-size:1.1rem; font-weight:800; padding:4px 16px; letter-spacing:2px; transform:rotate(-10deg); border-radius:4px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">SOLD</span>
+              </div>` : '';
+
             const card = document.createElement('div');
-            card.style.cssText = "border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column;";
+            card.style.cssText = `border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; position: relative; ${isSold ? 'opacity: 0.9;' : ''}`;
             
             card.innerHTML = `
                 <div style="height: 160px; overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; position: relative;">
-                    <img src="${mainImage}" alt="${car.title}" style="width: 100%; height: 100%; object-fit: cover;">
-                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.75); color: #fff; padding: 3px 8px; font-size: 11px; border-radius: 4px; font-weight: 500;">⏱️ ${timeAgoText.replace('Posted ', '')}</span>
+                    <img src="${mainImage}" alt="${car.title}" style="width: 100%; height: 100%; object-fit: cover; ${isSold ? 'filter: grayscale(40%);' : ''}">
+                    ${soldBadgeHTML}
+                    <span style="position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.75); color: #fff; padding: 3px 8px; font-size: 11px; border-radius: 4px; font-weight: 500; z-index: 4;">⏱️ ${timeAgoText.replace('Posted ', '')}</span>
                 </div>
                 <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px; flex-grow: 1;">
                     <h4 style="font-size: 1rem; color: #111; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${car.title}</h4>
-                    <p style="color: #ff4d00; font-weight: bold; font-size: 1rem; margin: 0;">KES ${Number(car.price).toLocaleString()}</p>
+                    <p style="color: ${isSold ? '#64748b' : '#ff4d00'}; font-weight: bold; font-size: 1rem; margin: 0;">KES ${Number(car.price).toLocaleString()} ${isSold ? '<span style="font-size:11px; font-weight:normal; background:#fee2e2; color:#991b1b; padding:2px 4px; border-radius:3px;">(Sold)</span>' : ''}</p>
                     <div style="display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-top: 4px; border-top: 1px solid #f1f5f9; padding-top: 6px;">
                         <span>📅 ${car.year || 'N/A'}</span>
                         <span>⚙️ ${car.transmission || 'N/A'}</span>
                         <span>📍 ${car.location || 'N/A'}</span>
                     </div>
                     <div style="font-size: 11px; color: #2563eb; font-weight: 500; margin-top: 2px;">🕒 ${timeAgoText}</div>
-                    <button onclick="openCarModal('${id}')" style="margin-top: 8px; background: #111; color: #fff; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; font-size: 13px;">View More Information</button>
+                    <button onclick="openCarModal('${id}')" style="margin-top: 8px; background: ${isSold ? '#475569' : '#111'}; color: #fff; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; font-size: 13px;">${isSold ? 'View Details (Sold)' : 'View More Information'}</button>
                 </div>
             `;
             carListingsContainer.appendChild(card);
@@ -372,16 +383,28 @@
         const car = allCarsData[id];
         if(!car) return;
 
-        document.getElementById('modalTitle').innerText = car.title;
+        const isSold = car.status === 'sold' || car.is_sold === true;
+
+        document.getElementById('modalTitle').innerHTML = `${car.title} ${isSold ? '<span style="background:#fee2e2; color:#dc2626; font-size:0.85rem; padding:2px 8px; border-radius:4px; vertical-align:middle; margin-left:8px;">❌ SOLD</span>' : ''}`;
+        document.getElementById('modalPrice').style.color = isSold ? '#64748b' : '#ff4d00';
         document.getElementById('modalPrice').innerText = `KES ${Number(car.price).toLocaleString()}`;
         document.getElementById('modalYear').innerText = car.year || 'N/A';
         document.getElementById('modalTransmission').innerText = car.transmission || 'N/A';
         document.getElementById('modalLocation').innerText = car.location || 'N/A';
         document.getElementById('modalMake').innerText = car.make || 'N/A';
-        document.getElementById('modalMoreInfo').innerText = car.moreInfo || 'No additional details provided.';
+        document.getElementById('modalMoreInfo').innerText = isSold ? '⚠️ This specific unit has already been sold. Feel free to contact our WhatsApp desk for similar available imports.' : (car.moreInfo || 'No additional details provided.');
 
         const images = car.imageUrls || [car.imageUrl];
-        document.getElementById('modalMainImg').src = images[0];
+        const mainImgElem = document.getElementById('modalMainImg');
+        mainImgElem.src = images[0];
+        mainImgElem.style.filter = isSold ? 'grayscale(40%)' : 'none';
+
+        const soldOverlayElem = document.getElementById('modalSoldOverlay');
+        if (isSold) {
+          soldOverlayElem.innerHTML = `<div style="position:absolute; inset:0; background:rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center;"><span style="background:#dc2626; color:#fff; font-size:1.5rem; font-weight:800; padding:8px 24px; transform:rotate(-10deg); border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.4);">SOLD UNIT</span></div>`;
+        } else {
+          soldOverlayElem.innerHTML = '';
+        }
 
         const thumbContainer = document.getElementById('modalThumbnails');
         thumbContainer.innerHTML = '';
@@ -395,8 +418,20 @@
             }
         });
 
-        const whatsappMsg = encodeURIComponent(`Hello Kabata Motors, I want to talk about this car: ${car.title} priced at KES ${Number(car.price).toLocaleString()} (Ref ID: ${id}). Is it available?`);
-        document.getElementById('whatsappInquiryBtn').href = `https://wa.me/254721876026?text=${whatsappMsg}`;
+        const actionContainer = document.getElementById('modalActionContainer');
+        if (isSold) {
+          actionContainer.innerHTML = `
+            <div style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:10px; border-radius:6px; font-size:13px; text-align:center; font-weight:bold; margin-bottom:8px;">
+              ❌ Unit No Longer Available
+            </div>
+            <a href="https://wa.me/254721876026?text=${encodeURIComponent(`Hello Kabata Motors, I saw that this car (${car.title}) is sold. Do you have a similar unit available?`)}" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">💬 Ask WhatsApp Broker for Similar Units</a>
+          `;
+        } else {
+          const whatsappMsg = encodeURIComponent(`Hello Kabata Motors, I want to talk about this car: ${car.title} priced at KES ${Number(car.price).toLocaleString()} (Ref ID: ${id}). Is it available?`);
+          actionContainer.innerHTML = `
+            <a id="whatsappInquiryBtn" href="https://wa.me/254721876026?text=${whatsappMsg}" target="_blank" style="display: block; text-align: center; background: #25D366; color: #fff; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">💬 Talk to Seller on WhatsApp</a>
+          `;
+        }
 
         const similarContainer = document.getElementById('similarCarsContainer');
         similarContainer.innerHTML = '';
@@ -409,7 +444,6 @@
             
             const otherCarTitle = (otherCar.title || '').toLowerCase().trim();
             
-            // Match exactly by make and title/model representation
             if (otherCar.make === car.make && otherCarTitle === currentCarTitle) {
                 foundSimilar++;
                 const simImg = otherCar.imageUrl || (otherCar.imageUrls && otherCar.imageUrls[0]) || '';
